@@ -51,19 +51,47 @@ function sampleSwordSpec(rng) {
 }
 
 // =====================================================================
+// Archetype axis — 給定 archetype 與 row y,回傳該 row 的中軸 x。
+// straight / broad:整把劍中軸在 cx,跟 row 無關。
+// curved:整把劍沿 ~30° 斜軸排(slope 1:2),tip 在右上,pommel 在左下。
+// 用統一介面讓 mask builder 與 paint helper(grip wrap、gem)同一份 code
+// 走兩種 layout。
+// =====================================================================
+
+function archAxis32(archetype, y) {
+  const cx = 16;
+  if (archetype !== 'curved') return cx;
+  const tipX = cx + 6;        // 22
+  if (y < 2)  return tipX;
+  if (y > 29) return tipX - 13;
+  return tipX - Math.floor((y - 2) / 2);
+}
+
+function archAxis16(archetype, y) {
+  const cx = 8;
+  if (archetype !== 'curved') return cx;
+  const tipX = cx + 3;        // 11
+  if (y < 1)  return tipX;
+  if (y > 14) return tipX - 6;
+  return tipX - Math.floor((y - 1) / 2);
+}
+
+// =====================================================================
 // Shape silhouette functions (32×32)
 //
 // 每個 archetype 是一個 () → { rows: Array<{leftX, rightX, kind:'blade'} | null> }
-// 描繪 blade 外輪廓。整數座標,中心對齊 cx=16。
+// 描繪 blade 外輪廓。整數座標。
 // 注意:silhouette 是「未咬掉外圍 outline 之前」的形狀;outline pass 會吃掉外圈 1px。
 //
-// 整體垂直配置(此 task 只做 blade,後續 task 加 guard/grip/pommel):
+// 整體垂直配置:
 //   y=0..1   padding
 //   y=2..18  blade  (17 rows)
 //   y=19..20 guard
 //   y=21..26 grip
 //   y=27..29 pommel
 //   y=30..31 padding
+//
+// straight / broad 中軸對齊 cx=16;curved 沿 archAxis32('curved', y) 斜軸。
 // =====================================================================
 
 function shapeStraight32() {
@@ -92,57 +120,17 @@ function shapeBroad32() {
 }
 
 function shapeCurved32() {
-  // 單刃彎刀(修正版):width 3,tip 偏右 cx+2,1 個 stairstep 在 y=11→12。
-  // 修正:max offset 從 2 降到 1,讓 blade rightX 永遠 ≤ tip 的 cx+2,
-  // 不再有「scimitar belly」凸出 tip 之外造成歪掉的視覺。
-  // 舊版見 shapeCurved32_v0(留作 regression 比對)。
+  // 單刃彎刀(整把斜):width 3 沿 archAxis32('curved', y) 斜軸排,
+  // tip 在 cx+6=22,每 2 列往左 1 col,blade 底端在 col 14。
+  // Guard / grip / pommel 也跟著斜軸走(由 buildSwordMask32 處理)。
   const rows = new Array(32).fill(null);
-  const cx = 16;
-  rows[2] = { leftX: cx + 2, rightX: cx + 2, kind: 'blade' };  // tip 1px,偏右 2
-  rows[3] = { leftX: cx + 1, rightX: cx + 2, kind: 'blade' };  // taper
-  // 上半:width 3 offset 1,col cx..cx+2(8 rows)
-  for (let y = 4; y <= 11; y++) {
-    rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
-  }
-  // 下半:width 3 offset 0,col cx-1..cx+1(7 rows,對齊 guard 中軸)
-  for (let y = 12; y <= 18; y++) {
-    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
-  }
-  return { rows };
-}
-
-// 舊版 curved 32(scimitar belly 凸出 tip,2026-05-07 視覺驗證後改 shapeCurved32)。
-// 留下來只給 regression.html 比對前後差異使用。**不在 production render path 用。**
-function shapeCurved32_v0() {
-  const rows = new Array(32).fill(null);
-  const cx = 16;
-  rows[2] = { leftX: cx + 2, rightX: cx + 2, kind: 'blade' };
-  rows[3] = { leftX: cx + 1, rightX: cx + 2, kind: 'blade' };
+  const tipX = archAxis32('curved', 2);
+  rows[2] = { leftX: tipX,                          rightX: tipX,                          kind: 'blade' };
+  rows[3] = { leftX: archAxis32('curved', 3) - 1,   rightX: archAxis32('curved', 3),       kind: 'blade' };
   for (let y = 4; y <= 18; y++) {
-    const offset = Math.round(2 * (18 - y) / (18 - 4));
-    rows[y] = {
-      leftX:  cx + offset - 1,
-      rightX: cx + offset + 1,
-      kind: 'blade',
-    };
+    const ax = archAxis32('curved', y);
+    rows[y] = { leftX: ax - 1, rightX: ax + 1, kind: 'blade' };
   }
-  return { rows };
-}
-
-// 對角線版 curved 32(候選 v2):tip 在 cx+5,blade 沿對角線往下左 5 個 stairstep
-// 每段 3 列,bottom 對齊 guard 中軸 cx-1..cx+1。Total 橫向 7 columns。
-// 跟 _v0 一樣只給 regression 比對使用。視覺驗證後若選 v2 再 promote 為 production。
-function shapeCurved32_v2() {
-  const rows = new Array(32).fill(null);
-  const cx = 16;
-  rows[2] = { leftX: cx + 5, rightX: cx + 5, kind: 'blade' };  // tip
-  rows[3] = { leftX: cx + 4, rightX: cx + 5, kind: 'blade' };  // taper width 2
-  // 5 個 stairstep,每 3 列左移 1
-  for (let y = 4;  y <= 6;  y++) rows[y] = { leftX: cx + 3, rightX: cx + 5, kind: 'blade' };
-  for (let y = 7;  y <= 9;  y++) rows[y] = { leftX: cx + 2, rightX: cx + 4, kind: 'blade' };
-  for (let y = 10; y <= 12; y++) rows[y] = { leftX: cx + 1, rightX: cx + 3, kind: 'blade' };
-  for (let y = 13; y <= 15; y++) rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
-  for (let y = 16; y <= 18; y++) rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
   return { rows };
 }
 
@@ -189,49 +177,16 @@ function shapeBroad16() {
 }
 
 function shapeCurved16() {
-  // 彎刀 16(修正版):tip 偏右 1px,上半身 3 列偏右 offset=1,下半身 4 列對齊中軸。
-  // 比舊版多 3 列偏移列(y=3..5),16 上才看得出彎度。spec §10 risk #6 預設 fallback。
-  // 舊版見 shapeCurved16_v0。
+  // 彎刀 16(整把斜):width 3 沿 archAxis16('curved', y) 斜軸排,
+  // tip 在 cx+3=11,每 2 列往左 1 col,blade 底端在 col 7。
   const rows = new Array(16).fill(null);
-  const cx = 8;
-  rows[1] = { leftX: cx + 1, rightX: cx + 1, kind: 'blade' };  // tip 偏右 1
-  rows[2] = { leftX: cx,     rightX: cx + 1, kind: 'blade' };  // taper width 2
-  // 上半:width 3 offset 1,col cx..cx+2(3 rows)
-  for (let y = 3; y <= 5; y++) {
-    rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
+  const tipX = archAxis16('curved', 1);
+  rows[1] = { leftX: tipX,                          rightX: tipX,                        kind: 'blade' };
+  rows[2] = { leftX: archAxis16('curved', 2) - 1,   rightX: archAxis16('curved', 2),     kind: 'blade' };
+  for (let y = 3; y <= 9; y++) {
+    const ax = archAxis16('curved', y);
+    rows[y] = { leftX: ax - 1, rightX: ax + 1, kind: 'blade' };
   }
-  // 下半:width 3 offset 0,col cx-1..cx+1(4 rows,對齊 guard)
-  for (let y = 6; y <= 9; y++) {
-    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
-  }
-  return { rows };
-}
-
-// 舊版 curved 16(只 tip + taper 偏移,body 全對齊中軸 → 16 上看不出彎度)。
-// 留下來只給 regression.html 比對。**不在 production render path 用。**
-function shapeCurved16_v0() {
-  const rows = new Array(16).fill(null);
-  const cx = 8;
-  rows[1] = { leftX: cx + 1, rightX: cx + 1, kind: 'blade' };
-  rows[2] = { leftX: cx,     rightX: cx + 1, kind: 'blade' };
-  rows[3] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
-  for (let y = 4; y <= 9; y++) {
-    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
-  }
-  return { rows };
-}
-
-// 對角線版 curved 16(候選 v2):tip 在 cx+3,blade 3 個 stairstep 沿對角下左,
-// 對齊 guard 中軸 cx-1..cx+1。橫向 5 columns。Regression-only。
-function shapeCurved16_v2() {
-  const rows = new Array(16).fill(null);
-  const cx = 8;
-  rows[1] = { leftX: cx + 3, rightX: cx + 3, kind: 'blade' };  // tip
-  rows[2] = { leftX: cx + 2, rightX: cx + 3, kind: 'blade' };  // taper width 2
-  // 3 個 stairstep,每 2 列左移 1
-  for (let y = 3; y <= 4; y++) rows[y] = { leftX: cx + 1, rightX: cx + 3, kind: 'blade' };
-  for (let y = 5; y <= 6; y++) rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
-  for (let y = 7; y <= 9; y++) rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
   return { rows };
 }
 
@@ -247,13 +202,14 @@ const SWORD_SHAPE_FNS_16 = {
 // Mask builder (32×32) — 把 spec 轉成 enum mask
 //
 // mask cell ∈ { 'blade' | 'guard' | 'grip' | 'pommel' | null }
-// 整體配置在 spec 設計文件 §4.1。
+// 以 archAxis32(spec.archetype, y) 取得該 row 的中軸,讓 vertical 與
+// curved 的 diagonal layout 共用同一份 code。
 // =====================================================================
 
 function buildSwordMask32(spec) {
   const size = 32;
   const mask = allocateMask(size);
-  const cx = 16;
+  const axisFn = (y) => archAxis32(spec.archetype, y);
 
   // ── Blade ──
   const shape = SWORD_SHAPE_FNS_32[spec.archetype]();
@@ -265,29 +221,32 @@ function buildSwordMask32(spec) {
     }
   }
 
-  // ── Guard (y=19..20, 2 列) ── 寬度與形狀依 guardStyle
-  // 每個 guardStyle 提供 [y19_left, y19_right, y20_left, y20_right](inclusive)。
+  // ── Guard (y=19..20, 2 列) ── 寬度依 guardStyle,中央對齊 axis(19.5)
+  // 對 vertical: axisFn(19) === axisFn(20) === cx,gCenter = cx。
+  // 對 diagonal: axisFn(19)/(20) 相差 1 col,gCenter 取下取整中點。
+  const gCenter = Math.floor((axisFn(19) + axisFn(20)) / 2);
   const guardRanges = {
-    bar:   [cx - 3, cx + 3, cx - 3, cx + 3],  // 2 列同寬 7
-    swept: [cx - 2, cx + 2, cx - 3, cx + 3],  // y=19 寬 5,y=20 寬 7(下層展開)
-    disc:  [cx - 3, cx + 3, cx - 4, cx + 4],  // y=19 寬 7,y=20 寬 9(中下凸)
+    bar:   [gCenter - 3, gCenter + 3, gCenter - 3, gCenter + 3],
+    swept: [gCenter - 2, gCenter + 2, gCenter - 3, gCenter + 3],
+    disc:  [gCenter - 3, gCenter + 3, gCenter - 4, gCenter + 4],
   };
   const [g19l, g19r, g20l, g20r] = guardRanges[spec.guardStyle];
   for (let x = g19l; x <= g19r; x++) maskSet(mask, size, x, 19, 'guard');
   for (let x = g20l; x <= g20r; x++) maskSet(mask, size, x, 20, 'guard');
 
-  // ── Grip (y=21..26, 6 列, width 3) ──
+  // ── Grip (y=21..26, 6 列, width 3) ── 沿 axis 走
   for (let y = 21; y <= 26; y++) {
-    for (let x = cx - 1; x <= cx + 1; x++) {
+    const ax = axisFn(y);
+    for (let x = ax - 1; x <= ax + 1; x++) {
       maskSet(mask, size, x, y, 'grip');
     }
   }
 
-  // ── Pommel (y=27..29, 3 列) ── 寬度依 pommelStyle
-  // round / gem 都用 width 3(cx-1..cx+1);disk 用 width 5(cx-2..cx+2)
+  // ── Pommel (y=27..29, 3 列) ── round/gem width 3,disk width 5
   const pommelHalfW = (spec.pommelStyle === 'disk') ? 2 : 1;
   for (let y = 27; y <= 29; y++) {
-    for (let x = cx - pommelHalfW; x <= cx + pommelHalfW; x++) {
+    const ax = axisFn(y);
+    for (let x = ax - pommelHalfW; x <= ax + pommelHalfW; x++) {
       maskSet(mask, size, x, y, 'pommel');
     }
   }
@@ -307,7 +266,7 @@ function buildSwordMask32(spec) {
 function buildSwordMask16(spec) {
   const size = 16;
   const mask = allocateMask(size);
-  const cx = 8;
+  const axisFn = (y) => archAxis16(spec.archetype, y);
 
   // ── Blade ──
   const shape = SWORD_SHAPE_FNS_16[spec.archetype]();
@@ -319,30 +278,30 @@ function buildSwordMask16(spec) {
     }
   }
 
-  // ── Guard (y=10, 1 列) ──
-  // bar / swept 都走 width 5;disc 走 width 6 (cx-3..cx+2,非對稱)
+  // ── Guard (y=10, 1 列) ── bar/swept width 5,disc width 6 (cx-3..cx+2 非對稱)
+  const gCenter = axisFn(10);
   let gLeft, gRight;
   if (spec.guardStyle === 'disc') {
-    gLeft = cx - 3; gRight = cx + 2;
+    gLeft = gCenter - 3; gRight = gCenter + 2;
   } else {
-    // bar 與 swept(collapse)
-    gLeft = cx - 2; gRight = cx + 2;
+    gLeft = gCenter - 2; gRight = gCenter + 2;
   }
   for (let x = gLeft; x <= gRight; x++) {
     maskSet(mask, size, x, 10, 'guard');
   }
 
-  // ── Grip (y=11..13, width 3) ──
+  // ── Grip (y=11..13, width 3) ── 沿 axis 走
   for (let y = 11; y <= 13; y++) {
-    for (let x = cx - 1; x <= cx + 1; x++) {
+    const ax = axisFn(y);
+    for (let x = ax - 1; x <= ax + 1; x++) {
       maskSet(mask, size, x, y, 'grip');
     }
   }
 
-  // ── Pommel (y=14, 1 列) ──
-  // round / gem 走 width 1;disk 走 width 3
+  // ── Pommel (y=14, 1 列) ── round/gem width 1,disk width 3
+  const ax = axisFn(14);
   const pommelHalfW = (spec.pommelStyle === 'disk') ? 1 : 0;
-  for (let x = cx - pommelHalfW; x <= cx + pommelHalfW; x++) {
+  for (let x = ax - pommelHalfW; x <= ax + pommelHalfW; x++) {
     maskSet(mask, size, x, 14, 'pommel');
   }
 
@@ -361,10 +320,10 @@ function tryPaintBladeCell32(ctx, mask, size, x, y) {
 }
 
 /**
- * Always-on blade shine。1px 縱線。
+ * Always-on blade shine。1px 縱線(curved 沿 axis 走)。
  * - straight:cx,y=4..15
  * - broad:cx-1(blade 內側最左 column),y=4..16
- * - curved:每列從 shape.rows[y] 算 xCenter,y=4..15
+ * - curved:每列從 shape.rows[y] 算 xCenter,y=4..15(自動跟著 diagonal axis)
  */
 function paintBladeShine32(ctx, mask, size, spec) {
   ctx.fillStyle = spec.palette.bladeShine;
@@ -417,17 +376,15 @@ function paintFuller32(ctx, mask, size, spec) {
 }
 
 /**
- * 條件裝飾:grip wrap。
+ * 條件裝飾:grip wrap。沿 archAxis32(spec.archetype, y) 走,vertical 與 diagonal 都通用。
  * spec.gripWrapYs 由 sample 階段決定(0、1 或 2 條,y 範圍 [22..25])。
- * 每條 wrap 畫 grip 寬整列 LEATHER_PALETTE.shadow,但只有 (cx, y) 不會被
- * 後續 outline pass 覆蓋,實際視覺是 1 px 暗點。
  */
 function paintGripWrap32(ctx, mask, size, spec) {
   if (!spec.hasGripWrap) return;
   ctx.fillStyle = LEATHER_PALETTE.shadow;
-  const cx = 16;
   for (const y of spec.gripWrapYs) {
-    for (let x = cx - 1; x <= cx + 1; x++) {
+    const ax = archAxis32(spec.archetype, y);
+    for (let x = ax - 1; x <= ax + 1; x++) {
       if (mask[y * size + x] !== 'grip') continue;
       ctx.fillRect(x, y, 1, 1);
     }
@@ -435,16 +392,16 @@ function paintGripWrap32(ctx, mask, size, spec) {
 }
 
 /**
- * 條件裝飾:pommel gem。
- * spec.pommelStyle === 'gem' 才畫,座標固定 (cx=16, y=28)— 即 pommel 3 列高的中間列、
- * 中央 cell,經 outline + seam pass 不會被覆蓋(interior 條件成立)。
+ * 條件裝飾:pommel gem。座標跟著 axis 走 — vertical 在 (cx, 28),
+ * curved 在 (archAxis32('curved', 28), 28),都是 pommel 中間列的中央 cell。
  */
 function paintGem32(ctx, mask, size, spec) {
   if (spec.pommelStyle !== 'gem') return;
-  const cx = 16, gemY = 28;
-  if (mask[gemY * size + cx] !== 'pommel') return;
+  const gemY = 28;
+  const gemX = archAxis32(spec.archetype, gemY);
+  if (mask[gemY * size + gemX] !== 'pommel') return;
   ctx.fillStyle = spec.palette.bladeShine;
-  ctx.fillRect(cx, gemY, 1, 1);
+  ctx.fillRect(gemX, gemY, 1, 1);
 }
 
 /** 只在指定 cell 為 'blade' 時才畫(16 版,共用 32 版邏輯) */
@@ -458,7 +415,7 @@ function tryPaintBladeCell16(ctx, mask, size, x, y) {
  * 16 blade shine — 壓縮成 3-4 px。
  * - straight:cx, y=4..7
  * - broad:cx-1, y=4..8
- * - curved:每列從 shape.rows[y] 算 xCenter, y=4..7
+ * - curved:每列從 shape.rows[y] 算 xCenter, y=4..7(自動跟著 diagonal axis)
  */
 function paintBladeShine16(ctx, mask, size, spec) {
   ctx.fillStyle = spec.palette.bladeShine;
@@ -491,7 +448,7 @@ function paintBladeShine16(ctx, mask, size, spec) {
 }
 
 // =====================================================================
-// Renderer — 純函式,不再使用 RNG;Task 4+ 補完
+// Renderer — 純函式,不再使用 RNG
 // =====================================================================
 
 function renderSwordSpec32(ctx, spec) {
@@ -558,260 +515,7 @@ function drawSwordImpl(ctx, rng, size) {
   else if (size === 16) renderSwordSpec16(ctx, spec);
 }
 
-// =====================================================================
-// Regression-only API:用舊版 curved shape 渲染,給 regression.html 比對。
-// 非 curved spec 直接 fall through 到正版 render(輸出完全相同)。
-// =====================================================================
-
-function renderSwordSpec32_v0(ctx, spec) {
-  if (spec.archetype !== 'curved') return renderSwordSpec32(ctx, spec);
-  const orig = SWORD_SHAPE_FNS_32.curved;
-  SWORD_SHAPE_FNS_32.curved = shapeCurved32_v0;
-  try { renderSwordSpec32(ctx, spec); }
-  finally { SWORD_SHAPE_FNS_32.curved = orig; }
-}
-
-function renderSwordSpec16_v0(ctx, spec) {
-  if (spec.archetype !== 'curved') return renderSwordSpec16(ctx, spec);
-  const orig = SWORD_SHAPE_FNS_16.curved;
-  SWORD_SHAPE_FNS_16.curved = shapeCurved16_v0;
-  try { renderSwordSpec16(ctx, spec); }
-  finally { SWORD_SHAPE_FNS_16.curved = orig; }
-}
-
-function renderSwordSpec32_v2(ctx, spec) {
-  if (spec.archetype !== 'curved') return renderSwordSpec32(ctx, spec);
-  const orig = SWORD_SHAPE_FNS_32.curved;
-  SWORD_SHAPE_FNS_32.curved = shapeCurved32_v2;
-  try { renderSwordSpec32(ctx, spec); }
-  finally { SWORD_SHAPE_FNS_32.curved = orig; }
-}
-
-function renderSwordSpec16_v2(ctx, spec) {
-  if (spec.archetype !== 'curved') return renderSwordSpec16(ctx, spec);
-  const orig = SWORD_SHAPE_FNS_16.curved;
-  SWORD_SHAPE_FNS_16.curved = shapeCurved16_v2;
-  try { renderSwordSpec16(ctx, spec); }
-  finally { SWORD_SHAPE_FNS_16.curved = orig; }
-}
-
-// =====================================================================
-// v3 — FULL DIAGONAL sword (curved archetype only)
-//
-// 跟 v0/v1/v2 不同,v3 把整把劍沿斜軸排:blade、guard、grip、pommel
-// 全部往左下移動。slope 1:2(每 2 列往左 1 col)。
-// Tip 在 cx+6(32 版)/ cx+3(16 版),pommel 在左下角。
-// Straight / broad spec 直接 fall through 到 production renderer。
-// 整套 v3 邏輯獨立(不依賴 SWORD_SHAPE_FNS_*),包含自己的 mask builder
-// 與 paint helpers(shine、gem 跟著斜軸走)。
-// gripWrap 暫不支援(diagonal grip 需另外處理 wrap y 座標,後續迭代)。
-// =====================================================================
-
-function axisX32_v3(y) {
-  const tipX = 22;  // cx + 6
-  if (y < 2) return tipX;
-  if (y > 29) return tipX - 13;
-  return tipX - Math.floor((y - 2) / 2);
-}
-
-function axisX16_v3(y) {
-  const tipX = 11;  // cx + 3
-  if (y < 1) return tipX;
-  if (y > 14) return tipX - 6;
-  return tipX - Math.floor((y - 1) / 2);
-}
-
-function shapeCurved32_v3() {
-  const rows = new Array(32).fill(null);
-  rows[2] = { leftX: axisX32_v3(2), rightX: axisX32_v3(2), kind: 'blade' };
-  rows[3] = { leftX: axisX32_v3(3) - 1, rightX: axisX32_v3(3), kind: 'blade' };
-  for (let y = 4; y <= 18; y++) {
-    const ax = axisX32_v3(y);
-    rows[y] = { leftX: ax - 1, rightX: ax + 1, kind: 'blade' };
-  }
-  return { rows };
-}
-
-function shapeCurved16_v3() {
-  const rows = new Array(16).fill(null);
-  rows[1] = { leftX: axisX16_v3(1), rightX: axisX16_v3(1), kind: 'blade' };
-  rows[2] = { leftX: axisX16_v3(2) - 1, rightX: axisX16_v3(2), kind: 'blade' };
-  for (let y = 3; y <= 9; y++) {
-    const ax = axisX16_v3(y);
-    rows[y] = { leftX: ax - 1, rightX: ax + 1, kind: 'blade' };
-  }
-  return { rows };
-}
-
-function buildSwordMaskCurved32_v3(spec) {
-  const size = 32;
-  const mask = allocateMask(size);
-
-  // Blade
-  const shape = shapeCurved32_v3();
-  for (let y = 0; y < size; y++) {
-    const r = shape.rows[y];
-    if (!r) continue;
-    for (let x = r.leftX; x <= r.rightX; x++) {
-      maskSet(mask, size, x, y, 'blade');
-    }
-  }
-
-  // Guard y=19..20 — horizontal bar centered at axis(19.5)
-  const gCenter = Math.floor((axisX32_v3(19) + axisX32_v3(20)) / 2);
-  const guardRanges = {
-    bar:   [gCenter - 3, gCenter + 3, gCenter - 3, gCenter + 3],
-    swept: [gCenter - 2, gCenter + 2, gCenter - 3, gCenter + 3],
-    disc:  [gCenter - 3, gCenter + 3, gCenter - 4, gCenter + 4],
-  };
-  const [g19l, g19r, g20l, g20r] = guardRanges[spec.guardStyle];
-  for (let x = g19l; x <= g19r; x++) maskSet(mask, size, x, 19, 'guard');
-  for (let x = g20l; x <= g20r; x++) maskSet(mask, size, x, 20, 'guard');
-
-  // Grip y=21..26 width 3 along axis
-  for (let y = 21; y <= 26; y++) {
-    const ax = axisX32_v3(y);
-    for (let x = ax - 1; x <= ax + 1; x++) {
-      maskSet(mask, size, x, y, 'grip');
-    }
-  }
-
-  // Pommel y=27..29 along axis
-  const pommelHalfW = (spec.pommelStyle === 'disk') ? 2 : 1;
-  for (let y = 27; y <= 29; y++) {
-    const ax = axisX32_v3(y);
-    for (let x = ax - pommelHalfW; x <= ax + pommelHalfW; x++) {
-      maskSet(mask, size, x, y, 'pommel');
-    }
-  }
-
-  return mask;
-}
-
-function buildSwordMaskCurved16_v3(spec) {
-  const size = 16;
-  const mask = allocateMask(size);
-
-  // Blade
-  const shape = shapeCurved16_v3();
-  for (let y = 0; y < size; y++) {
-    const r = shape.rows[y];
-    if (!r) continue;
-    for (let x = r.leftX; x <= r.rightX; x++) {
-      maskSet(mask, size, x, y, 'blade');
-    }
-  }
-
-  // Guard y=10
-  const gCenter = axisX16_v3(10);
-  let gLeft, gRight;
-  if (spec.guardStyle === 'disc') {
-    gLeft = gCenter - 3; gRight = gCenter + 2;
-  } else {
-    gLeft = gCenter - 2; gRight = gCenter + 2;
-  }
-  for (let x = gLeft; x <= gRight; x++) {
-    maskSet(mask, size, x, 10, 'guard');
-  }
-
-  // Grip y=11..13 width 3 along axis
-  for (let y = 11; y <= 13; y++) {
-    const ax = axisX16_v3(y);
-    for (let x = ax - 1; x <= ax + 1; x++) {
-      maskSet(mask, size, x, y, 'grip');
-    }
-  }
-
-  // Pommel y=14
-  const ax = axisX16_v3(14);
-  const pommelHalfW = (spec.pommelStyle === 'disk') ? 1 : 0;
-  for (let x = ax - pommelHalfW; x <= ax + pommelHalfW; x++) {
-    maskSet(mask, size, x, 14, 'pommel');
-  }
-
-  return mask;
-}
-
-function paintBladeShine32_v3(ctx, mask, size, spec) {
-  ctx.fillStyle = spec.palette.bladeShine;
-  const shape = shapeCurved32_v3();
-  for (let y = 4; y <= 15; y++) {
-    const r = shape.rows[y];
-    if (!r) continue;
-    const xCenter = Math.round((r.leftX + r.rightX) / 2);
-    tryPaintBladeCell32(ctx, mask, size, xCenter, y);
-  }
-}
-
-function paintBladeShine16_v3(ctx, mask, size, spec) {
-  ctx.fillStyle = spec.palette.bladeShine;
-  const shape = shapeCurved16_v3();
-  for (let y = 4; y <= 7; y++) {
-    const r = shape.rows[y];
-    if (!r) continue;
-    const xCenter = Math.round((r.leftX + r.rightX) / 2);
-    tryPaintBladeCell16(ctx, mask, size, xCenter, y);
-  }
-}
-
-function paintGem32_v3(ctx, mask, size, spec) {
-  if (spec.pommelStyle !== 'gem') return;
-  const gemX = axisX32_v3(28), gemY = 28;
-  if (mask[gemY * size + gemX] !== 'pommel') return;
-  ctx.fillStyle = spec.palette.bladeShine;
-  ctx.fillRect(gemX, gemY, 1, 1);
-}
-
-function renderSwordSpec32_v3(ctx, spec) {
-  if (spec.archetype !== 'curved') return renderSwordSpec32(ctx, spec);
-  const size = 32;
-  ctx.clearRect(0, 0, size, size);
-
-  const mask = buildSwordMaskCurved32_v3(spec);
-
-  paintMaskByEnum(ctx, mask, size, {
-    blade:  spec.palette.bladeMain,
-    guard:  spec.palette.bladeMain,
-    pommel: spec.palette.bladeMain,
-    grip:   LEATHER_PALETTE.main,
-  });
-
-  // gripWrap 在 diagonal grip 上需另算 axis_x,本輪暫 skip
-  paintBladeShine32_v3(ctx, mask, size, spec);
-  // fuller 強制 false on curved
-  paintGem32_v3(ctx, mask, size, spec);
-
-  paintInternalSeams(ctx, mask, size, spec.palette.outline);
-  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
-}
-
-function renderSwordSpec16_v3(ctx, spec) {
-  if (spec.archetype !== 'curved') return renderSwordSpec16(ctx, spec);
-  const size = 16;
-  ctx.clearRect(0, 0, size, size);
-
-  const mask = buildSwordMaskCurved16_v3(spec);
-
-  paintMaskByEnum(ctx, mask, size, {
-    blade:  spec.palette.bladeMain,
-    guard:  spec.palette.bladeMain,
-    pommel: spec.palette.bladeMain,
-    grip:   LEATHER_PALETTE.main,
-  });
-
-  paintBladeShine16_v3(ctx, mask, size, spec);
-
-  paintInternalSeams(ctx, mask, size, spec.palette.outline);
-  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
-}
-
 window.sampleSwordSpec = sampleSwordSpec;
 window.renderSwordSpec32 = renderSwordSpec32;
 window.renderSwordSpec16 = renderSwordSpec16;
-window.renderSwordSpec32_v0 = renderSwordSpec32_v0;
-window.renderSwordSpec16_v0 = renderSwordSpec16_v0;
-window.renderSwordSpec32_v2 = renderSwordSpec32_v2;
-window.renderSwordSpec16_v2 = renderSwordSpec16_v2;
-window.renderSwordSpec32_v3 = renderSwordSpec32_v3;
-window.renderSwordSpec16_v3 = renderSwordSpec16_v3;
 window.drawSword = drawSwordImpl;

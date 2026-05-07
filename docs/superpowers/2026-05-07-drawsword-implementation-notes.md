@@ -102,18 +102,45 @@ y= 5..18 3 px,xCenter 線性遞減從 cx+2 到 cx
 
 從 5 列偏移(tip + taper + 上半身 3 列),16 上看得出彎度。
 
-### 2.5 舊版保留為 `_v0` 函式給 regression 比對
+### 2.5 第三輪實作(現況):整把劍沿 ~30° 斜軸排(FULL-DIAG)
 
-`sword.js` 同時 export:
-- `shapeCurved32` / `shapeCurved16`(現役 production)
-- `shapeCurved32_v0` / `shapeCurved16_v0`(舊版,**file-internal,不 export**)
-- `renderSwordSpec32_v0(ctx, spec)` / `renderSwordSpec16_v0(ctx, spec)`(window-export,規則:非 curved 直接 fall through 到正版,curved 才 swap shape fn 渲染舊版)
+§2.3 / §2.4 的「修 stairstep」與「加 mid-blade offset」做完後,user 視覺驗證仍不滿意 — 直立 + 略斜 blade 在 32 / 16 上都讀不出 saber 的動感。
 
-`regression.html` 有獨立 section「drawSword — curve fix(新 vs 舊)」,把 main `SWORD_SEEDS` 中 archetype = curved 的 6 個 seed 用 4 個欄位並排展示(32 NEW / 32 OLD / 16 NEW / 16 OLD),供視覺前後比對。
+第三輪改採「整把劍沿斜軸排」:不只 blade 斜,**guard、grip、pommel 全部沿同一條 1:2 斜軸**(每 2 列往左 1 col)。tip 在 cx+6=22(32)/ cx+3=11(16),pommel 在左下角(col 9 / col 5)。
 
-### 2.6 Spec 應澄清
+```
+新版 production curved 32(整把斜):
+  tip               (22, 2)
+  blade body        width 3,沿 archAxis32('curved', y) 排,y=2..18
+  guard             y=19..20,horizontal bar 中央在 axis(19.5) ≈ col 13
+  grip              y=21..26,width 3 沿 axis 走(每 2 列左移 1)
+  pommel            y=27..29,沿 axis 走
 
-未來重看 spec §4.2 的 curved 設計,prose 與 formula 都已過時。Production 用的是上面 §2.3 / §2.4 的新公式。日後 spec 重整時,把 §4.2 的 curved 區段改寫成現況。
+新版 production curved 16(整把斜):
+  tip               (11, 1)
+  blade body        width 3,沿 archAxis16('curved', y) 排,y=1..9
+  guard             y=10,horizontal bar 中央 col 7
+  grip              y=11..13,width 3 沿 axis 走
+  pommel            y=14,沿 axis 走
+```
+
+### 2.6 統一 axis 抽象:`archAxis32(archetype, y)` / `archAxis16(...)`
+
+實作上加了一對 helper,讓 vertical 與 diagonal 走同一份 mask builder + paint helper code:
+
+```js
+function archAxis32(archetype, y) {
+  if (archetype !== 'curved') return 16;       // straight / broad: vertical 中軸
+  // curved: 1:2 slope,tip cx+6 → pommel cx-7 over y=2..29
+  ...
+}
+```
+
+`buildSwordMask32` 的 guard / grip / pommel 全改用 `archAxis32(spec.archetype, y)` 取中央 x。Vertical archetype 永遠回 cx,行為跟之前完全一樣;curved 沿斜軸。`paintGripWrap32` / `paintGem32` 同理 — 用 axis 取座標,wrap 跟 gem 在 diagonal grip / pommel 上自動對齊。
+
+### 2.7 Spec 應澄清
+
+Spec §4 的 curved 描述全部過時。Production 用的是 §2.5 的整把斜版本。日後 spec 重整時,把 §4.2 的 curved 區段改寫成現況,並補一節說明 archetype 可能改變整把劍 layout(curved → diagonal)。
 
 ---
 
