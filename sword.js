@@ -116,6 +116,63 @@ const SWORD_SHAPE_FNS_32 = {
 };
 
 // =====================================================================
+// Shape silhouette functions (16×16) — 子集,專為 16 解析度重新設計(非縮放)
+//
+// 整體垂直配置:
+//   y=0      padding
+//   y=1      blade tip
+//   y=2..9   blade body (8 rows)
+//   y=10     guard
+//   y=11..13 grip
+//   y=14     pommel
+//   y=15     padding
+// =====================================================================
+
+function shapeStraight16() {
+  // 直劍 16:width 3
+  const rows = new Array(16).fill(null);
+  const cx = 8;
+  rows[1] = { leftX: cx, rightX: cx, kind: 'blade' };  // tip
+  for (let y = 2; y <= 9; y++) {
+    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
+  }
+  return { rows };
+}
+
+function shapeBroad16() {
+  // 寬刃 16:width 5
+  const rows = new Array(16).fill(null);
+  const cx = 8;
+  rows[1] = { leftX: cx,     rightX: cx,     kind: 'blade' };  // tip
+  rows[2] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };  // taper
+  for (let y = 3; y <= 9; y++) {
+    rows[y] = { leftX: cx - 2, rightX: cx + 2, kind: 'blade' };
+  }
+  return { rows };
+}
+
+function shapeCurved16() {
+  // 彎刀 16:tip 偏右 1px,3 列轉到中軸
+  const rows = new Array(16).fill(null);
+  const cx = 8;
+  rows[1] = { leftX: cx + 1, rightX: cx + 1, kind: 'blade' };  // tip 偏右 1
+  rows[2] = { leftX: cx,     rightX: cx + 1, kind: 'blade' };  // 寬 2 過渡
+  rows[3] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };  // 寬 3 對齊
+  for (let y = 4; y <= 9; y++) {
+    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
+  }
+  return { rows };
+}
+
+// 注意:此 const 命名為 SWORD_SHAPE_FNS_16(不是 SHAPE_FNS_16),
+// 避免跟 potion.js 同名 const 在 browser global script env collide → SyntaxError。
+const SWORD_SHAPE_FNS_16 = {
+  straight: shapeStraight16,
+  curved:   shapeCurved16,
+  broad:    shapeBroad16,
+};
+
+// =====================================================================
 // Mask builder (32×32) — 把 spec 轉成 enum mask
 //
 // mask cell ∈ { 'blade' | 'guard' | 'grip' | 'pommel' | null }
