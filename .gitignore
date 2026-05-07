@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+._*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Visual regression baselines (generated artifacts; baseline files themselves
+# can be tracked if you want — uncomment the next line to ignore the dir)
+# baselines/
+
+# Downloaded outputs (from regression.html "下載拼接 PNG" / specs.json buttons)
+regression-baseline.png
+regression-specs.json
+icon_*.png

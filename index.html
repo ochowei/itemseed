@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Icon Machine — 程序化像素圖示產生器</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg-deep: #0e0d14;
+      --bg-panel: #15131e;
+      --bg-panel-2: #1d1a2a;
+      --ink: #e8e4d8;
+      --ink-dim: #8a8499;
+      --accent: #ffb347;       /* 燈泡橘 */
+      --accent-2: #6dd3ce;     /* 古銅綠 */
+      --danger: #ff6b8a;
+      --line: #2a2638;
+      --pixel-gap: 1px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-deep);
+      color: var(--ink);
+      font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+      min-height: 100vh;
+      /* 細微的網格紋路,加深「機器」感 */
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 32px 32px;
+      background-position: -1px -1px;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    /* ---------- 標題 ---------- */
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 24px;
+      margin-bottom: 40px;
+    }
+    h1 {
+      font-family: 'VT323', monospace;
+      font-size: 64px;
+      line-height: 1;
+      margin: 0;
+      letter-spacing: 1px;
+      color: var(--ink);
+    }
+    h1 .accent {
+      color: var(--accent);
+    }
+    .tagline {
+      color: var(--ink-dim);
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+    .tagline .blink {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: var(--accent);
+      vertical-align: -2px;
+      margin-left: 4px;
+      animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    /* ---------- 主要佈局 ---------- */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 32px;
+      align-items: start;
+    }
+    @media (max-width: 800px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ---------- 預覽區 ---------- */
+    .preview-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 24px;
+      position: relative;
+    }
+    .preview-card::before {
+      /* 角落裝飾,模擬機械面板的螺絲/標記 */
+      content: '';
+      position: absolute;
+      top: 8px; left: 8px;
+      width: 6px; height: 6px;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+    .preview-label {
+      font-family: 'VT323', monospace;
+      font-size: 22px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .preview-frame {
+      background:
+        linear-gradient(135deg, #20202c 25%, transparent 25%),
+        linear-gradient(225deg, #20202c 25%, transparent 25%),
+        linear-gradient(45deg, #20202c 25%, transparent 25%),
+        linear-gradient(315deg, #20202c 25%, #1a1a26 25%);
+      background-position: 8px 0, 8px 0, 0 0, 0 0;
+      background-size: 16px 16px;
+      background-color: #1a1a26;
+      border: 1px solid var(--line);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1;
+    }
+    #preview-canvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      max-width: 384px;
+      max-height: 384px;
+    }
+    .preview-info {
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--ink-dim);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ---------- 控制面板 ---------- */
+    .controls {
+      background: var(--bg-panel);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .control-group label {
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      color: var(--accent-2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .seed-row {
+      display: flex;
+      gap: 8px;
+    }
+    input[type="text"], select {
+      background: var(--bg-panel-2);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    input[type="text"]:focus, select:focus {
+      border-color: var(--accent);
+    }
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ---------- 按鈕 ---------- */
+    button {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      background: var(--bg-panel-2);
+      color: var(--ink);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.12s;
+      position: relative;
+    }
+    button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translate(-1px, -1px);
+      box-shadow: 1px 1px 0 var(--line);
+    }
+    button:active {
+      transform: translate(0, 0);
+      box-shadow: none;
+    }
+    button.primary {
+      background: var(--accent);
+      color: var(--bg-deep);
+      border-color: var(--accent);
+    }
+    button.primary:hover {
+      background: var(--ink);
+      color: var(--bg-deep);
+      border-color: var(--ink);
+    }
+    button.icon-btn {
+      width: 40px;
+      flex-shrink: 0;
+      padding: 10px;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+
+    /* ---------- 批次預覽 ---------- */
+    .grid-section {
+      margin-top: 48px;
+    }
+    .grid-section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 8px;
+    }
+    .grid-section-header h2 {
+      font-family: 'VT323', monospace;
+      font-size: 28px;
+      color: var(--ink);
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .grid-section-header h2 .accent {
+      color: var(--accent-2);
+    }
+    .grid-section-header .hint {
+      font-size: 11px;
+      color: var(--ink-dim);
+    }
+    #grid-container {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 700px) {
+      #grid-container { grid-template-columns: repeat(4, 1fr); }
+    }
+    .grid-cell {
+      aspect-ratio: 1 / 1;
+      background: #1a1a26;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.12s;
+      padding: 8px;
+    }
+    .grid-cell:hover {
+      border-color: var(--accent);
+      transform: scale(1.06);
+      z-index: 2;
+    }
+    .grid-cell canvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    /* ---------- 頁尾 ---------- */
+    footer {
+      margin-top: 48px;
+      font-size: 11px;
+      color: var(--ink-dim);
+      text-align: center;
+      border-top: 1px dashed var(--line);
+      padding-top: 24px;
+    }
+    footer a {
+      color: var(--accent-2);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>icon<span class="accent">.</span>machine</h1>
+      <div class="tagline">
+        程序化像素圖示產生器 <span class="blink"></span>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- 左:主預覽 -->
+      <section class="preview-card">
+        <div class="preview-label">// preview</div>
+        <div class="preview-frame">
+          <canvas id="preview-canvas" width="384" height="384"></canvas>
+        </div>
+        <div class="preview-info">
+          <span>scale: 12x</span>
+          <span>format: png · transparent</span>
+        </div>
+      </section>
+
+      <!-- 右:控制面板 -->
+      <section class="controls">
+        <div class="control-group">
+          <label for="seed-input">// seed</label>
+          <div class="seed-row">
+            <input
+              type="text"
+              id="seed-input"
+              placeholder="輸入種子,或留空隨機產生"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button id="reroll-seed-btn" class="icon-btn" title="隨機新種子">⟳</button>
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="control-group">
+            <label for="type-select">// type</label>
+            <select id="type-select">
+              <option value="any">任意 (any)</option>
+              <option value="potion">藥水 (potion)</option>
+              <option value="sword">劍 (sword)</option>
+              <option value="spear">長矛 (spear)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="size-select">// size</label>
+            <select id="size-select">
+              <option value="32">32 × 32</option>
+              <option value="16">16 × 16</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="generate-btn" class="primary">▸ generate</button>
+          <button id="download-btn">⇩ png</button>
+        </div>
+
+        <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.6;">
+          提示:同樣的種子永遠產生同樣的圖示。下方批次預覽中,點任何一張圖示即可載入。
+        </div>
+      </section>
+    </div>
+
+    <!-- 批次預覽 -->
+    <section class="grid-section">
+      <div class="grid-section-header">
+        <h2>batch<span class="accent">_</span>preview</h2>
+        <div class="hint">點任一格載入該種子</div>
+      </div>
+      <div id="grid-container"></div>
+    </section>
+
+    <footer>
+      Icon Machine — 第一版骨架  ·  Inspired by
+      <a href="https://bmaczero.itch.io/icon-machine" target="_blank" rel="noopener">Brian MacIntosh</a>
+      ·  繪圖規則待擴充
+    </footer>
+  </div>
+
+  <script src="random.js"></script>
+  <script src="palette.js"></script>
+  <script src="pixel-utils.js"></script>
+  <script src="potion.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
