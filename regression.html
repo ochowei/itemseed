@@ -39,6 +39,14 @@
   <h2>// drawSword</h2>
   <table id="grid-sword"></table>
 
+  <h2>// drawSword — curved 候選比對(v3 vs v4)</h2>
+  <p style="font-size: 11px; color: #6a6458; margin: 0 0 12px;">
+    v3 = 整把劍沿 ~30° 斜軸排(blade + guard + grip + pommel 全部 tilt);
+    v4 = vertical hilt + curved blade(只 blade 彎,guard / grip / pommel 直立對齊 cx,跟 reference 圖風格一致,目前 production)。
+    Straight / broad 不受影響,此區只列 curved seeds。
+  </p>
+  <table id="grid-sword-curved"></table>
+
   <script src="random.js"></script>
   <script src="palette.js"></script>
   <script src="pixel-utils.js"></script>
@@ -132,6 +140,46 @@
         grid.appendChild(tr);
 
         collectedSword.push({ kind: 'sword', seed, spec, c32, c16 });
+      }
+    }
+
+    // ============================================================
+    // Render curved comparison grid (v3 vs v4)
+    // ============================================================
+    {
+      const grid = document.getElementById('grid-sword-curved');
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th>seed</th><th>family</th><th>32 v3</th><th>32 v4</th><th>16 v3</th><th>16 v4</th>';
+      grid.appendChild(headerRow);
+
+      const curvedSeeds = SWORD_SEEDS.filter(
+        s => sampleSwordSpec(new SeededRandom(s)).archetype === 'curved'
+      );
+      for (let i = 0; curvedSeeds.length < 6 && i < 200; i++) {
+        const cs = 'curve-cmp-' + i;
+        if (sampleSwordSpec(new SeededRandom(cs)).archetype === 'curved') curvedSeeds.push(cs);
+      }
+
+      function mkCanvas(size) {
+        const c = document.createElement('canvas');
+        c.width = size; c.height = size;
+        c.style.width = '64px'; c.style.height = '64px';
+        return c;
+      }
+
+      for (const seed of curvedSeeds) {
+        const spec = sampleSwordSpec(new SeededRandom(seed));
+        const c32v3 = mkCanvas(32); renderSwordSpec32_v3(c32v3.getContext('2d'), spec);
+        const c32v4 = mkCanvas(32); renderSwordSpec32   (c32v4.getContext('2d'), spec);
+        const c16v3 = mkCanvas(16); renderSwordSpec16_v3(c16v3.getContext('2d'), spec);
+        const c16v4 = mkCanvas(16); renderSwordSpec16   (c16v4.getContext('2d'), spec);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${seed}</td><td>${spec.family}</td>`;
+        for (const c of [c32v3, c32v4, c16v3, c16v4]) {
+          const td = document.createElement('td'); td.appendChild(c); tr.appendChild(td);
+        }
+        grid.appendChild(tr);
       }
     }
 
