@@ -142,4 +142,3 @@ window.sampleSwordSpec = sampleSwordSpec;
 window.renderSwordSpec32 = renderSwordSpec32;
 window.renderSwordSpec16 = renderSwordSpec16;
 window.drawSwordV2 = drawSwordImpl;  // Task 9 改成 window.drawSword
-window.SHAPE_FNS_32 = SHAPE_FNS_32;
