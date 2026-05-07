@@ -595,6 +595,216 @@ function renderSwordSpec16_v2(ctx, spec) {
   finally { SWORD_SHAPE_FNS_16.curved = orig; }
 }
 
+// =====================================================================
+// v3 — FULL DIAGONAL sword (curved archetype only)
+//
+// 跟 v0/v1/v2 不同,v3 把整把劍沿斜軸排:blade、guard、grip、pommel
+// 全部往左下移動。slope 1:2(每 2 列往左 1 col)。
+// Tip 在 cx+6(32 版)/ cx+3(16 版),pommel 在左下角。
+// Straight / broad spec 直接 fall through 到 production renderer。
+// 整套 v3 邏輯獨立(不依賴 SWORD_SHAPE_FNS_*),包含自己的 mask builder
+// 與 paint helpers(shine、gem 跟著斜軸走)。
+// gripWrap 暫不支援(diagonal grip 需另外處理 wrap y 座標,後續迭代)。
+// =====================================================================
+
+function axisX32_v3(y) {
+  const tipX = 22;  // cx + 6
+  if (y < 2) return tipX;
+  if (y > 29) return tipX - 13;
+  return tipX - Math.floor((y - 2) / 2);
+}
+
+function axisX16_v3(y) {
+  const tipX = 11;  // cx + 3
+  if (y < 1) return tipX;
+  if (y > 14) return tipX - 6;
+  return tipX - Math.floor((y - 1) / 2);
+}
+
+function shapeCurved32_v3() {
+  const rows = new Array(32).fill(null);
+  rows[2] = { leftX: axisX32_v3(2), rightX: axisX32_v3(2), kind: 'blade' };
+  rows[3] = { leftX: axisX32_v3(3) - 1, rightX: axisX32_v3(3), kind: 'blade' };
+  for (let y = 4; y <= 18; y++) {
+    const ax = axisX32_v3(y);
+    rows[y] = { leftX: ax - 1, rightX: ax + 1, kind: 'blade' };
+  }
+  return { rows };
+}
+
+function shapeCurved16_v3() {
+  const rows = new Array(16).fill(null);
+  rows[1] = { leftX: axisX16_v3(1), rightX: axisX16_v3(1), kind: 'blade' };
+  rows[2] = { leftX: axisX16_v3(2) - 1, rightX: axisX16_v3(2), kind: 'blade' };
+  for (let y = 3; y <= 9; y++) {
+    const ax = axisX16_v3(y);
+    rows[y] = { leftX: ax - 1, rightX: ax + 1, kind: 'blade' };
+  }
+  return { rows };
+}
+
+function buildSwordMaskCurved32_v3(spec) {
+  const size = 32;
+  const mask = allocateMask(size);
+
+  // Blade
+  const shape = shapeCurved32_v3();
+  for (let y = 0; y < size; y++) {
+    const r = shape.rows[y];
+    if (!r) continue;
+    for (let x = r.leftX; x <= r.rightX; x++) {
+      maskSet(mask, size, x, y, 'blade');
+    }
+  }
+
+  // Guard y=19..20 — horizontal bar centered at axis(19.5)
+  const gCenter = Math.floor((axisX32_v3(19) + axisX32_v3(20)) / 2);
+  const guardRanges = {
+    bar:   [gCenter - 3, gCenter + 3, gCenter - 3, gCenter + 3],
+    swept: [gCenter - 2, gCenter + 2, gCenter - 3, gCenter + 3],
+    disc:  [gCenter - 3, gCenter + 3, gCenter - 4, gCenter + 4],
+  };
+  const [g19l, g19r, g20l, g20r] = guardRanges[spec.guardStyle];
+  for (let x = g19l; x <= g19r; x++) maskSet(mask, size, x, 19, 'guard');
+  for (let x = g20l; x <= g20r; x++) maskSet(mask, size, x, 20, 'guard');
+
+  // Grip y=21..26 width 3 along axis
+  for (let y = 21; y <= 26; y++) {
+    const ax = axisX32_v3(y);
+    for (let x = ax - 1; x <= ax + 1; x++) {
+      maskSet(mask, size, x, y, 'grip');
+    }
+  }
+
+  // Pommel y=27..29 along axis
+  const pommelHalfW = (spec.pommelStyle === 'disk') ? 2 : 1;
+  for (let y = 27; y <= 29; y++) {
+    const ax = axisX32_v3(y);
+    for (let x = ax - pommelHalfW; x <= ax + pommelHalfW; x++) {
+      maskSet(mask, size, x, y, 'pommel');
+    }
+  }
+
+  return mask;
+}
+
+function buildSwordMaskCurved16_v3(spec) {
+  const size = 16;
+  const mask = allocateMask(size);
+
+  // Blade
+  const shape = shapeCurved16_v3();
+  for (let y = 0; y < size; y++) {
+    const r = shape.rows[y];
+    if (!r) continue;
+    for (let x = r.leftX; x <= r.rightX; x++) {
+      maskSet(mask, size, x, y, 'blade');
+    }
+  }
+
+  // Guard y=10
+  const gCenter = axisX16_v3(10);
+  let gLeft, gRight;
+  if (spec.guardStyle === 'disc') {
+    gLeft = gCenter - 3; gRight = gCenter + 2;
+  } else {
+    gLeft = gCenter - 2; gRight = gCenter + 2;
+  }
+  for (let x = gLeft; x <= gRight; x++) {
+    maskSet(mask, size, x, 10, 'guard');
+  }
+
+  // Grip y=11..13 width 3 along axis
+  for (let y = 11; y <= 13; y++) {
+    const ax = axisX16_v3(y);
+    for (let x = ax - 1; x <= ax + 1; x++) {
+      maskSet(mask, size, x, y, 'grip');
+    }
+  }
+
+  // Pommel y=14
+  const ax = axisX16_v3(14);
+  const pommelHalfW = (spec.pommelStyle === 'disk') ? 1 : 0;
+  for (let x = ax - pommelHalfW; x <= ax + pommelHalfW; x++) {
+    maskSet(mask, size, x, 14, 'pommel');
+  }
+
+  return mask;
+}
+
+function paintBladeShine32_v3(ctx, mask, size, spec) {
+  ctx.fillStyle = spec.palette.bladeShine;
+  const shape = shapeCurved32_v3();
+  for (let y = 4; y <= 15; y++) {
+    const r = shape.rows[y];
+    if (!r) continue;
+    const xCenter = Math.round((r.leftX + r.rightX) / 2);
+    tryPaintBladeCell32(ctx, mask, size, xCenter, y);
+  }
+}
+
+function paintBladeShine16_v3(ctx, mask, size, spec) {
+  ctx.fillStyle = spec.palette.bladeShine;
+  const shape = shapeCurved16_v3();
+  for (let y = 4; y <= 7; y++) {
+    const r = shape.rows[y];
+    if (!r) continue;
+    const xCenter = Math.round((r.leftX + r.rightX) / 2);
+    tryPaintBladeCell16(ctx, mask, size, xCenter, y);
+  }
+}
+
+function paintGem32_v3(ctx, mask, size, spec) {
+  if (spec.pommelStyle !== 'gem') return;
+  const gemX = axisX32_v3(28), gemY = 28;
+  if (mask[gemY * size + gemX] !== 'pommel') return;
+  ctx.fillStyle = spec.palette.bladeShine;
+  ctx.fillRect(gemX, gemY, 1, 1);
+}
+
+function renderSwordSpec32_v3(ctx, spec) {
+  if (spec.archetype !== 'curved') return renderSwordSpec32(ctx, spec);
+  const size = 32;
+  ctx.clearRect(0, 0, size, size);
+
+  const mask = buildSwordMaskCurved32_v3(spec);
+
+  paintMaskByEnum(ctx, mask, size, {
+    blade:  spec.palette.bladeMain,
+    guard:  spec.palette.bladeMain,
+    pommel: spec.palette.bladeMain,
+    grip:   LEATHER_PALETTE.main,
+  });
+
+  // gripWrap 在 diagonal grip 上需另算 axis_x,本輪暫 skip
+  paintBladeShine32_v3(ctx, mask, size, spec);
+  // fuller 強制 false on curved
+  paintGem32_v3(ctx, mask, size, spec);
+
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
+}
+
+function renderSwordSpec16_v3(ctx, spec) {
+  if (spec.archetype !== 'curved') return renderSwordSpec16(ctx, spec);
+  const size = 16;
+  ctx.clearRect(0, 0, size, size);
+
+  const mask = buildSwordMaskCurved16_v3(spec);
+
+  paintMaskByEnum(ctx, mask, size, {
+    blade:  spec.palette.bladeMain,
+    guard:  spec.palette.bladeMain,
+    pommel: spec.palette.bladeMain,
+    grip:   LEATHER_PALETTE.main,
+  });
+
+  paintBladeShine16_v3(ctx, mask, size, spec);
+
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
+}
+
 window.sampleSwordSpec = sampleSwordSpec;
 window.renderSwordSpec32 = renderSwordSpec32;
 window.renderSwordSpec16 = renderSwordSpec16;
@@ -602,4 +812,6 @@ window.renderSwordSpec32_v0 = renderSwordSpec32_v0;
 window.renderSwordSpec16_v0 = renderSwordSpec16_v0;
 window.renderSwordSpec32_v2 = renderSwordSpec32_v2;
 window.renderSwordSpec16_v2 = renderSwordSpec16_v2;
+window.renderSwordSpec32_v3 = renderSwordSpec32_v3;
+window.renderSwordSpec16_v3 = renderSwordSpec16_v3;
 window.drawSword = drawSwordImpl;
