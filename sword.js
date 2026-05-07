@@ -129,6 +129,23 @@ function shapeCurved32_v0() {
   return { rows };
 }
 
+// 對角線版 curved 32(候選 v2):tip 在 cx+5,blade 沿對角線往下左 5 個 stairstep
+// 每段 3 列,bottom 對齊 guard 中軸 cx-1..cx+1。Total 橫向 7 columns。
+// 跟 _v0 一樣只給 regression 比對使用。視覺驗證後若選 v2 再 promote 為 production。
+function shapeCurved32_v2() {
+  const rows = new Array(32).fill(null);
+  const cx = 16;
+  rows[2] = { leftX: cx + 5, rightX: cx + 5, kind: 'blade' };  // tip
+  rows[3] = { leftX: cx + 4, rightX: cx + 5, kind: 'blade' };  // taper width 2
+  // 5 個 stairstep,每 3 列左移 1
+  for (let y = 4;  y <= 6;  y++) rows[y] = { leftX: cx + 3, rightX: cx + 5, kind: 'blade' };
+  for (let y = 7;  y <= 9;  y++) rows[y] = { leftX: cx + 2, rightX: cx + 4, kind: 'blade' };
+  for (let y = 10; y <= 12; y++) rows[y] = { leftX: cx + 1, rightX: cx + 3, kind: 'blade' };
+  for (let y = 13; y <= 15; y++) rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
+  for (let y = 16; y <= 18; y++) rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
+  return { rows };
+}
+
 const SWORD_SHAPE_FNS_32 = {
   straight: shapeStraight32,
   curved:   shapeCurved32,
@@ -201,6 +218,20 @@ function shapeCurved16_v0() {
   for (let y = 4; y <= 9; y++) {
     rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
   }
+  return { rows };
+}
+
+// 對角線版 curved 16(候選 v2):tip 在 cx+3,blade 3 個 stairstep 沿對角下左,
+// 對齊 guard 中軸 cx-1..cx+1。橫向 5 columns。Regression-only。
+function shapeCurved16_v2() {
+  const rows = new Array(16).fill(null);
+  const cx = 8;
+  rows[1] = { leftX: cx + 3, rightX: cx + 3, kind: 'blade' };  // tip
+  rows[2] = { leftX: cx + 2, rightX: cx + 3, kind: 'blade' };  // taper width 2
+  // 3 個 stairstep,每 2 列左移 1
+  for (let y = 3; y <= 4; y++) rows[y] = { leftX: cx + 1, rightX: cx + 3, kind: 'blade' };
+  for (let y = 5; y <= 6; y++) rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
+  for (let y = 7; y <= 9; y++) rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
   return { rows };
 }
 
@@ -548,9 +579,27 @@ function renderSwordSpec16_v0(ctx, spec) {
   finally { SWORD_SHAPE_FNS_16.curved = orig; }
 }
 
+function renderSwordSpec32_v2(ctx, spec) {
+  if (spec.archetype !== 'curved') return renderSwordSpec32(ctx, spec);
+  const orig = SWORD_SHAPE_FNS_32.curved;
+  SWORD_SHAPE_FNS_32.curved = shapeCurved32_v2;
+  try { renderSwordSpec32(ctx, spec); }
+  finally { SWORD_SHAPE_FNS_32.curved = orig; }
+}
+
+function renderSwordSpec16_v2(ctx, spec) {
+  if (spec.archetype !== 'curved') return renderSwordSpec16(ctx, spec);
+  const orig = SWORD_SHAPE_FNS_16.curved;
+  SWORD_SHAPE_FNS_16.curved = shapeCurved16_v2;
+  try { renderSwordSpec16(ctx, spec); }
+  finally { SWORD_SHAPE_FNS_16.curved = orig; }
+}
+
 window.sampleSwordSpec = sampleSwordSpec;
 window.renderSwordSpec32 = renderSwordSpec32;
 window.renderSwordSpec16 = renderSwordSpec16;
 window.renderSwordSpec32_v0 = renderSwordSpec32_v0;
 window.renderSwordSpec16_v0 = renderSwordSpec16_v0;
+window.renderSwordSpec32_v2 = renderSwordSpec32_v2;
+window.renderSwordSpec16_v2 = renderSwordSpec16_v2;
 window.drawSword = drawSwordImpl;

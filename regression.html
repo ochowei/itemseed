@@ -39,9 +39,9 @@
   <h2>// drawSword</h2>
   <table id="grid-sword"></table>
 
-  <h2>// drawSword — curve fix(新 vs 舊)</h2>
+  <h2>// drawSword — curved 三版比對</h2>
   <p style="font-size: 11px; color: #6a6458; margin: 0 0 12px;">
-    比對 curved archetype 修正前後:舊版 32 belly 凸出 tip、16 看不出彎度;新版 32 一個平滑 stairstep、16 上半身偏右 1px 讓彎度可讀。Straight / broad archetype 不受影響(此區只列 curved seeds)。
+    OLD = scimitar belly(原 v0,刀身上半凸出 tip);NEW = 1 個 stairstep 修正版(production);DIAG = 對角線版本(候選 v2,tip 在 cx+5 / cx+3,blade 沿對角下左 5 / 3 個 stairstep)。Straight / broad 不受影響,此區只列 curved seeds。
   </p>
   <table id="grid-sword-curved"></table>
 
@@ -142,15 +142,14 @@
     }
 
     // ============================================================
-    // Render curved-fix comparison grid (new vs old curved shape)
+    // Render curved-3way comparison grid (OLD / NEW / DIAG)
     // ============================================================
     {
       const grid = document.getElementById('grid-sword-curved');
       const headerRow = document.createElement('tr');
-      headerRow.innerHTML = '<th>seed</th><th>family</th><th>32 NEW</th><th>32 OLD</th><th>16 NEW</th><th>16 OLD</th>';
+      headerRow.innerHTML = '<th>seed</th><th>family</th><th>32 OLD</th><th>32 NEW</th><th>32 DIAG</th><th>16 OLD</th><th>16 NEW</th><th>16 DIAG</th>';
       grid.appendChild(headerRow);
 
-      // 收 SWORD_SEEDS 中 archetype === 'curved' 的;不夠就補 cmp- 系列
       const curvedSeeds = SWORD_SEEDS.filter(
         s => sampleSwordSpec(new SeededRandom(s)).archetype === 'curved'
       );
@@ -171,14 +170,16 @@
       for (const seed of curvedSeeds) {
         const spec = sampleSwordSpec(new SeededRandom(seed));
 
-        const c32new = mkCanvas(32); renderSwordSpec32(c32new.getContext('2d'), spec);
-        const c32old = mkCanvas(32); renderSwordSpec32_v0(c32old.getContext('2d'), spec);
-        const c16new = mkCanvas(16); renderSwordSpec16(c16new.getContext('2d'), spec);
-        const c16old = mkCanvas(16); renderSwordSpec16_v0(c16old.getContext('2d'), spec);
+        const c32old  = mkCanvas(32); renderSwordSpec32_v0(c32old.getContext('2d'), spec);
+        const c32new  = mkCanvas(32); renderSwordSpec32   (c32new.getContext('2d'), spec);
+        const c32diag = mkCanvas(32); renderSwordSpec32_v2(c32diag.getContext('2d'), spec);
+        const c16old  = mkCanvas(16); renderSwordSpec16_v0(c16old.getContext('2d'), spec);
+        const c16new  = mkCanvas(16); renderSwordSpec16   (c16new.getContext('2d'), spec);
+        const c16diag = mkCanvas(16); renderSwordSpec16_v2(c16diag.getContext('2d'), spec);
 
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${seed}</td><td>${spec.family}</td>`;
-        for (const c of [c32new, c32old, c16new, c16old]) {
+        for (const c of [c32old, c32new, c32diag, c16old, c16new, c16diag]) {
           const td = document.createElement('td'); td.appendChild(c); tr.appendChild(td);
         }
         grid.appendChild(tr);
