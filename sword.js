@@ -168,6 +168,53 @@ function buildSwordMask32(spec) {
 }
 
 // =====================================================================
+// Paint helpers (32×32) — 純像素操作,讀 spec + mask 產生裝飾
+// =====================================================================
+
+/** 只在指定 cell 為 'blade' 時才畫;避免畫到 guard / 外面 */
+function tryPaintBladeCell32(ctx, mask, size, x, y) {
+  if (x < 0 || y < 0 || x >= size || y >= size) return;
+  if (mask[y * size + x] !== 'blade') return;
+  ctx.fillRect(x, y, 1, 1);
+}
+
+/**
+ * Always-on blade shine。1px 縱線。
+ * - straight:cx,y=4..15
+ * - broad:cx-1(blade 內側最左 column),y=4..16
+ * - curved:每列從 shape.rows[y] 算 xCenter,y=4..15
+ */
+function paintBladeShine32(ctx, mask, size, spec) {
+  ctx.fillStyle = spec.palette.bladeShine;
+  const cx = 16;
+
+  if (spec.archetype === 'straight') {
+    for (let y = 4; y <= 15; y++) {
+      tryPaintBladeCell32(ctx, mask, size, cx, y);
+    }
+    return;
+  }
+
+  if (spec.archetype === 'broad') {
+    for (let y = 4; y <= 16; y++) {
+      tryPaintBladeCell32(ctx, mask, size, cx - 1, y);
+    }
+    return;
+  }
+
+  if (spec.archetype === 'curved') {
+    const shape = SWORD_SHAPE_FNS_32.curved();
+    for (let y = 4; y <= 15; y++) {
+      const r = shape.rows[y];
+      if (!r) continue;
+      const xCenter = Math.round((r.leftX + r.rightX) / 2);
+      tryPaintBladeCell32(ctx, mask, size, xCenter, y);
+    }
+    return;
+  }
+}
+
+// =====================================================================
 // Renderer — 純函式,不再使用 RNG;Task 4+ 補完
 // =====================================================================
 
@@ -185,8 +232,10 @@ function renderSwordSpec32(ctx, spec) {
     grip:   LEATHER_PALETTE.main,
   });
 
-  // step 3-6 裝飾(Task 5、6 補)
-  // (none yet)
+  // step 3 裝飾(Task 6 補 grip wrap)
+  // step 4: blade shine(always-on)
+  paintBladeShine32(ctx, mask, size, spec);
+  // step 5-6 裝飾(Task 6 補 fuller / gem)
 
   // step 7: internal seam
   paintInternalSeams(ctx, mask, size, spec.palette.outline);
