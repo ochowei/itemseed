@@ -49,9 +49,9 @@ B. 不改 plan / spec,只在這份 implementation-notes 做為前置必讀。本
 
 ---
 
-## 2. Curved blade silhouette — formula 勝 prose,產生「scimitar belly」
+## 2. Curved blade silhouette — formula 推翻並重設計(原 spec §4.2 兩者皆 not used)
 
-### 2.1 spec §4.2 的內部矛盾
+### 2.1 spec §4.2 的原始內部矛盾
 
 Spec 對 `curved` archetype 同時給了 prose example 與 formula:
 
@@ -68,28 +68,52 @@ y= 5..18 3 px,xCenter 線性遞減從 cx+2 到 cx
 - **Prose:** `(cx+0..cx+2)` = leftX 16, rightX 18
 - **Formula:** offset = round(2*14/14) = 2 → `(cx+1..cx+3)` = leftX 17, rightX 19
 
-### 2.2 實作選 formula,理由
+### 2.2 第一輪實作:採 formula(scimitar belly)
 
-如果套 prose(y=4 特例化),y=4 與 y=5 的 right edge 從 18 跳到 19,blade 會在 y=5 產生一個「shoulder 凸出後又凹回」的視覺缺陷。
+第一輪選 formula 詮釋,理由:formula 給連續、無特例的設計;prose 在 y=4 特例化會在 y=5 產生「shoulder 凸出後又凹回」缺陷。
 
-如果套 formula(整個 y=4..18 都跑同公式),blade 上半段 y=4..7 的 right edge 在 19 = `cx+3`,**比 tip(y=2 在 cx+2)更右 1 px**。乍看像 bug(「blade 凸出 tip 之外」),但實際對應 scimitar / saber 的「belly」現實外觀:刀身腹部比 tip 寬,曲線優雅。
+但 formula 在 y=4..7(offset=2)讓 blade rightX = `cx+3` = 19,**比 tip(`cx+2` = 18)更右 1 px**。預期是 scimitar / saber 的「belly」(刀身腹部比 tip 寬),但視覺驗證後 user 回報「32 curved 都歪歪的」— belly 凸出 tip 看起來不像滑順曲線,像「刀身翹出 tip 之外」。
 
-兩種詮釋都試過,formula 勝:
+### 2.3 第二輪實作(現況):max offset 從 2 降到 1,1 個 stairstep
 
 ```
-formula 詮釋(實際採用):
-  y= 2:           ........X......     tip
-  y= 3:           .......XX......
-  y= 4..7:        .......XXX.....     belly,rightX=19 略凸出 tip
-  y= 8..14:       ......XXX......     轉折,rightX 收回 18
-  y=15..18:       .....XXX.......     近 hilt,rightX=17 對齊 guard
+新版 shapeCurved32(production):
+  y= 2:               cx+2..cx+2     tip
+  y= 3:               cx+1..cx+2     taper
+  y= 4..11:           cx..cx+2       width 3 offset 1(8 rows)
+  y=12..18:           cx-1..cx+1     width 3 offset 0(7 rows)
 ```
 
-讀起來是清楚的「右上偏的 saber」。
+只剩 1 個 stairstep(y=11→12),tip 永遠是 blade 最右點(rightX 從不超過 cx+2)。整體刀身平滑左下傾斜回 guard 中軸,讀起來是穩定 saber。
 
-### 2.3 Spec 應澄清
+### 2.4 16 curved 的同步修正
 
-如果未來重看 spec §4.2 的 prose `y= 4 (cx+0..cx+2)`,**那一行是錯的**。formula 才是設計意圖。
+舊版 `shapeCurved16` 只 tip(y=1)與 taper(y=2)偏移,y=3..9 全對齊中軸 → spec §10 risk #6 已預測「16 curved 看不出彎度」,user 確認看不出。
+
+新版加入 spec §10 risk #6 的 fallback 設計:
+
+```
+新版 shapeCurved16(production):
+  y= 1:               cx+1..cx+1     tip 偏右 1
+  y= 2:               cx..cx+1       taper width 2
+  y= 3..5:            cx..cx+2       width 3 offset 1(上半 3 rows)
+  y= 6..9:            cx-1..cx+1     width 3 offset 0(下半 4 rows)
+```
+
+從 5 列偏移(tip + taper + 上半身 3 列),16 上看得出彎度。
+
+### 2.5 舊版保留為 `_v0` 函式給 regression 比對
+
+`sword.js` 同時 export:
+- `shapeCurved32` / `shapeCurved16`(現役 production)
+- `shapeCurved32_v0` / `shapeCurved16_v0`(舊版,**file-internal,不 export**)
+- `renderSwordSpec32_v0(ctx, spec)` / `renderSwordSpec16_v0(ctx, spec)`(window-export,規則:非 curved 直接 fall through 到正版,curved 才 swap shape fn 渲染舊版)
+
+`regression.html` 有獨立 section「drawSword — curve fix(新 vs 舊)」,把 main `SWORD_SEEDS` 中 archetype = curved 的 6 個 seed 用 4 個欄位並排展示(32 NEW / 32 OLD / 16 NEW / 16 OLD),供視覺前後比對。
+
+### 2.6 Spec 應澄清
+
+未來重看 spec §4.2 的 curved 設計,prose 與 formula 都已過時。Production 用的是上面 §2.3 / §2.4 的新公式。日後 spec 重整時,把 §4.2 的 curved 區段改寫成現況。
 
 ---
 

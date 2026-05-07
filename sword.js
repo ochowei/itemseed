@@ -92,12 +92,32 @@ function shapeBroad32() {
 }
 
 function shapeCurved32() {
-  // 單刃彎刀:width 3,tip 偏右 cx+2,中心線線性過渡到 cx
-  // offset(y) = round(2 * (18 - y) / (18 - 4)),範圍 y=4..18,offset 從 2 到 0
+  // 單刃彎刀(修正版):width 3,tip 偏右 cx+2,1 個 stairstep 在 y=11→12。
+  // 修正:max offset 從 2 降到 1,讓 blade rightX 永遠 ≤ tip 的 cx+2,
+  // 不再有「scimitar belly」凸出 tip 之外造成歪掉的視覺。
+  // 舊版見 shapeCurved32_v0(留作 regression 比對)。
   const rows = new Array(32).fill(null);
   const cx = 16;
   rows[2] = { leftX: cx + 2, rightX: cx + 2, kind: 'blade' };  // tip 1px,偏右 2
   rows[3] = { leftX: cx + 1, rightX: cx + 2, kind: 'blade' };  // taper
+  // 上半:width 3 offset 1,col cx..cx+2(8 rows)
+  for (let y = 4; y <= 11; y++) {
+    rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
+  }
+  // 下半:width 3 offset 0,col cx-1..cx+1(7 rows,對齊 guard 中軸)
+  for (let y = 12; y <= 18; y++) {
+    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
+  }
+  return { rows };
+}
+
+// 舊版 curved 32(scimitar belly 凸出 tip,2026-05-07 視覺驗證後改 shapeCurved32)。
+// 留下來只給 regression.html 比對前後差異使用。**不在 production render path 用。**
+function shapeCurved32_v0() {
+  const rows = new Array(32).fill(null);
+  const cx = 16;
+  rows[2] = { leftX: cx + 2, rightX: cx + 2, kind: 'blade' };
+  rows[3] = { leftX: cx + 1, rightX: cx + 2, kind: 'blade' };
   for (let y = 4; y <= 18; y++) {
     const offset = Math.round(2 * (18 - y) / (18 - 4));
     rows[y] = {
@@ -152,12 +172,32 @@ function shapeBroad16() {
 }
 
 function shapeCurved16() {
-  // 彎刀 16:tip 偏右 1px,3 列轉到中軸
+  // 彎刀 16(修正版):tip 偏右 1px,上半身 3 列偏右 offset=1,下半身 4 列對齊中軸。
+  // 比舊版多 3 列偏移列(y=3..5),16 上才看得出彎度。spec §10 risk #6 預設 fallback。
+  // 舊版見 shapeCurved16_v0。
   const rows = new Array(16).fill(null);
   const cx = 8;
   rows[1] = { leftX: cx + 1, rightX: cx + 1, kind: 'blade' };  // tip 偏右 1
-  rows[2] = { leftX: cx,     rightX: cx + 1, kind: 'blade' };  // 寬 2 過渡
-  rows[3] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };  // 寬 3 對齊
+  rows[2] = { leftX: cx,     rightX: cx + 1, kind: 'blade' };  // taper width 2
+  // 上半:width 3 offset 1,col cx..cx+2(3 rows)
+  for (let y = 3; y <= 5; y++) {
+    rows[y] = { leftX: cx,     rightX: cx + 2, kind: 'blade' };
+  }
+  // 下半:width 3 offset 0,col cx-1..cx+1(4 rows,對齊 guard)
+  for (let y = 6; y <= 9; y++) {
+    rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
+  }
+  return { rows };
+}
+
+// 舊版 curved 16(只 tip + taper 偏移,body 全對齊中軸 → 16 上看不出彎度)。
+// 留下來只給 regression.html 比對。**不在 production render path 用。**
+function shapeCurved16_v0() {
+  const rows = new Array(16).fill(null);
+  const cx = 8;
+  rows[1] = { leftX: cx + 1, rightX: cx + 1, kind: 'blade' };
+  rows[2] = { leftX: cx,     rightX: cx + 1, kind: 'blade' };
+  rows[3] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
   for (let y = 4; y <= 9; y++) {
     rows[y] = { leftX: cx - 1, rightX: cx + 1, kind: 'blade' };
   }
@@ -487,7 +527,30 @@ function drawSwordImpl(ctx, rng, size) {
   else if (size === 16) renderSwordSpec16(ctx, spec);
 }
 
+// =====================================================================
+// Regression-only API:用舊版 curved shape 渲染,給 regression.html 比對。
+// 非 curved spec 直接 fall through 到正版 render(輸出完全相同)。
+// =====================================================================
+
+function renderSwordSpec32_v0(ctx, spec) {
+  if (spec.archetype !== 'curved') return renderSwordSpec32(ctx, spec);
+  const orig = SWORD_SHAPE_FNS_32.curved;
+  SWORD_SHAPE_FNS_32.curved = shapeCurved32_v0;
+  try { renderSwordSpec32(ctx, spec); }
+  finally { SWORD_SHAPE_FNS_32.curved = orig; }
+}
+
+function renderSwordSpec16_v0(ctx, spec) {
+  if (spec.archetype !== 'curved') return renderSwordSpec16(ctx, spec);
+  const orig = SWORD_SHAPE_FNS_16.curved;
+  SWORD_SHAPE_FNS_16.curved = shapeCurved16_v0;
+  try { renderSwordSpec16(ctx, spec); }
+  finally { SWORD_SHAPE_FNS_16.curved = orig; }
+}
+
 window.sampleSwordSpec = sampleSwordSpec;
 window.renderSwordSpec32 = renderSwordSpec32;
 window.renderSwordSpec16 = renderSwordSpec16;
+window.renderSwordSpec32_v0 = renderSwordSpec32_v0;
+window.renderSwordSpec16_v0 = renderSwordSpec16_v0;
 window.drawSword = drawSwordImpl;
