@@ -142,6 +142,30 @@ function archAxis32(archetype, y) {
 
 Spec §4 的 curved 描述全部過時。Production 用的是 §2.5 的整把斜版本。日後 spec 重整時,把 §4.2 的 curved 區段改寫成現況,並補一節說明 archetype 可能改變整把劍 layout(curved → diagonal)。
 
+### 2.8 v4「vertical hilt + curved blade」嘗試與放棄(2026-05-07 後續)
+
+User 後來提供 itch.io reference 圖(`https://img.itch.zone/.../T26fEv.png`,5×3 grid 的 weapon sprites,**每格 64×64**)。觀察 reference 中絕大多數彎刀採「**vertical hilt + curved blade**」pattern — guard / grip / pommel 直立對齊中軸,只有 blade 帶曲度,中段 stairstep 急彎,下半接 vertical hilt。
+
+照這個 pattern 實作 v4(短暫成為 production):
+
+```
+v4 curved 32(已放棄):
+  y=2     tip 1px cx+5
+  y=3     taper width 2 cx+4..cx+5
+  y=4..7  upper segment 4 rows constant tilt (cx+3..cx+5)
+  y=8..9  belly stairstep 1 (cx+2..cx+4)
+  y=10..11 stairstep 2 (cx+1..cx+3)
+  y=12..13 stairstep 3 (cx..cx+2)
+  y=14..18 base 5 rows aligned (cx-1..cx+1)
+  y=19..29 hilt vertical 對齊 cx
+```
+
+視覺驗證後 user 回報 **v3 比 v4 好讀**。原因:**reference 是 64×64,我們 32×32 等於 1/4 解析度** — v4 的「上半 tilt + 中段急彎 + 下半 aligned」在 64 上有 ~30 列可用,curve 很滑順;在 32 上只有 17 列 blade,中段 stairstep 看起來像「斷掉」,讀不出 saber 的連續曲線。v3 的「整把都同一角度」反而在小 size 上連貫、不需要強行收回 vertical 軸。
+
+決策:**production 維持 v3(整把斜)**,v4 不留在 code 裡(刪掉)。Reference pattern 對 32 不適用是個 resolution-dependent 設計選擇。
+
+未來若做 64×64 大圖 / 更高解析度,可以重評 v4 pattern。
+
 ---
 
 ## 3. 細微的設計慣例 / 沒寫進 spec 但實作中決定的
