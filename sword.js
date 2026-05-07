@@ -225,6 +225,60 @@ function buildSwordMask32(spec) {
 }
 
 // =====================================================================
+// Mask builder (16×16) — 共用 spec,但內部 collapse 16 不支援的 axis
+//
+// 16 collapse 規則(per spec §6.3 / §6.5):
+//   guardStyle 'swept' → 走 'bar' 同寬
+//   pommelStyle 'gem'  → 走 'round' 同形(無 highlight)
+// 不污染 spec(spec 仍標 swept / gem)。
+// =====================================================================
+
+function buildSwordMask16(spec) {
+  const size = 16;
+  const mask = allocateMask(size);
+  const cx = 8;
+
+  // ── Blade ──
+  const shape = SWORD_SHAPE_FNS_16[spec.archetype]();
+  for (let y = 0; y < size; y++) {
+    const r = shape.rows[y];
+    if (!r) continue;
+    for (let x = r.leftX; x <= r.rightX; x++) {
+      maskSet(mask, size, x, y, 'blade');
+    }
+  }
+
+  // ── Guard (y=10, 1 列) ──
+  // bar / swept 都走 width 5;disc 走 width 6 (cx-3..cx+2,非對稱)
+  let gLeft, gRight;
+  if (spec.guardStyle === 'disc') {
+    gLeft = cx - 3; gRight = cx + 2;
+  } else {
+    // bar 與 swept(collapse)
+    gLeft = cx - 2; gRight = cx + 2;
+  }
+  for (let x = gLeft; x <= gRight; x++) {
+    maskSet(mask, size, x, 10, 'guard');
+  }
+
+  // ── Grip (y=11..13, width 3) ──
+  for (let y = 11; y <= 13; y++) {
+    for (let x = cx - 1; x <= cx + 1; x++) {
+      maskSet(mask, size, x, y, 'grip');
+    }
+  }
+
+  // ── Pommel (y=14, 1 列) ──
+  // round / gem 走 width 1;disk 走 width 3
+  const pommelHalfW = (spec.pommelStyle === 'disk') ? 1 : 0;
+  for (let x = cx - pommelHalfW; x <= cx + pommelHalfW; x++) {
+    maskSet(mask, size, x, 14, 'pommel');
+  }
+
+  return mask;
+}
+
+// =====================================================================
 // Paint helpers (32×32) — 純像素操作,讀 spec + mask 產生裝飾
 // =====================================================================
 
@@ -322,6 +376,49 @@ function paintGem32(ctx, mask, size, spec) {
   ctx.fillRect(cx, gemY, 1, 1);
 }
 
+/** 只在指定 cell 為 'blade' 時才畫(16 版,共用 32 版邏輯) */
+function tryPaintBladeCell16(ctx, mask, size, x, y) {
+  if (x < 0 || y < 0 || x >= size || y >= size) return;
+  if (mask[y * size + x] !== 'blade') return;
+  ctx.fillRect(x, y, 1, 1);
+}
+
+/**
+ * 16 blade shine — 壓縮成 3-4 px。
+ * - straight:cx, y=4..7
+ * - broad:cx-1, y=4..8
+ * - curved:每列從 shape.rows[y] 算 xCenter, y=4..7
+ */
+function paintBladeShine16(ctx, mask, size, spec) {
+  ctx.fillStyle = spec.palette.bladeShine;
+  const cx = 8;
+
+  if (spec.archetype === 'straight') {
+    for (let y = 4; y <= 7; y++) {
+      tryPaintBladeCell16(ctx, mask, size, cx, y);
+    }
+    return;
+  }
+
+  if (spec.archetype === 'broad') {
+    for (let y = 4; y <= 8; y++) {
+      tryPaintBladeCell16(ctx, mask, size, cx - 1, y);
+    }
+    return;
+  }
+
+  if (spec.archetype === 'curved') {
+    const shape = SWORD_SHAPE_FNS_16.curved();
+    for (let y = 4; y <= 7; y++) {
+      const r = shape.rows[y];
+      if (!r) continue;
+      const xCenter = Math.round((r.leftX + r.rightX) / 2);
+      tryPaintBladeCell16(ctx, mask, size, xCenter, y);
+    }
+    return;
+  }
+}
+
 // =====================================================================
 // Renderer — 純函式,不再使用 RNG;Task 4+ 補完
 // =====================================================================
@@ -357,7 +454,27 @@ function renderSwordSpec32(ctx, spec) {
 }
 
 function renderSwordSpec16(ctx, spec) {
-  // TODO Task 8: 實作
+  const size = 16;
+  ctx.clearRect(0, 0, size, size);
+
+  const mask = buildSwordMask16(spec);
+
+  // step 2: 平鋪主色
+  paintMaskByEnum(ctx, mask, size, {
+    blade:  spec.palette.bladeMain,
+    guard:  spec.palette.bladeMain,
+    pommel: spec.palette.bladeMain,
+    grip:   LEATHER_PALETTE.main,
+  });
+
+  // 16 不畫 fuller / gripWrap / gem(per spec §6.6)
+  // step 4: blade shine(always-on)
+  paintBladeShine16(ctx, mask, size, spec);
+
+  // step 7: internal seam
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+  // step 8: 外圈 outline
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
 }
 
 // =====================================================================
