@@ -214,6 +214,57 @@ function paintBladeShine32(ctx, mask, size, spec) {
   }
 }
 
+/**
+ * 條件裝飾:fuller(刀身中軸溝槽)。
+ * curved 強制 false;straight + broad 在 cx 中軸畫 1px bladeShadow 縱線。
+ * 範圍 y=4..16,故意比 blade 全長短 ~2px,讓 tip 與 hilt 端不畫,看起來像真實溝槽中段。
+ *
+ * 與 shine 互動:
+ * - straight 寬 3,fuller 在 cx,shine 也在 cx,fuller 後畫故覆蓋 shine,結果為較暗刀身(刻意)。
+ * - broad 寬 5,shine 在 cx-1 / fuller 在 cx,各佔不同 column 共存。
+ */
+function paintFuller32(ctx, mask, size, spec) {
+  if (!spec.hasFuller) return;
+  if (spec.archetype === 'curved') return;
+  ctx.fillStyle = spec.palette.bladeShadow;
+  const cx = 16;
+  for (let y = 4; y <= 16; y++) {
+    if (mask[y * size + cx] !== 'blade') continue;
+    ctx.fillRect(cx, y, 1, 1);
+  }
+}
+
+/**
+ * 條件裝飾:grip wrap。
+ * spec.gripWrapYs 由 sample 階段決定(0、1 或 2 條,y 範圍 [22..25])。
+ * 每條 wrap 畫 grip 寬整列 LEATHER_PALETTE.shadow,但只有 (cx, y) 不會被
+ * 後續 outline pass 覆蓋,實際視覺是 1 px 暗點。
+ */
+function paintGripWrap32(ctx, mask, size, spec) {
+  if (!spec.hasGripWrap) return;
+  ctx.fillStyle = LEATHER_PALETTE.shadow;
+  const cx = 16;
+  for (const y of spec.gripWrapYs) {
+    for (let x = cx - 1; x <= cx + 1; x++) {
+      if (mask[y * size + x] !== 'grip') continue;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
+/**
+ * 條件裝飾:pommel gem。
+ * spec.pommelStyle === 'gem' 才畫,座標固定 (cx=16, y=28)— 即 pommel 3 列高的中間列、
+ * 中央 cell,經 outline + seam pass 不會被覆蓋(interior 條件成立)。
+ */
+function paintGem32(ctx, mask, size, spec) {
+  if (spec.pommelStyle !== 'gem') return;
+  const cx = 16, gemY = 28;
+  if (mask[gemY * size + cx] !== 'pommel') return;
+  ctx.fillStyle = spec.palette.bladeShine;
+  ctx.fillRect(cx, gemY, 1, 1);
+}
+
 // =====================================================================
 // Renderer — 純函式,不再使用 RNG;Task 4+ 補完
 // =====================================================================
@@ -232,10 +283,14 @@ function renderSwordSpec32(ctx, spec) {
     grip:   LEATHER_PALETTE.main,
   });
 
-  // step 3 裝飾(Task 6 補 grip wrap)
+  // step 3: grip wrap
+  paintGripWrap32(ctx, mask, size, spec);
   // step 4: blade shine(always-on)
   paintBladeShine32(ctx, mask, size, spec);
-  // step 5-6 裝飾(Task 6 補 fuller / gem)
+  // step 5: fuller(在 shine 之後,讓 straight + fuller 時 fuller 覆蓋 shine)
+  paintFuller32(ctx, mask, size, spec);
+  // step 6: gem
+  paintGem32(ctx, mask, size, spec);
 
   // step 7: internal seam
   paintInternalSeams(ctx, mask, size, spec.palette.outline);
