@@ -479,7 +479,6 @@ function renderSwordSpec16(ctx, spec) {
 
 // =====================================================================
 // 對外:drawSword(ctx, rng, size)
-// 暫名 drawSwordV2 避免跟 main.js 既有 stub 撞名;Task 9 才取代。
 // =====================================================================
 
 function drawSwordImpl(ctx, rng, size) {
@@ -491,4 +490,4 @@ function drawSwordImpl(ctx, rng, size) {
 window.sampleSwordSpec = sampleSwordSpec;
 window.renderSwordSpec32 = renderSwordSpec32;
 window.renderSwordSpec16 = renderSwordSpec16;
-window.drawSwordV2 = drawSwordImpl;  // Task 9 改成 window.drawSword
+window.drawSword = drawSwordImpl;

@@ -126,31 +126,6 @@ function renderBatchGrid() {
 // 目前先畫個簡單的色塊讓整個流程能跑起來
 // =============================================================
 
-function drawSword(ctx, rng, size) {
-  // 暫時的占位:中央畫一把劍
-  const bladeColors = ['#d8d8e8', '#c8b070', '#a8a0c8', '#90c8a0'];
-  const blade = rng.pick(bladeColors);
-  const cx = Math.floor(size / 2);
-  const tipY = 2;
-  const guardY = size - 9;
-
-  // 刀刃
-  fillRect(ctx, cx - 1, tipY, 2, guardY - tipY, blade);
-  fillRect(ctx, cx - 2, tipY + 1, 1, guardY - tipY - 1, '#1a1a2e');
-  fillRect(ctx, cx + 1, tipY + 1, 1, guardY - tipY - 1, '#1a1a2e');
-  fillRect(ctx, cx, tipY, 1, 1, '#1a1a2e'); // 劍尖
-
-  // 護手
-  fillRect(ctx, cx - 4, guardY, 8, 2, '#7a5a3a');
-  fillRect(ctx, cx - 5, guardY, 1, 2, '#1a1a2e');
-  fillRect(ctx, cx + 4, guardY, 1, 2, '#1a1a2e');
-
-  // 握把
-  fillRect(ctx, cx - 1, guardY + 2, 2, 4, '#4a3020');
-  // 圓首
-  fillRect(ctx, cx - 1, guardY + 6, 2, 1, '#c8a050');
-}
-
 function drawSpear(ctx, rng, size) {
   // 暫時的占位:中央畫一支長矛
   const headColors = ['#d8d8e8', '#c8b070', '#a8a0c8'];
