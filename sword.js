@@ -109,7 +109,7 @@ function shapeCurved32() {
   return { rows };
 }
 
-const SHAPE_FNS_32 = {
+const SWORD_SHAPE_FNS_32 = {
   straight: shapeStraight32,
   curved:   shapeCurved32,
   broad:    shapeBroad32,
@@ -122,13 +122,13 @@ const SHAPE_FNS_32 = {
 // 整體配置在 spec 設計文件 §4.1。
 // =====================================================================
 
-function buildSilhouetteMask32(spec) {
+function buildSwordMask32(spec) {
   const size = 32;
   const mask = allocateMask(size);
   const cx = 16;
 
   // ── Blade ──
-  const shape = SHAPE_FNS_32[spec.archetype]();
+  const shape = SWORD_SHAPE_FNS_32[spec.archetype]();
   for (let y = 0; y < size; y++) {
     const r = shape.rows[y];
     if (!r) continue;
@@ -175,7 +175,7 @@ function renderSwordSpec32(ctx, spec) {
   const size = 32;
   ctx.clearRect(0, 0, size, size);
 
-  const mask = buildSilhouetteMask32(spec);
+  const mask = buildSwordMask32(spec);
 
   // step 2: 平鋪主色
   paintMaskByEnum(ctx, mask, size, {
