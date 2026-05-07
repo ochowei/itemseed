@@ -116,11 +116,83 @@ const SHAPE_FNS_32 = {
 };
 
 // =====================================================================
+// Mask builder (32×32) — 把 spec 轉成 enum mask
+//
+// mask cell ∈ { 'blade' | 'guard' | 'grip' | 'pommel' | null }
+// 整體配置在 spec 設計文件 §4.1。
+// =====================================================================
+
+function buildSilhouetteMask32(spec) {
+  const size = 32;
+  const mask = allocateMask(size);
+  const cx = 16;
+
+  // ── Blade ──
+  const shape = SHAPE_FNS_32[spec.archetype]();
+  for (let y = 0; y < size; y++) {
+    const r = shape.rows[y];
+    if (!r) continue;
+    for (let x = r.leftX; x <= r.rightX; x++) {
+      maskSet(mask, size, x, y, 'blade');
+    }
+  }
+
+  // ── Guard (y=19..20, 2 列) ── 寬度與形狀依 guardStyle
+  // 每個 guardStyle 提供 [y19_left, y19_right, y20_left, y20_right](inclusive)。
+  const guardRanges = {
+    bar:   [cx - 3, cx + 3, cx - 3, cx + 3],  // 2 列同寬 7
+    swept: [cx - 2, cx + 2, cx - 3, cx + 3],  // y=19 寬 5,y=20 寬 7(下層展開)
+    disc:  [cx - 3, cx + 3, cx - 4, cx + 4],  // y=19 寬 7,y=20 寬 9(中下凸)
+  };
+  const [g19l, g19r, g20l, g20r] = guardRanges[spec.guardStyle];
+  for (let x = g19l; x <= g19r; x++) maskSet(mask, size, x, 19, 'guard');
+  for (let x = g20l; x <= g20r; x++) maskSet(mask, size, x, 20, 'guard');
+
+  // ── Grip (y=21..26, 6 列, width 3) ──
+  for (let y = 21; y <= 26; y++) {
+    for (let x = cx - 1; x <= cx + 1; x++) {
+      maskSet(mask, size, x, y, 'grip');
+    }
+  }
+
+  // ── Pommel (y=27..29, 3 列) ── 寬度依 pommelStyle
+  // round / gem 都用 width 3(cx-1..cx+1);disk 用 width 5(cx-2..cx+2)
+  const pommelHalfW = (spec.pommelStyle === 'disk') ? 2 : 1;
+  for (let y = 27; y <= 29; y++) {
+    for (let x = cx - pommelHalfW; x <= cx + pommelHalfW; x++) {
+      maskSet(mask, size, x, y, 'pommel');
+    }
+  }
+
+  return mask;
+}
+
+// =====================================================================
 // Renderer — 純函式,不再使用 RNG;Task 4+ 補完
 // =====================================================================
 
 function renderSwordSpec32(ctx, spec) {
-  // TODO Task 4: 實作
+  const size = 32;
+  ctx.clearRect(0, 0, size, size);
+
+  const mask = buildSilhouetteMask32(spec);
+
+  // step 2: 平鋪主色
+  paintMaskByEnum(ctx, mask, size, {
+    blade:  spec.palette.bladeMain,
+    guard:  spec.palette.bladeMain,    // 同金屬色
+    pommel: spec.palette.bladeMain,    // 同金屬色
+    grip:   LEATHER_PALETTE.main,
+  });
+
+  // step 3-6 裝飾(Task 5、6 補)
+  // (none yet)
+
+  // step 7: internal seam
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+
+  // step 8: 外圈 outline
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
 }
 
 function renderSwordSpec16(ctx, spec) {
