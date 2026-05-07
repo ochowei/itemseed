@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>Icon Machine — Visual Regression</title>
+  <style>
+    body {
+      font-family: ui-monospace, Menlo, monospace;
+      background: #f0ece4;
+      color: #2a2638;
+      margin: 24px;
+    }
+    h1 { font-size: 18px; margin: 0 0 16px; }
+    .controls { margin-bottom: 16px; display: flex; gap: 8px; }
+    button {
+      background: #ffffff; color: #2a2638;
+      border: 1px solid #c8c2b4; padding: 8px 14px;
+      cursor: pointer; font-family: inherit;
+    }
+    button:hover { border-color: #c46a00; color: #c46a00; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #c8c2b4; padding: 6px; text-align: center; }
+    th { background: #e6dfd0; color: #c46a00; font-weight: normal; font-size: 11px; }
+    canvas { image-rendering: pixelated; image-rendering: crisp-edges; background: #e8e0d0; }
+    .seed-label { font-size: 10px; color: #6a6458; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Visual Regression — drawPotion</h1>
+  <div class="controls">
+    <button id="dl-png">下載拼接 PNG</button>
+    <button id="dl-json">下載 specs.json</button>
+  </div>
+  <table id="grid"></table>
+
+  <script src="random.js"></script>
+  <script src="palette.js"></script>
+  <script src="pixel-utils.js"></script>
+  <script src="potion.js"></script>
+  <script>
+    // Hardcoded baseline seeds:涵蓋色族 / 瓶型 / edge cases
+    const SEEDS = [
+      'fam-fire', 'fam-frost', 'fam-mana', 'fam-poison', 'fam-golden', 'fam-shadow',
+      'shape-flask-1', 'shape-round-1', 'shape-vial-1',
+      'edge-low-liquid', 'edge-high-liquid',
+      'edge-all-options', 'edge-zero-options',
+      'rusty-flask-42', 'gilded-tear-7', 'cursed-relic-13',
+    ];
+
+    const grid = document.getElementById('grid');
+    const collected = [];
+
+    {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<th>seed</th><th>family</th><th>shape</th><th>cap</th><th>32×32</th><th>16×16</th>';
+      grid.appendChild(tr);
+    }
+
+    for (const seed of SEEDS) {
+      const rng = new SeededRandom(seed);
+      const spec = samplePotionSpec(rng);
+
+      const c32 = document.createElement('canvas');
+      c32.width = 32; c32.height = 32; c32.style.width = '64px'; c32.style.height = '64px';
+      renderPotionSpec32(c32.getContext('2d'), spec);
+
+      const c16 = document.createElement('canvas');
+      c16.width = 16; c16.height = 16; c16.style.width = '64px'; c16.style.height = '64px';
+      renderPotionSpec16(c16.getContext('2d'), spec);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${seed}</td><td>${spec.family}</td><td>${spec.shape}</td><td>${spec.capType}</td>`;
+      const td32 = document.createElement('td'); td32.appendChild(c32); tr.appendChild(td32);
+      const td16 = document.createElement('td'); td16.appendChild(c16); tr.appendChild(td16);
+      grid.appendChild(tr);
+
+      collected.push({ seed, spec, c32, c16 });
+    }
+
+    document.getElementById('dl-png').addEventListener('click', () => {
+      // 拼接成單一 PNG:每行 [32 | gap | 16-放大到-32] 並排,所有 seed 縱向疊
+      const cellW = 32, cellH = 32;
+      const composite = document.createElement('canvas');
+      composite.width = cellW + 4 + cellW;
+      composite.height = (cellH + 4) * collected.length;
+      const cx = composite.getContext('2d');
+      cx.imageSmoothingEnabled = false;
+      cx.fillStyle = '#1a1a26';
+      cx.fillRect(0, 0, composite.width, composite.height);
+      for (let i = 0; i < collected.length; i++) {
+        const { c32, c16 } = collected[i];
+        const y = i * (cellH + 4);
+        cx.drawImage(c32, 0, y);
+        cx.drawImage(c16, cellW + 4, y, cellH, cellH);
+      }
+      const a = document.createElement('a');
+      a.download = 'regression-baseline.png';
+      a.href = composite.toDataURL('image/png');
+      a.click();
+    });
+
+    document.getElementById('dl-json').addEventListener('click', () => {
+      const dump = collected.map(({ seed, spec }) => ({ seed, spec }));
+      const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.download = 'regression-specs.json';
+      a.href = URL.createObjectURL(blob);
+      a.click();
+    });
+  </script>
+</body>
+</html>
