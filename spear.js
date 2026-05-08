@@ -209,11 +209,31 @@ function paintHeadShine32(ctx, mask, size, spec) {
   }
 }
 
+/**
+ * 條件裝飾:shaft binding(纏繩 / 金屬綁帶)。
+ * spec.shaftBindingYs 由 sample 階段決定(0、1 或 2 條,y 範圍 [10..23])。
+ * 每條 binding 是 1 列 width 3(cols 15..17),shadow 色,gate 為 mask=='shaft'。
+ *
+ * 經 outline pass 後,binding 在該列實際可見的只有 (cx=16, y) 1 cell
+ * (cols 15 / 17 是 outline ring,被 outline pass 改寫)。視覺效果是
+ * 「16 列 wood 主色條上點綴 1-2 個 shadow 1×1 像素」,讀為纏繩痕跡。
+ */
+function paintShaftBinding32(ctx, mask, size, spec) {
+  if (!spec.hasShaftBinding) return;
+  ctx.fillStyle = WOOD_PALETTE.shadow;
+  for (const y of spec.shaftBindingYs) {
+    for (let x = 15; x <= 17; x++) {
+      if (mask[y * size + x] !== 'shaft') continue;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+}
+
 // =====================================================================
 // Renderer (32×32) — 純函式,不再使用 RNG
 //
-// 此 task 是第一版:只 mask + paint by enum + seam + outline,
-// 還沒 shine / shaft binding(Task 5、6 加)。
+// 完整 pipeline(per spec §3):mask → paint by enum → head shine →
+// 條件 shaft binding → internal seam → 外圈 outline。
 // =====================================================================
 
 function renderSpearSpec32(ctx, spec) {
@@ -232,7 +252,8 @@ function renderSpearSpec32(ctx, spec) {
   // step 3: head shine(always-on)
   paintHeadShine32(ctx, mask, size, spec);
 
-  // TODO Task 6: paintShaftBinding32
+  // step 4: shaft binding(條件裝飾)
+  paintShaftBinding32(ctx, mask, size, spec);
 
   // step 5: internal seam
   paintInternalSeams(ctx, mask, size, spec.palette.outline);
