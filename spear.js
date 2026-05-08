@@ -121,6 +121,27 @@ const SPEAR_SHAPE_FNS_32 = {
   hooked:   shapeSpearHooked32,
 };
 
+// V2 fallback per spec §11 risk #4:hook 從 y=5..7 都保留,shoulder 也帶鉤,
+// 把 hook footprint 從 V1 的 ~3 px 增到 ~5 px。視覺迴歸 A/B 比較用,
+// 比較通過後選一版促為 production、另一版刪除(同 sword v3/v4 流程)。
+function shapeSpearHookedV2_32() {
+  const cells = [];
+  const cx = 16;
+  cells.push({ x: cx, y: 2 });             // tip
+  spearAddRange(cells, 3, cx - 1, cx + 1); // taper w3
+  spearAddRange(cells, 4, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 5, cx - 2, cx + 3); // body + hook 開始 w6
+  spearAddRange(cells, 6, cx - 2, cx + 4); // 鉤峰 w7
+  spearAddRange(cells, 7, cx - 1, cx + 3); // shoulder + hook tail w5(右伸到 col 19)
+  return { cells };
+}
+
+const SPEAR_SHAPE_FNS_32_V2 = {
+  straight: shapeSpearStraight32,
+  trident:  shapeSpearTrident32,
+  hooked:   shapeSpearHookedV2_32,
+};
+
 // =====================================================================
 // Shape silhouette functions (16×16) — 子集,專為 16 解析度重新設計(非縮放)
 //
@@ -407,6 +428,45 @@ function renderSpearSpec32(ctx, spec) {
   applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
 }
 
+// V2 比較用 — 同 renderSpearSpec32 但用 SPEAR_SHAPE_FNS_32_V2(hooked 走 V2)。
+// 視覺迴歸選定一版後刪除 — production 不會路由到這裡。
+function buildSpearMask32V2(spec) {
+  const size = 32;
+  const mask = allocateMask(size);
+  const { cells } = SPEAR_SHAPE_FNS_32_V2[spec.archetype]();
+  for (const { x, y } of cells) maskSet(mask, size, x, y, 'head');
+  for (let y = 8; y <= 25; y++) {
+    for (let x = 15; x <= 17; x++) maskSet(mask, size, x, y, 'shaft');
+  }
+  const buttRanges = {
+    disc:   [[14, 18], [14, 18], [14, 18]],
+    sphere: [[15, 17], [14, 18], [15, 17]],
+    spike:  [[14, 18], [15, 17], [16, 16]],
+  };
+  const ranges = buttRanges[spec.buttStyle];
+  for (let i = 0; i < 3; i++) {
+    const y = 26 + i;
+    const [lx, rx] = ranges[i];
+    for (let x = lx; x <= rx; x++) maskSet(mask, size, x, y, 'butt');
+  }
+  return mask;
+}
+
+function renderSpearSpec32V2(ctx, spec) {
+  const size = 32;
+  ctx.clearRect(0, 0, size, size);
+  const mask = buildSpearMask32V2(spec);
+  paintMaskByEnum(ctx, mask, size, {
+    head:  spec.palette.headMain,
+    shaft: WOOD_PALETTE.main,
+    butt:  spec.palette.headMain,
+  });
+  paintHeadShine32(ctx, mask, size, spec);
+  paintShaftBinding32(ctx, mask, size, spec);
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
+}
+
 // =====================================================================
 // 對外:drawSpear(ctx, rng, size)
 // =====================================================================
@@ -425,3 +485,5 @@ window.buildSpearMask32 = buildSpearMask32;
 window.renderSpearSpec32 = renderSpearSpec32;
 window.buildSpearMask16 = buildSpearMask16;
 window.renderSpearSpec16 = renderSpearSpec16;
+window.SPEAR_SHAPE_FNS_32_V2 = SPEAR_SHAPE_FNS_32_V2;
+window.renderSpearSpec32V2 = renderSpearSpec32V2;
