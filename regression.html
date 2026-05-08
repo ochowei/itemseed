@@ -42,9 +42,6 @@
   <h2>// drawSpear</h2>
   <table id="grid-spear"></table>
 
-  <h2>// drawSpear hooked — V1 (production) vs V2 (fallback per spec §11 risk #4)</h2>
-  <table id="grid-spear-hooked-cmp"></table>
-
   <script src="random.js"></script>
   <script src="palette.js"></script>
   <script src="pixel-utils.js"></script>
@@ -182,45 +179,6 @@
         grid.appendChild(tr);
 
         collectedSpear.push({ kind: 'spear', seed, spec, c32, c16 });
-      }
-    }
-
-    // ============================================================
-    // Render spear hooked V1 vs V2 comparison (scaffold per spec §11 risk #4)
-    // 6 seeds × forced archetype='hooked',各 metal family + 1 帶 binding 比較。
-    // 不進 collected* / download bundle — comparison only。
-    // ============================================================
-    {
-      const grid = document.getElementById('grid-spear-hooked-cmp');
-      const headerRow = document.createElement('tr');
-      headerRow.innerHTML = '<th>seed</th><th>family</th><th>butt</th><th>binding</th><th>V1 (current)</th><th>V2 (fallback)</th>';
-      grid.appendChild(headerRow);
-
-      const HOOKED_CMP_SEEDS = [
-        'sp-cmp-steel', 'sp-cmp-iron', 'sp-cmp-bronze', 'sp-cmp-gold', 'sp-cmp-obsidian',
-        'sp-cmp-binding',
-      ];
-
-      for (const seed of HOOKED_CMP_SEEDS) {
-        const rng = new SeededRandom(seed);
-        const spec = sampleSpearSpec(rng);
-        spec.archetype = 'hooked';   // 強制 hooked,避免 sample 走到別的 archetype
-
-        const c32V1 = document.createElement('canvas');
-        c32V1.width = 32; c32V1.height = 32; c32V1.style.width = '96px'; c32V1.style.height = '96px';
-        renderSpearSpec32(c32V1.getContext('2d'), spec);
-
-        const c32V2 = document.createElement('canvas');
-        c32V2.width = 32; c32V2.height = 32; c32V2.style.width = '96px'; c32V2.style.height = '96px';
-        renderSpearSpec32V2(c32V2.getContext('2d'), spec);
-
-        const bindingTag = spec.hasShaftBinding ? 'B' + spec.shaftBindingYs.length : '--';
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${seed}</td><td>${spec.family}</td><td>${spec.buttStyle}</td><td>${bindingTag}</td>`;
-        const tdV1 = document.createElement('td'); tdV1.appendChild(c32V1); tr.appendChild(tdV1);
-        const tdV2 = document.createElement('td'); tdV2.appendChild(c32V2); tr.appendChild(tdV2);
-        grid.appendChild(tr);
       }
     }
 

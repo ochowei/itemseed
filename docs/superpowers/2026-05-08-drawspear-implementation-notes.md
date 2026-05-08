@@ -183,7 +183,57 @@ Spec §5.2 寫 `sampleSpearPalette` wrap `sampleSwordPalette` 並重命名 `blad
 
 ---
 
-## 7. 下一輪迭代候選
+## 7. Hooked 32 archetype 的 V1 → V2 promotion(Task 10 後 follow-up)
+
+### 7.1 背景
+
+Spec §11 risk #4 預測:
+> Hooked 32 hook 只有 ~3 px 視覺 footprint(y=5 col 19 + y=6 cols 19-20)。視覺迴歸後若覺得太微妙,fallback 把 hook 從 y=5 起到 y=7 都保留(shoulder 也帶鉤),hook footprint 增到 4-5 px。
+
+Task 10 完成後實際視覺迴歸,user 確認 V1 hook(只到 y=6)在 32 上看起來太細,難以讀為「barb / 鉤」。
+
+### 7.2 V1 vs V2 比較流程
+
+加 `shapeSpearHookedV2_32` + `SPEAR_SHAPE_FNS_32_V2` + `buildSpearMask32V2` + `renderSpearSpec32V2` 作為平行 scaffold,production 路徑不動。在 `regression.html` 加「hooked V1 vs V2」section,6 個 forced-hooked seed(5 metal family + 1 帶 binding)並排顯示 96×96 兩版圖示。
+
+User 視覺判斷後選 V2。
+
+### 7.3 V2 promote 後的清理
+
+- `shapeSpearHooked32` 函式體換成 V2 內容(y=7 從 w3 cols 15-17 變 w5 cols 15-19)。其他 row 不變。
+- 刪掉 `shapeSpearHookedV2_32`、`SPEAR_SHAPE_FNS_32_V2`、`buildSpearMask32V2`、`renderSpearSpec32V2` 與兩個對應 window export
+- 刪掉 `regression.html` 的 `// drawSpear hooked — V1 vs V2` section + render block
+- `shapeSpearHooked32` 的函式內 comment 加註「原 spec §4.2 hooked y=7 是 w3,A/B 後改 w5,見 implementation notes §8」
+
+### 7.4 V2 production 幾何(現況)
+
+```
+y=2: tip 1px   (cx=16)
+y=3: taper w3  (cx-1..cx+1)
+y=4: body w5   (cx-2..cx+2)
+y=5: body+hook w6  (cx-2..cx+3)
+y=6: hook peak w7  (cx-2..cx+4)
+y=7: shoulder + hook tail w5  (cx-1..cx+3)  ← 新增 cols 18-19
+```
+
+Total cells: 1+3+5+6+7+5 = **27**(原 V1 是 25)
+
+經 outline + seam pass 後,V2 vs V1 的視覺差異:
+- y=6 cols 18-19 從 outline → metal interior(因為 y=7 shoulder 延伸,down 不再 null)
+- y=7 cols 18-19 從 null → outline(新增 hook tail 的 outline)
+- 整體 head body 在右側更飽滿,hook 縱向延伸到底
+
+### 7.5 Spec §4.2 沒同步更新
+
+跟 sword §4 curved 描述過時不更新 spec 同 idiom — spec 仍代表 brainstorm 當下意圖。Code 為準,本筆記 §8.4 為 production 幾何 reference。
+
+### 7.6 16 版沒做 V2
+
+User 只要求 32 比較。Hooked 16 的 1px hook(spec §11 risk #6 已記錄 fallback)未做 V2 比較,維持現況。若日後 16 視覺迴歸覺得不夠,參考 §11 risk #6 的 fallback 設計。
+
+---
+
+## 8. 下一輪迭代候選
 
 從這次過程觀察到值得做的事:
 
