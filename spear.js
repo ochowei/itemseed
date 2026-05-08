@@ -286,6 +286,95 @@ function paintShaftBinding32(ctx, mask, size, spec) {
 }
 
 // =====================================================================
+// Mask builder (16×16) — 共用 spec,但 16 collapse 規則內部處理
+//
+// 16 collapse(per spec §6.4):
+//   buttStyle 'sphere' / 'spike' → 全部 collapse 成 'disc' 同形(w3 × 2 行)
+// 不污染 spec(spec 仍標 sphere / spike)。
+// =====================================================================
+
+function buildSpearMask16(spec) {
+  const size = 16;
+  const mask = allocateMask(size);
+
+  // ── Head ──
+  const { cells } = SPEAR_SHAPE_FNS_16[spec.archetype]();
+  for (const { x, y } of cells) {
+    maskSet(mask, size, x, y, 'head');
+  }
+
+  // ── Shaft (y=5..12, width 3, cols 7..9) ──
+  for (let y = 5; y <= 12; y++) {
+    for (let x = 7; x <= 9; x++) {
+      maskSet(mask, size, x, y, 'shaft');
+    }
+  }
+
+  // ── Butt (y=13..14, 全 collapse 成 disc w3) ──
+  // 16 上 butt 2 行 + outline pass 後沒有 interior cell 顯示金屬色,
+  // sphere / spike vs disc 在外形差異不可能讀出,故統一一個形狀。
+  for (let y = 13; y <= 14; y++) {
+    for (let x = 7; x <= 9; x++) {
+      maskSet(mask, size, x, y, 'butt');
+    }
+  }
+
+  return mask;
+}
+
+// =====================================================================
+// 16 paint helpers
+// =====================================================================
+
+/** 16 版 head cell gate(同 32 版邏輯,不同 size) */
+function tryPaintHeadCell16(ctx, mask, size, x, y) {
+  if (x < 0 || y < 0 || x >= size || y >= size) return;
+  if (mask[y * size + x] !== 'head') return;
+  ctx.fillRect(x, y, 1, 1);
+}
+
+/**
+ * 16 head shine — 壓縮成 1 px。
+ * 三個 archetype 都在 y=3 col cx-1=7 畫 1 px,因 16 head 4 行裡只有 y=3 body 列
+ * 在 col 7 是 interior;y=2 col 7 上鄰是 null/edge 會被 outline 蓋掉。
+ */
+function paintHeadShine16(ctx, mask, size, spec) {
+  ctx.fillStyle = spec.palette.headShine;
+  const cx = 8;
+  tryPaintHeadCell16(ctx, mask, size, cx - 1, 3);
+}
+
+// =====================================================================
+// Renderer (16×16)
+//
+// 16 不畫 hasShaftBinding(per spec §6.5)。
+// =====================================================================
+
+function renderSpearSpec16(ctx, spec) {
+  const size = 16;
+  ctx.clearRect(0, 0, size, size);
+
+  const mask = buildSpearMask16(spec);
+
+  // step 2: 平鋪主色
+  paintMaskByEnum(ctx, mask, size, {
+    head:  spec.palette.headMain,
+    shaft: WOOD_PALETTE.main,
+    butt:  spec.palette.headMain,
+  });
+
+  // step 3: head shine
+  paintHeadShine16(ctx, mask, size, spec);
+
+  // 16 不畫 paintShaftBinding(per spec §6.5)
+
+  // step 5: internal seam
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+  // step 6: 外圈 outline
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
+}
+
+// =====================================================================
 // Renderer (32×32) — 純函式,不再使用 RNG
 //
 // 完整 pipeline(per spec §3):mask → paint by enum → head shine →
@@ -327,8 +416,7 @@ function renderSpearSpec32(ctx, spec) {
 function drawSpearV2Impl(ctx, rng, size) {
   const spec = sampleSpearSpec(rng);
   if (size === 32) renderSpearSpec32(ctx, spec);
-  // TODO Task 8: 16×16
-  // 暫時 size=16 fallback 到 silent no-op(透過 ITEM_TYPES 機制)
+  else if (size === 16) renderSpearSpec16(ctx, spec);
 }
 
 window.sampleSpearSpec = sampleSpearSpec;
@@ -337,3 +425,5 @@ window.SPEAR_SHAPE_FNS_32 = SPEAR_SHAPE_FNS_32;
 window.SPEAR_SHAPE_FNS_16 = SPEAR_SHAPE_FNS_16;
 window.buildSpearMask32 = buildSpearMask32;
 window.renderSpearSpec32 = renderSpearSpec32;
+window.buildSpearMask16 = buildSpearMask16;
+window.renderSpearSpec16 = renderSpearSpec16;
