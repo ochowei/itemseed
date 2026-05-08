@@ -39,11 +39,15 @@
   <h2>// drawSword</h2>
   <table id="grid-sword"></table>
 
+  <h2>// drawSpear</h2>
+  <table id="grid-spear"></table>
+
   <script src="random.js"></script>
   <script src="palette.js"></script>
   <script src="pixel-utils.js"></script>
   <script src="potion.js"></script>
   <script src="sword.js"></script>
+  <script src="spear.js"></script>
   <script>
     // ============================================================
     // Hardcoded baseline seeds
@@ -66,8 +70,18 @@
       'edge-fuller-broad', 'edge-wrap-2lines',
     ];
 
+    // spear baseline:涵蓋 5 個金屬族 + 3 archetype + 3 buttStyle + hasShaftBinding edge cases
+    const SPEAR_SEEDS = [
+      'sp-metal-steel-1', 'sp-metal-iron-1', 'sp-metal-bronze-1', 'sp-metal-gold-1', 'sp-metal-obsidian-1',
+      'sp-arch-straight-1', 'sp-arch-trident-1', 'sp-arch-hooked-1',
+      'sp-butt-disc-1', 'sp-butt-sphere-1', 'sp-butt-spike-1',
+      'sp-edge-binding-2lines', 'sp-edge-binding-1line', 'sp-edge-no-binding',
+      'sp-edge-trident-gold', 'sp-edge-hooked-bronze',
+    ];
+
     const collectedPotion = [];
     const collectedSword = [];
+    const collectedSpear = [];
 
     // ============================================================
     // Render potion grid
@@ -136,10 +150,43 @@
     }
 
     // ============================================================
-    // Download buttons (potion + sword combined)
+    // Render spear grid
+    // ============================================================
+    {
+      const grid = document.getElementById('grid-spear');
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th>seed</th><th>family</th><th>archetype</th><th>butt</th><th>binding</th><th>32×32</th><th>16×16</th>';
+      grid.appendChild(headerRow);
+
+      for (const seed of SPEAR_SEEDS) {
+        const rng = new SeededRandom(seed);
+        const spec = sampleSpearSpec(rng);
+
+        const c32 = document.createElement('canvas');
+        c32.width = 32; c32.height = 32; c32.style.width = '64px'; c32.style.height = '64px';
+        renderSpearSpec32(c32.getContext('2d'), spec);
+
+        const c16 = document.createElement('canvas');
+        c16.width = 16; c16.height = 16; c16.style.width = '64px'; c16.style.height = '64px';
+        renderSpearSpec16(c16.getContext('2d'), spec);
+
+        const bindingTag = spec.hasShaftBinding ? 'B' + spec.shaftBindingYs.length : '--';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${seed}</td><td>${spec.family}</td><td>${spec.archetype}</td><td>${spec.buttStyle}</td><td>${bindingTag}</td>`;
+        const td32 = document.createElement('td'); td32.appendChild(c32); tr.appendChild(td32);
+        const td16 = document.createElement('td'); td16.appendChild(c16); tr.appendChild(td16);
+        grid.appendChild(tr);
+
+        collectedSpear.push({ kind: 'spear', seed, spec, c32, c16 });
+      }
+    }
+
+    // ============================================================
+    // Download buttons (potion + sword + spear combined)
     // ============================================================
     document.getElementById('dl-png').addEventListener('click', () => {
-      const all = [...collectedPotion, ...collectedSword];
+      const all = [...collectedPotion, ...collectedSword, ...collectedSpear];
       const cellW = 32, cellH = 32;
       const composite = document.createElement('canvas');
       composite.width = cellW + 4 + cellW;
@@ -164,6 +211,7 @@
       const dump = [
         ...collectedPotion.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
         ...collectedSword.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
+        ...collectedSpear.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
       ];
       const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
