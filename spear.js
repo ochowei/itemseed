@@ -49,6 +49,79 @@ function sampleSpearSpec(rng) {
 }
 
 // =====================================================================
+// Shape silhouette functions (32×32)
+//
+// 每個 archetype 是一個 () → { cells: Array<{ x, y }> }
+// 描繪 head 外輪廓(僅 head,不含 shaft/butt)。整數座標。
+//
+// 用 cells-based 而非 row-spans:trident y=2..3 有 3 個不連續 1px prong,
+// row-spans 表示不出來;cells 統一處理 sparse / dense 兩種 row。
+//
+// 整體垂直配置(per spec §4.1):
+//   y=0..1   padding
+//   y=2..7   head  (6 rows)
+//   y=8..25  shaft (18 rows)
+//   y=26..28 butt  (3 rows)
+//   y=29..31 padding
+//
+// 中軸 cx=16,所有 archetype 都 vertical aligned。
+// =====================================================================
+
+// helper: 在 cells 加進「row y 的 cols [x0..x1]」這段
+function spearAddRange(cells, y, x0, x1) {
+  for (let x = x0; x <= x1; x++) cells.push({ x, y });
+}
+
+function shapeSpearStraight32() {
+  // 對稱長葉狀:tip 1 + taper 3 + body 5 三列 + shoulder 3
+  const cells = [];
+  const cx = 16;
+  cells.push({ x: cx, y: 2 });             // tip
+  spearAddRange(cells, 3, cx - 1, cx + 1); // taper w3
+  spearAddRange(cells, 4, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 5, cx - 2, cx + 2);
+  spearAddRange(cells, 6, cx - 2, cx + 2);
+  spearAddRange(cells, 7, cx - 1, cx + 1); // shoulder w3
+  return { cells };
+}
+
+function shapeSpearTrident32() {
+  // 三叉:3 prongs at cols cx-3, cx, cx+3 (cols 13, 16, 19),間距 3
+  // y=2..3 prongs(各 1 px)→ y=4 bridge w7 → y=5..6 body w5 → y=7 shoulder
+  const cells = [];
+  const cx = 16;
+  for (let y = 2; y <= 3; y++) {
+    cells.push({ x: cx - 3, y });
+    cells.push({ x: cx,     y });
+    cells.push({ x: cx + 3, y });
+  }
+  spearAddRange(cells, 4, cx - 3, cx + 3); // bridge w7
+  spearAddRange(cells, 5, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 6, cx - 2, cx + 2);
+  spearAddRange(cells, 7, cx - 1, cx + 1); // shoulder w3
+  return { cells };
+}
+
+function shapeSpearHooked32() {
+  // 鉤矛:右側不對稱,hook 從 y=5 起到 y=6 達峰 col 20
+  const cells = [];
+  const cx = 16;
+  cells.push({ x: cx, y: 2 });             // tip
+  spearAddRange(cells, 3, cx - 1, cx + 1); // taper w3
+  spearAddRange(cells, 4, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 5, cx - 2, cx + 3); // body + hook 開始 w6
+  spearAddRange(cells, 6, cx - 2, cx + 4); // 鉤峰 w7
+  spearAddRange(cells, 7, cx - 1, cx + 1); // shoulder w3
+  return { cells };
+}
+
+const SPEAR_SHAPE_FNS_32 = {
+  straight: shapeSpearStraight32,
+  trident:  shapeSpearTrident32,
+  hooked:   shapeSpearHooked32,
+};
+
+// =====================================================================
 // 對外:drawSpear(ctx, rng, size)
 // 注意:暫時 export 為 drawSpearV2,避免跟 main.js 既有 drawSpear stub
 // 撞名(function declaration silent override)。Task 9 改為 drawSpear。
@@ -62,3 +135,4 @@ function drawSpearV2Impl(ctx, rng, size) {
 
 window.sampleSpearSpec = sampleSpearSpec;
 window.drawSpearV2 = drawSpearV2Impl;
+window.SPEAR_SHAPE_FNS_32 = SPEAR_SHAPE_FNS_32;
