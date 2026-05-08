@@ -165,6 +165,51 @@ function buildSpearMask32(spec) {
 }
 
 // =====================================================================
+// Paint helpers (32×32) — 純像素操作,讀 spec + mask 產生裝飾
+// =====================================================================
+
+/** 只在指定 cell 為 'head' 時才畫;避免畫到 shaft / butt / 外面 */
+function tryPaintHeadCell32(ctx, mask, size, x, y) {
+  if (x < 0 || y < 0 || x >= size || y >= size) return;
+  if (mask[y * size + x] !== 'head') return;
+  ctx.fillRect(x, y, 1, 1);
+}
+
+/**
+ * Always-on head shine。1px 縱線在 head body 的 interior column。
+ * - straight:cx-1 = 15,y=4..6(3 列,body w5 的內側最左 column)
+ * - trident:cx-1 = 15,y=5..6(2 列,跳過 y=4 因 bridge w7 在 col 15 處 up=null 變 outline)
+ * - hooked:cx-1 = 15,y=4..6(3 列,body 至少 w5 從 y=4 起)
+ *
+ * gate:tryPaintHeadCell32 只在 mask 為 'head' 時畫,避免 shine 落到 shaft / 外面。
+ */
+function paintHeadShine32(ctx, mask, size, spec) {
+  ctx.fillStyle = spec.palette.headShine;
+  const cx = 16;
+
+  if (spec.archetype === 'straight') {
+    for (let y = 4; y <= 6; y++) {
+      tryPaintHeadCell32(ctx, mask, size, cx - 1, y);
+    }
+    return;
+  }
+
+  if (spec.archetype === 'trident') {
+    for (let y = 5; y <= 6; y++) {
+      tryPaintHeadCell32(ctx, mask, size, cx - 1, y);
+    }
+    return;
+  }
+
+  if (spec.archetype === 'hooked') {
+    for (let y = 4; y <= 6; y++) {
+      tryPaintHeadCell32(ctx, mask, size, cx - 1, y);
+    }
+    return;
+  }
+}
+
+// =====================================================================
 // Renderer (32×32) — 純函式,不再使用 RNG
 //
 // 此 task 是第一版:只 mask + paint by enum + seam + outline,
@@ -184,7 +229,9 @@ function renderSpearSpec32(ctx, spec) {
     butt:  spec.palette.headMain,    // 同金屬色
   });
 
-  // TODO Task 5: paintHeadShine32
+  // step 3: head shine(always-on)
+  paintHeadShine32(ctx, mask, size, spec);
+
   // TODO Task 6: paintShaftBinding32
 
   // step 5: internal seam
