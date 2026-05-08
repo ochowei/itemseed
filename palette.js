@@ -31,6 +31,12 @@ const LEATHER_PALETTE = {
   highlight: '#8a6840',
 };
 
+const WOOD_PALETTE = {
+  main:      '#a87c4e',   // 中等橡木色,shaft 主色
+  shadow:    '#6a4020',   // 深棕,shaft binding 用
+  highlight: '#c8a070',   // 淺褐,本輪不用,留給未來 shaft shine
+};
+
 /** HSL (h:0-360, s:0-100, l:0-100) → '#RRGGBB' */
 function hslToRgbHex(h, s, l) {
   h = ((h % 360) + 360) % 360;
@@ -106,6 +112,25 @@ function sampleSwordPalette(rng) {
   };
 }
 
+/**
+ * 從 RNG 抽一個金屬色族並推導 4 色 spear palette。
+ * 內部呼叫 sampleSwordPalette,把 bladeMain/bladeShadow/bladeShine 重命名為
+ * headMain/headShadow/headShine,語意更符合 spear 矛頭。
+ * @returns {{ family: string, palette: { outline, headMain, headShadow, headShine } }}
+ */
+function sampleSpearPalette(rng) {
+  const { family, palette } = sampleSwordPalette(rng);
+  return {
+    family,
+    palette: {
+      outline:    palette.outline,
+      headMain:   palette.bladeMain,
+      headShadow: palette.bladeShadow,
+      headShine:  palette.bladeShine,
+    },
+  };
+}
+
 window.FAMILIES = FAMILIES;
 window.CORK_PALETTE = CORK_PALETTE;
 window.samplePalette = samplePalette;
@@ -113,3 +138,5 @@ window.hslToRgbHex = hslToRgbHex;
 window.METAL_FAMILIES = METAL_FAMILIES;
 window.LEATHER_PALETTE = LEATHER_PALETTE;
 window.sampleSwordPalette = sampleSwordPalette;
+window.WOOD_PALETTE = WOOD_PALETTE;
+window.sampleSpearPalette = sampleSpearPalette;
