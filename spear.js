@@ -409,18 +409,16 @@ function renderSpearSpec32(ctx, spec) {
 
 // =====================================================================
 // 對外:drawSpear(ctx, rng, size)
-// 注意:暫時 export 為 drawSpearV2,避免跟 main.js 既有 drawSpear stub
-// 撞名(function declaration silent override)。Task 9 改為 drawSpear。
 // =====================================================================
 
-function drawSpearV2Impl(ctx, rng, size) {
+function drawSpearImpl(ctx, rng, size) {
   const spec = sampleSpearSpec(rng);
   if (size === 32) renderSpearSpec32(ctx, spec);
   else if (size === 16) renderSpearSpec16(ctx, spec);
 }
 
 window.sampleSpearSpec = sampleSpearSpec;
-window.drawSpearV2 = drawSpearV2Impl;
+window.drawSpear = drawSpearImpl;
 window.SPEAR_SHAPE_FNS_32 = SPEAR_SHAPE_FNS_32;
 window.SPEAR_SHAPE_FNS_16 = SPEAR_SHAPE_FNS_16;
 window.buildSpearMask32 = buildSpearMask32;

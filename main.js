@@ -29,7 +29,7 @@ previewCtx.imageSmoothingEnabled = false;
 const ITEM_TYPES = {
   potion: drawPotion,
   sword: drawSword,
-  spear: drawSpearV2,    // TEMPORARY: Task 9 will swap back to drawSpear
+  spear: drawSpear,
 };
 
 // =============================================================
@@ -119,38 +119,6 @@ function renderBatchGrid() {
     });
     gridContainer.appendChild(wrap);
   }
-}
-
-// =============================================================
-// 繪圖函式 stub —— 第二步再來填充細節
-// 目前先畫個簡單的色塊讓整個流程能跑起來
-// =============================================================
-
-function drawSpear(ctx, rng, size) {
-  // 暫時的占位:中央畫一支長矛
-  const headColors = ['#d8d8e8', '#c8b070', '#a8a0c8'];
-  const head = rng.pick(headColors);
-  const cx = Math.floor(size / 2);
-
-  // 矛頭(三角形)
-  fillRect(ctx, cx, 1, 1, 1, '#1a1a2e');
-  fillRect(ctx, cx - 1, 2, 3, 1, head);
-  fillRect(ctx, cx - 1, 3, 3, 1, head);
-  fillRect(ctx, cx - 2, 4, 5, 1, head);
-  fillRect(ctx, cx - 2, 5, 5, 1, head);
-  fillRect(ctx, cx - 1, 6, 3, 1, head);
-  // 矛頭描邊
-  fillRect(ctx, cx - 2, 2, 1, 3, '#1a1a2e');
-  fillRect(ctx, cx + 2, 2, 1, 3, '#1a1a2e');
-  fillRect(ctx, cx - 3, 4, 1, 2, '#1a1a2e');
-  fillRect(ctx, cx + 3, 4, 1, 2, '#1a1a2e');
-
-  // 桿身
-  fillRect(ctx, cx, 7, 1, size - 9, '#7a4a2e');
-  fillRect(ctx, cx - 1, 7, 1, size - 9, '#4a2a1e');
-
-  // 末端
-  fillRect(ctx, cx - 1, size - 2, 2, 1, '#3a2a1e');
 }
 
 // =============================================================
