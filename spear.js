@@ -122,6 +122,62 @@ const SPEAR_SHAPE_FNS_32 = {
 };
 
 // =====================================================================
+// Shape silhouette functions (16×16) — 子集,專為 16 解析度重新設計(非縮放)
+//
+// 整體垂直配置(per spec §6.1):
+//   y=0      padding
+//   y=1..4   head  (4 rows)
+//   y=5..12  shaft (8 rows)
+//   y=13..14 butt  (2 rows,collapse 成 disc w3)
+//   y=15     padding
+//
+// 中軸 cx=8。
+// =====================================================================
+
+function shapeSpearStraight16() {
+  // 對稱 leaf:tip 1 + taper 3 + body 5 + shoulder 3
+  const cells = [];
+  const cx = 8;
+  cells.push({ x: cx, y: 1 });             // tip
+  spearAddRange(cells, 2, cx - 1, cx + 1); // taper w3
+  spearAddRange(cells, 3, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 4, cx - 1, cx + 1); // shoulder w3
+  return { cells };
+}
+
+function shapeSpearTrident16() {
+  // 三叉:prongs 在 cols cx-2, cx, cx+2(間距 2,比 32 版 cols 13,16,19 間距 3 收窄)
+  // y=1 prongs → y=2 bridge w5 → y=3 body w5 → y=4 shoulder w3
+  const cells = [];
+  const cx = 8;
+  cells.push({ x: cx - 2, y: 1 });
+  cells.push({ x: cx,     y: 1 });
+  cells.push({ x: cx + 2, y: 1 });
+  spearAddRange(cells, 2, cx - 2, cx + 2); // bridge w5
+  spearAddRange(cells, 3, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 4, cx - 1, cx + 1); // shoulder w3
+  return { cells };
+}
+
+function shapeSpearHooked16() {
+  // 鉤矛 16:head 4 行容不下專屬 hook row,改用 shoulder 列向右多 1 col 表 hook
+  // tip 1 + taper 3 + body 5 + shoulder + hook (cols 7..11 = w5 偏右)
+  const cells = [];
+  const cx = 8;
+  cells.push({ x: cx, y: 1 });             // tip
+  spearAddRange(cells, 2, cx - 1, cx + 1); // taper w3
+  spearAddRange(cells, 3, cx - 2, cx + 2); // body w5
+  spearAddRange(cells, 4, cx - 1, cx + 3); // shoulder + hook 1 px(右伸到 col 11)
+  return { cells };
+}
+
+const SPEAR_SHAPE_FNS_16 = {
+  straight: shapeSpearStraight16,
+  trident:  shapeSpearTrident16,
+  hooked:   shapeSpearHooked16,
+};
+
+// =====================================================================
 // Mask builder (32×32) — 把 spec 轉成 enum mask
 //
 // mask cell ∈ { 'head' | 'shaft' | 'butt' | null }
@@ -278,5 +334,6 @@ function drawSpearV2Impl(ctx, rng, size) {
 window.sampleSpearSpec = sampleSpearSpec;
 window.drawSpearV2 = drawSpearV2Impl;
 window.SPEAR_SHAPE_FNS_32 = SPEAR_SHAPE_FNS_32;
+window.SPEAR_SHAPE_FNS_16 = SPEAR_SHAPE_FNS_16;
 window.buildSpearMask32 = buildSpearMask32;
 window.renderSpearSpec32 = renderSpearSpec32;
