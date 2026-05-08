@@ -29,7 +29,7 @@ previewCtx.imageSmoothingEnabled = false;
 const ITEM_TYPES = {
   potion: drawPotion,
   sword: drawSword,
-  spear: drawSpear,
+  spear: drawSpearV2,    // TEMPORARY: Task 9 will swap back to drawSpear
 };
 
 // =============================================================

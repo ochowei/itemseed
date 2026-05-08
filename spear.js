@@ -122,6 +122,79 @@ const SPEAR_SHAPE_FNS_32 = {
 };
 
 // =====================================================================
+// Mask builder (32×32) — 把 spec 轉成 enum mask
+//
+// mask cell ∈ { 'head' | 'shaft' | 'butt' | null }
+// 三個 archetype 都 vertical(cx=16 中軸對齊),不需 axisFn 抽象。
+// =====================================================================
+
+function buildSpearMask32(spec) {
+  const size = 32;
+  const mask = allocateMask(size);
+
+  // ── Head ── 從 archetype 對應的 shape 函式取 cells
+  const { cells } = SPEAR_SHAPE_FNS_32[spec.archetype]();
+  for (const { x, y } of cells) {
+    maskSet(mask, size, x, y, 'head');
+  }
+
+  // ── Shaft (y=8..25, width 3, cols 15..17) ──
+  for (let y = 8; y <= 25; y++) {
+    for (let x = 15; x <= 17; x++) {
+      maskSet(mask, size, x, y, 'shaft');
+    }
+  }
+
+  // ── Butt (y=26..28, varies by buttStyle) ──
+  // 每列 [leftX, rightX] 寬度,對應 spec §4.4 的表格
+  const buttRanges = {
+    disc:   [[14, 18], [14, 18], [14, 18]],   // 平蓋 w5×3 列
+    sphere: [[15, 17], [14, 18], [15, 17]],   // 上下窄中間寬,圓珠
+    spike:  [[14, 18], [15, 17], [16, 16]],   // 從上往下收成 1 px 點
+  };
+  const ranges = buttRanges[spec.buttStyle];
+  for (let i = 0; i < 3; i++) {
+    const y = 26 + i;
+    const [lx, rx] = ranges[i];
+    for (let x = lx; x <= rx; x++) {
+      maskSet(mask, size, x, y, 'butt');
+    }
+  }
+
+  return mask;
+}
+
+// =====================================================================
+// Renderer (32×32) — 純函式,不再使用 RNG
+//
+// 此 task 是第一版:只 mask + paint by enum + seam + outline,
+// 還沒 shine / shaft binding(Task 5、6 加)。
+// =====================================================================
+
+function renderSpearSpec32(ctx, spec) {
+  const size = 32;
+  ctx.clearRect(0, 0, size, size);
+
+  const mask = buildSpearMask32(spec);
+
+  // step 2: 平鋪主色
+  paintMaskByEnum(ctx, mask, size, {
+    head:  spec.palette.headMain,
+    shaft: WOOD_PALETTE.main,
+    butt:  spec.palette.headMain,    // 同金屬色
+  });
+
+  // TODO Task 5: paintHeadShine32
+  // TODO Task 6: paintShaftBinding32
+
+  // step 5: internal seam
+  paintInternalSeams(ctx, mask, size, spec.palette.outline);
+
+  // step 6: 外圈 outline
+  applyInsideOutlinePass(ctx, mask, size, spec.palette.outline);
+}
+
+// =====================================================================
 // 對外:drawSpear(ctx, rng, size)
 // 注意:暫時 export 為 drawSpearV2,避免跟 main.js 既有 drawSpear stub
 // 撞名(function declaration silent override)。Task 9 改為 drawSpear。
@@ -129,10 +202,13 @@ const SPEAR_SHAPE_FNS_32 = {
 
 function drawSpearV2Impl(ctx, rng, size) {
   const spec = sampleSpearSpec(rng);
-  // TODO Task 4-8: render → renderSpearSpec32 / renderSpearSpec16
-  console.log('[drawSpearV2 stub] spec=', spec, 'size=', size);
+  if (size === 32) renderSpearSpec32(ctx, spec);
+  // TODO Task 8: 16×16
+  // 暫時 size=16 fallback 到 silent no-op(透過 ITEM_TYPES 機制)
 }
 
 window.sampleSpearSpec = sampleSpearSpec;
 window.drawSpearV2 = drawSpearV2Impl;
 window.SPEAR_SHAPE_FNS_32 = SPEAR_SHAPE_FNS_32;
+window.buildSpearMask32 = buildSpearMask32;
+window.renderSpearSpec32 = renderSpearSpec32;
