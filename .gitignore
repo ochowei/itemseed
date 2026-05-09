@@ -9,6 +9,9 @@
 *.swo
 *~
 
+# Claude Code session cache
+.claude/
+
 # Visual regression baselines (generated artifacts; baseline files themselves
 # can be tracked if you want — uncomment the next line to ignore the dir)
 # baselines/
