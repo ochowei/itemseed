@@ -1,0 +1,26 @@
+{
+  "name": "game-asset-2026-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "snapshot": "node scripts/snapshot-regression.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ochowei/game-asset-2026-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ochowei/game-asset-2026-2/issues"
+  },
+  "homepage": "https://github.com/ochowei/game-asset-2026-2#readme",
+  "devDependencies": {
+    "puppeteer": "^24.43.0"
+  }
+}
