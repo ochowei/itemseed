@@ -54,5 +54,62 @@ for (const { sel, file } of targets) {
   console.log(`wrote ${file} (${(size / 1024).toFixed(1)} KB)`);
 }
 
+const ZOOMS = [
+  { grid: 'grid-spear', seed: 'sp-metal-steel-1',       size: 32, label: 'spear-trident-32' },
+  { grid: 'grid-spear', seed: 'sp-metal-steel-1',       size: 16, label: 'spear-trident-16' },
+  { grid: 'grid-spear', seed: 'sp-butt-sphere-1',       size: 32, label: 'spear-hooked-32' },
+  { grid: 'grid-spear', seed: 'sp-butt-sphere-1',       size: 16, label: 'spear-hooked-16' },
+  { grid: 'grid-spear', seed: 'sp-edge-binding-2lines', size: 32, label: 'spear-binding-32' },
+  // risk #1 — obsidian (dark) head against WOOD shaft contrast, all 3 archetypes
+  { grid: 'grid-spear', seed: 'sp-obs-97',              size: 32, label: 'spear-obsidian-trident-32' },
+  { grid: 'grid-spear', seed: 'sp-obs-32',              size: 32, label: 'spear-obsidian-hooked-32' },
+  { grid: 'grid-spear', seed: 'sp-obs-51',              size: 32, label: 'spear-obsidian-straight-32' },
+];
+
+const zoomResults = await page.evaluate((zooms) => {
+  const SCALE = 8;
+  const BG = '#2a2a3a';
+  const out = [];
+  for (const z of zooms) {
+    const grid = document.getElementById(z.grid);
+    if (!grid) { out.push({ ...z, ok: false, err: 'grid not found' }); continue; }
+    let row = null;
+    for (const tr of grid.querySelectorAll('tr')) {
+      const firstTd = tr.querySelector('td');
+      if (firstTd && firstTd.textContent.trim() === z.seed) { row = tr; break; }
+    }
+    if (!row) { out.push({ ...z, ok: false, err: 'seed not found' }); continue; }
+    const canvases = row.querySelectorAll('canvas');
+    const src = z.size === 32 ? canvases[0] : canvases[1];
+    if (!src) { out.push({ ...z, ok: false, err: 'canvas not found' }); continue; }
+
+    const id = 'zoom-' + z.label;
+    const zc = document.createElement('canvas');
+    zc.id = id;
+    zc.width = src.width * SCALE;
+    zc.height = src.height * SCALE;
+    zc.style.imageRendering = 'pixelated';
+    zc.style.display = 'block';
+    zc.style.margin = '8px';
+    const cx = zc.getContext('2d');
+    cx.fillStyle = BG;
+    cx.fillRect(0, 0, zc.width, zc.height);
+    cx.imageSmoothingEnabled = false;
+    cx.drawImage(src, 0, 0, zc.width, zc.height);
+    document.body.appendChild(zc);
+    out.push({ ...z, ok: true, id });
+  }
+  return out;
+}, ZOOMS);
+
+for (const z of zoomResults) {
+  if (!z.ok) { console.warn(`skip ${z.label}: ${z.err}`); continue; }
+  const el = await page.$('#' + z.id);
+  const out = path.join(outDir, z.label + '.png');
+  await el.screenshot({ path: out });
+  const { size } = fs.statSync(out);
+  console.log(`wrote ${z.label}.png (${(size / 1024).toFixed(1)} KB)`);
+}
+
 await browser.close();
 console.log('done');
