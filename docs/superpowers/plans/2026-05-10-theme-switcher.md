@@ -88,7 +88,7 @@ body[data-theme="light"] {
 - [ ] **Step 2: Verify file content**
 
 Run: `grep -c "^  --" theme.css`
-Expected: `26` (13 vars × 2 blocks)
+Expected: `24` (12 vars × 2 blocks)
 
 Run: `grep -E "^\s*(--bg-deep|--ink|--accent|--line):" theme.css | wc -l`
 Expected: `8` (4 key vars × 2 blocks — sanity check both blocks define the core slots)
@@ -202,7 +202,7 @@ window.THEME = (function () {
 - [ ] **Step 2: Verify file content**
 
 Run: `grep -E "^(\s*const SUPPORTED|\s*const STORAGE_KEY|\s*function (read|resolve|apply|setTheme|init))" theme.js | wc -l`
-Expected: `8` (SUPPORTED + STORAGE_KEY + 2 read*, resolveInitial, resolveEffective, applyTheme, setTheme, init)
+Expected: `9` (SUPPORTED + STORAGE_KEY + readSettingFromURL + readSettingFromStorage + resolveInitialSetting + resolveEffective + applyTheme + setTheme + init)
 
 Run: `grep -c "window.THEME" theme.js`
 Expected: `1`
