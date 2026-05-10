@@ -218,7 +218,7 @@
       composite.height = (cellH + 4) * all.length;
       const cx = composite.getContext('2d');
       cx.imageSmoothingEnabled = false;
-      cx.fillStyle = '#1a1a26';
+      cx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-cell').trim();
       cx.fillRect(0, 0, composite.width, composite.height);
       for (let i = 0; i < all.length; i++) {
         const { c32, c16 } = all[i];
