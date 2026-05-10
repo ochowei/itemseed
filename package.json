@@ -7,7 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "snapshot": "node scripts/snapshot-regression.mjs"
+    "snapshot": "node scripts/snapshot-regression.mjs",
+    "check-theme": "node scripts/test-theme.mjs",
+    "check-i18n": "node scripts/check-i18n.mjs"
   },
   "repository": {
     "type": "git",
