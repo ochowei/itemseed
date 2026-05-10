@@ -1,0 +1,46 @@
+/* theme.css
+ * CSS custom properties for dark (default :root) and light (body[data-theme="light"]).
+ * Single source of truth for both index.html and regression.html.
+ *
+ * Adding a new color slot? Define it in BOTH :root and body[data-theme="light"].
+ */
+
+:root {
+  /* Backgrounds */
+  --bg-deep:     #0e0d14;
+  --bg-panel:    #15131e;
+  --bg-panel-2:  #1d1a2a;
+  --bg-frame-a:  #20202c;   /* checker high (preview frame) */
+  --bg-frame-b:  #1a1a26;   /* checker low (preview frame) */
+  --bg-cell:     #1a1a26;   /* grid cell + regression canvas bg */
+
+  /* Inks */
+  --ink:         #e8e4d8;
+  --ink-dim:     #8a8499;
+
+  /* Accents */
+  --accent:      #ffb347;   /* 燈泡橘 */
+  --accent-2:    #6dd3ce;   /* 古銅綠 */
+  --danger:      #ff6b8a;
+
+  /* Lines / borders */
+  --line:        #2a2638;
+}
+
+body[data-theme="light"] {
+  --bg-deep:     #f0ece4;   /* paper, reuse regression body */
+  --bg-panel:    #ffffff;
+  --bg-panel-2:  #f7f3ea;
+  --bg-frame-a:  #f0ece4;   /* light checker high */
+  --bg-frame-b:  #e8e0d0;   /* light checker low */
+  --bg-cell:     #e8e0d0;   /* matches regression's previous canvas bg */
+
+  --ink:         #2a2638;   /* deep purple-black, reuse regression ink */
+  --ink-dim:     #6a6458;
+
+  --accent:      #c46a00;   /* matches regression h2 */
+  --accent-2:    #2a8a85;   /* darker teal, WCAG AA on white */
+  --danger:      #c2185b;
+
+  --line:        #c8c2b4;   /* matches regression table border */
+}
