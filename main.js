@@ -151,6 +151,7 @@ seedInput.addEventListener('keydown', (e) => {
 // =============================================================
 // 啟動
 // =============================================================
+THEME.init();
 I18N.init();
 seedInput.value = generateRandomSeed();
 generate();
@@ -163,4 +164,13 @@ const langSelect = document.getElementById('lang-select');
 langSelect.value = I18N.getLang();
 langSelect.addEventListener('change', (e) => {
   I18N.setLang(e.target.value);
+});
+
+// =============================================================
+// theme dropdown
+// =============================================================
+const themeSelect = document.getElementById('theme-select');
+themeSelect.value = THEME.getSetting();
+themeSelect.addEventListener('change', (e) => {
+  THEME.setTheme(e.target.value);
 });

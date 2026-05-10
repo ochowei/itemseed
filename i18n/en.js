@@ -21,6 +21,11 @@ window.I18N_EN = {
 
   'size.label': '// size',
 
+  'theme.label': 'Theme',
+  'theme.option.auto': 'Auto',
+  'theme.option.light': 'Light',
+  'theme.option.dark': 'Dark',
+
   'generate.button': '▸ generate',
   'download.button': '⇩ png',
 
