@@ -55,10 +55,15 @@
       align-items: flex-end;
       gap: 8px;
     }
-    #lang-select {
+    #lang-select, #theme-select {
       font-size: 12px;
       padding: 4px 8px;
       width: auto;
+    }
+    .settings-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
     h1 {
       font-family: 'VT323', monospace;
@@ -330,10 +335,17 @@
     <header>
       <h1>icon<span class="accent">.</span>machine</h1>
       <div class="header-right">
-        <select id="lang-select" aria-label="Language">
-          <option value="zh-Hant">繁體中文</option>
-          <option value="en">English</option>
-        </select>
+        <div class="settings-row">
+          <select id="lang-select" aria-label="Language">
+            <option value="zh-Hant">繁體中文</option>
+            <option value="en">English</option>
+          </select>
+          <select id="theme-select" data-i18n-attr-aria-label="theme.label" aria-label="Theme">
+            <option value="auto"  data-i18n-key="theme.option.auto">自動</option>
+            <option value="light" data-i18n-key="theme.option.light">亮色</option>
+            <option value="dark"  data-i18n-key="theme.option.dark">暗色</option>
+          </select>
+        </div>
         <div class="tagline">
           <span data-i18n-key="app.tagline">程序化像素圖示產生器</span> <span class="blink"></span>
         </div>
