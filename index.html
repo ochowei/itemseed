@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Icon Machine — 程序化像素圖示產生器</title>
+  <title data-i18n-key="app.title">Icon Machine — 程序化像素圖示產生器</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -59,6 +59,17 @@
       border-bottom: 1px dashed var(--line);
       padding-bottom: 24px;
       margin-bottom: 40px;
+    }
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    #lang-select {
+      font-size: 12px;
+      padding: 4px 8px;
+      width: auto;
     }
     h1 {
       font-family: 'VT323', monospace;
@@ -329,53 +340,60 @@
   <div class="app">
     <header>
       <h1>icon<span class="accent">.</span>machine</h1>
-      <div class="tagline">
-        程序化像素圖示產生器 <span class="blink"></span>
+      <div class="header-right">
+        <select id="lang-select" aria-label="Language">
+          <option value="zh-Hant">繁體中文</option>
+          <option value="en">English</option>
+        </select>
+        <div class="tagline">
+          <span data-i18n-key="app.tagline">程序化像素圖示產生器</span> <span class="blink"></span>
+        </div>
       </div>
     </header>
 
     <div class="main-grid">
       <!-- 左:主預覽 -->
       <section class="preview-card">
-        <div class="preview-label">// preview</div>
+        <div class="preview-label" data-i18n-key="preview.label">// preview</div>
         <div class="preview-frame">
           <canvas id="preview-canvas" width="384" height="384"></canvas>
         </div>
         <div class="preview-info">
-          <span>scale: 12x</span>
-          <span>format: png · transparent</span>
+          <span data-i18n-key="preview.scale">scale: 12x</span>
+          <span data-i18n-key="preview.format">format: png · transparent</span>
         </div>
       </section>
 
       <!-- 右:控制面板 -->
       <section class="controls">
         <div class="control-group">
-          <label for="seed-input">// seed</label>
+          <label for="seed-input" data-i18n-key="seed.label">// seed</label>
           <div class="seed-row">
             <input
               type="text"
               id="seed-input"
+              data-i18n-attr-placeholder="seed.placeholder"
               placeholder="輸入種子,或留空隨機產生"
               autocomplete="off"
               spellcheck="false"
             />
-            <button id="reroll-seed-btn" class="icon-btn" title="隨機新種子">⟳</button>
+            <button id="reroll-seed-btn" class="icon-btn" data-i18n-attr-title="seed.reroll.title" title="隨機新種子">⟳</button>
           </div>
         </div>
 
         <div class="row-2">
           <div class="control-group">
-            <label for="type-select">// type</label>
+            <label for="type-select" data-i18n-key="type.label">// type</label>
             <select id="type-select">
-              <option value="any">任意 (any)</option>
-              <option value="potion">藥水 (potion)</option>
-              <option value="sword">劍 (sword)</option>
-              <option value="spear">長矛 (spear)</option>
+              <option value="any" data-i18n-key="type.option.any">任意 (any)</option>
+              <option value="potion" data-i18n-key="type.option.potion">藥水 (potion)</option>
+              <option value="sword" data-i18n-key="type.option.sword">劍 (sword)</option>
+              <option value="spear" data-i18n-key="type.option.spear">長矛 (spear)</option>
             </select>
           </div>
 
           <div class="control-group">
-            <label for="size-select">// size</label>
+            <label for="size-select" data-i18n-key="size.label">// size</label>
             <select id="size-select">
               <option value="32">32 × 32</option>
               <option value="16">16 × 16</option>
@@ -384,11 +402,11 @@
         </div>
 
         <div class="button-row">
-          <button id="generate-btn" class="primary">▸ generate</button>
-          <button id="download-btn">⇩ png</button>
+          <button id="generate-btn" class="primary" data-i18n-key="generate.button">▸ generate</button>
+          <button id="download-btn" data-i18n-key="download.button">⇩ png</button>
         </div>
 
-        <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.6;">
+        <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.6;" data-i18n-key="tip.text">
           提示:同樣的種子永遠產生同樣的圖示。下方批次預覽中,點任何一張圖示即可載入。
         </div>
       </section>
@@ -397,16 +415,16 @@
     <!-- 批次預覽 -->
     <section class="grid-section">
       <div class="grid-section-header">
-        <h2>batch<span class="accent">_</span>preview</h2>
-        <div class="hint">點任一格載入該種子</div>
+        <h2><span data-i18n-key="batch.heading.before">batch</span><span class="accent">_</span><span data-i18n-key="batch.heading.after">preview</span></h2>
+        <div class="hint" data-i18n-key="batch.hint">點任一格載入該種子</div>
       </div>
       <div id="grid-container"></div>
     </section>
 
     <footer>
-      Icon Machine — 第一版骨架  ·  Inspired by
+      <span data-i18n-key="footer.skeleton">Icon Machine — 第一版骨架</span>  ·  <span data-i18n-key="footer.inspired">Inspired by</span>
       <a href="https://bmaczero.itch.io/icon-machine" target="_blank" rel="noopener">Brian MacIntosh</a>
-      ·  繪圖規則待擴充
+      ·  <span data-i18n-key="footer.todo">繪圖規則待擴充</span>
     </footer>
   </div>
 
@@ -416,6 +434,9 @@
   <script src="potion.js"></script>
   <script src="sword.js"></script>
   <script src="spear.js"></script>
+  <script src="i18n/zh-Hant.js"></script>
+  <script src="i18n/en.js"></script>
+  <script src="i18n.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
