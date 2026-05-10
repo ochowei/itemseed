@@ -12,20 +12,9 @@
     rel="stylesheet"
   />
 
-  <style>
-    :root {
-      --bg-deep: #0e0d14;
-      --bg-panel: #15131e;
-      --bg-panel-2: #1d1a2a;
-      --ink: #e8e4d8;
-      --ink-dim: #8a8499;
-      --accent: #ffb347;       /* 燈泡橘 */
-      --accent-2: #6dd3ce;     /* 古銅綠 */
-      --danger: #ff6b8a;
-      --line: #2a2638;
-      --pixel-gap: 1px;
-    }
+  <link rel="stylesheet" href="theme.css" />
 
+  <style>
     * { box-sizing: border-box; }
 
     html, body {
@@ -138,13 +127,13 @@
     }
     .preview-frame {
       background:
-        linear-gradient(135deg, #20202c 25%, transparent 25%),
-        linear-gradient(225deg, #20202c 25%, transparent 25%),
-        linear-gradient(45deg, #20202c 25%, transparent 25%),
-        linear-gradient(315deg, #20202c 25%, #1a1a26 25%);
+        linear-gradient(135deg, var(--bg-frame-a) 25%, transparent 25%),
+        linear-gradient(225deg, var(--bg-frame-a) 25%, transparent 25%),
+        linear-gradient(45deg, var(--bg-frame-a) 25%, transparent 25%),
+        linear-gradient(315deg, var(--bg-frame-a) 25%, var(--bg-frame-b) 25%);
       background-position: 8px 0, 8px 0, 0 0, 0 0;
       background-size: 16px 16px;
-      background-color: #1a1a26;
+      background-color: var(--bg-frame-b);
       border: 1px solid var(--line);
       padding: 16px;
       display: flex;
@@ -299,7 +288,7 @@
     }
     .grid-cell {
       aspect-ratio: 1 / 1;
-      background: #1a1a26;
+      background: var(--bg-cell);
       border: 1px solid var(--line);
       display: flex;
       align-items: center;
@@ -336,7 +325,7 @@
     footer a:hover { color: var(--accent); }
   </style>
 </head>
-<body>
+<body data-theme="dark">
   <div class="app">
     <header>
       <h1>icon<span class="accent">.</span>machine</h1>
@@ -428,6 +417,7 @@
     </footer>
   </div>
 
+  <script src="theme.js"></script>
   <script src="random.js"></script>
   <script src="palette.js"></script>
   <script src="pixel-utils.js"></script>
