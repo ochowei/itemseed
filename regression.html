@@ -3,30 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <title>Icon Machine — Visual Regression</title>
+  <link rel="stylesheet" href="theme.css" />
   <style>
     body {
       font-family: ui-monospace, Menlo, monospace;
-      background: #f0ece4;
-      color: #2a2638;
+      background: var(--bg-deep);
+      color: var(--ink);
       margin: 24px;
     }
     h1 { font-size: 18px; margin: 0 0 16px; }
-    h2 { font-size: 14px; margin: 32px 0 12px; color: #c46a00; letter-spacing: 1px; }
-    .controls { margin-bottom: 16px; display: flex; gap: 8px; }
+    h2 { font-size: 14px; margin: 32px 0 12px; color: var(--accent); letter-spacing: 1px; }
+    .controls { margin-bottom: 16px; display: flex; gap: 8px; align-items: center; }
     button {
-      background: #ffffff; color: #2a2638;
-      border: 1px solid #c8c2b4; padding: 8px 14px;
+      background: var(--bg-panel); color: var(--ink);
+      border: 1px solid var(--line); padding: 8px 14px;
       cursor: pointer; font-family: inherit;
     }
-    button:hover { border-color: #c46a00; color: #c46a00; }
+    button:hover { border-color: var(--accent); color: var(--accent); }
+    select {
+      background: var(--bg-panel); color: var(--ink);
+      border: 1px solid var(--line); padding: 8px 14px;
+      font-family: inherit; cursor: pointer;
+    }
     table { border-collapse: collapse; margin-bottom: 16px; }
-    th, td { border: 1px solid #c8c2b4; padding: 6px; text-align: center; }
-    th { background: #e6dfd0; color: #c46a00; font-weight: normal; font-size: 11px; }
-    canvas { image-rendering: pixelated; image-rendering: crisp-edges; background: #e8e0d0; }
-    .seed-label { font-size: 10px; color: #6a6458; margin-top: 4px; }
+    th, td { border: 1px solid var(--line); padding: 6px; text-align: center; }
+    th { background: var(--bg-panel-2); color: var(--accent); font-weight: normal; font-size: 11px; }
+    canvas { image-rendering: pixelated; image-rendering: crisp-edges; background: var(--bg-cell); }
+    .seed-label { font-size: 10px; color: var(--ink-dim); margin-top: 4px; }
   </style>
 </head>
-<body>
+<body data-theme="dark">
   <h1>Visual Regression — Icon Machine</h1>
   <div class="controls">
     <button id="dl-png">下載拼接 PNG</button>
