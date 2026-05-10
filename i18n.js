@@ -121,6 +121,14 @@ window.I18N = (function () {
     }
   }
 
+  function setLang(lang) {
+    if (!SUPPORTED.includes(lang)) return;
+    if (lang === currentLang) return;
+    currentLang = lang;
+    try { localStorage.setItem(STORAGE_KEY, lang); } catch (_) {}
+    applyI18n();
+  }
+
   function init() {
     currentLang = resolveInitialLang();
     validateTables();
@@ -132,6 +140,7 @@ window.I18N = (function () {
     getLang: () => currentLang,
     t,
     applyI18n,
+    setLang,
     init,
   };
 })();

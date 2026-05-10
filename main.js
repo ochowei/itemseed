@@ -155,3 +155,12 @@ I18N.init();
 seedInput.value = generateRandomSeed();
 generate();
 renderBatchGrid();
+
+// =============================================================
+// i18n dropdown
+// =============================================================
+const langSelect = document.getElementById('lang-select');
+langSelect.value = I18N.getLang();
+langSelect.addEventListener('change', (e) => {
+  I18N.setLang(e.target.value);
+});
