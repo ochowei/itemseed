@@ -35,6 +35,11 @@
 <body data-theme="dark">
   <h1>Visual Regression — Icon Machine</h1>
   <div class="controls">
+    <select id="theme-select" aria-label="Theme">
+      <option value="auto">Auto</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
     <button id="dl-png">下載拼接 PNG</button>
     <button id="dl-json">下載 specs.json</button>
   </div>
@@ -48,6 +53,7 @@
   <h2>// drawSpear</h2>
   <table id="grid-spear"></table>
 
+  <script src="theme.js"></script>
   <script src="random.js"></script>
   <script src="palette.js"></script>
   <script src="pixel-utils.js"></script>
@@ -55,6 +61,16 @@
   <script src="sword.js"></script>
   <script src="spear.js"></script>
   <script>
+    // ============================================================
+    // Theme bootstrap
+    // ============================================================
+    THEME.init();
+    {
+      const themeSelect = document.getElementById('theme-select');
+      themeSelect.value = THEME.getSetting();
+      themeSelect.addEventListener('change', (e) => THEME.setTheme(e.target.value));
+    }
+
     // ============================================================
     // Hardcoded baseline seeds
     // ============================================================
