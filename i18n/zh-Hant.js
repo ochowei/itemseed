@@ -21,6 +21,11 @@ window.I18N_ZH_HANT = {
 
   'size.label': '// size',
 
+  'theme.label': '主題',
+  'theme.option.auto': '自動',
+  'theme.option.light': '亮色',
+  'theme.option.dark': '暗色',
+
   'generate.button': '▸ generate',
   'download.button': '⇩ png',
 
