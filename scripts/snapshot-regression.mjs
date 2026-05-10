@@ -4,7 +4,9 @@ import path from 'path';
 import fs from 'fs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const target = pathToFileURL(path.join(root, 'regression.html')).href;
+// Force light theme so canvas bg resolves to --bg-cell #e8e0d0
+// (matches the historical hardcoded snapshot baseline). Independent of host OS.
+const target = pathToFileURL(path.join(root, 'regression.html')).href + '?theme=light';
 
 const promote = process.argv.includes('--promote');
 const mode = promote ? 'baseline' : 'current';
