@@ -5,6 +5,7 @@
 window.I18N = (function () {
   const SUPPORTED = ['zh-Hant', 'en'];
   const DEFAULT_LANG = 'zh-Hant';
+  const STORAGE_KEY = 'iconmachine.lang';
 
   const TABLES = {
     'zh-Hant': window.I18N_ZH_HANT,
@@ -12,6 +13,44 @@ window.I18N = (function () {
   };
 
   let currentLang = DEFAULT_LANG;
+
+  function readLangFromURL() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const v = params.get('lang');
+      if (v && SUPPORTED.includes(v)) return v;
+    } catch (_) {}
+    return null;
+  }
+
+  function readLangFromStorage() {
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      if (v && SUPPORTED.includes(v)) return v;
+    } catch (_) {}
+    return null;
+  }
+
+  function readLangFromNavigator() {
+    try {
+      const nav = (navigator.language || '').toLowerCase();
+      if (nav.startsWith('zh')) return 'zh-Hant';
+      if (nav.startsWith('en')) return 'en';
+    } catch (_) {}
+    return null;
+  }
+
+  function resolveInitialLang() {
+    // URL 命中時,順手把它寫進 localStorage(讓分享連結進來後會被記住)
+    const urlLang = readLangFromURL();
+    if (urlLang) {
+      try { localStorage.setItem(STORAGE_KEY, urlLang); } catch (_) {}
+      return urlLang;
+    }
+    return readLangFromStorage()
+        || readLangFromNavigator()
+        || DEFAULT_LANG;
+  }
 
   function t(key) {
     const table = TABLES[currentLang];
@@ -51,8 +90,7 @@ window.I18N = (function () {
   }
 
   function init() {
-    // Task 5 將擴充為 resolveInitialLang chain;Task 4 暫時固定 zh-Hant
-    currentLang = DEFAULT_LANG;
+    currentLang = resolveInitialLang();
     applyI18n();
   }
 
