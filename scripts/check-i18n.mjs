@@ -55,8 +55,9 @@ async function main() {
 
   const { missingInA: missingInZh, missingInB: missingInEn } = diffKeys(zh, en);
 
-  console.log(`  ${missingInEn.length === 0 ? '✓' : '✗'} zh-Hant: ${zhCount} keys`);
-  console.log(`  ${missingInZh.length === 0 ? '✓' : '✗'} en:      ${enCount} keys`);
+  const mismatch = missingInEn.length > 0 || missingInZh.length > 0;
+  console.log(`  ${mismatch ? '✗' : '✓'} zh-Hant: ${zhCount} keys`);
+  console.log(`  ${mismatch ? '✗' : '✓'} en:      ${enCount} keys`);
 
   if (missingInEn.length === 0 && missingInZh.length === 0) {
     console.log('  ✓ Tables match');
