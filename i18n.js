@@ -52,6 +52,38 @@ window.I18N = (function () {
         || DEFAULT_LANG;
   }
 
+  function validateTables() {
+    const langs = Object.keys(TABLES);
+    if (langs.length < 2) return; // single lang 沒得比
+
+    const allKeys = new Set();
+    for (const lang of langs) {
+      const tbl = TABLES[lang];
+      if (!tbl) continue;
+      Object.keys(tbl).forEach((k) => allKeys.add(k));
+    }
+
+    const missing = {};
+    let anyMissing = false;
+    for (const lang of langs) {
+      const tbl = TABLES[lang] || {};
+      const lacks = [];
+      allKeys.forEach((k) => { if (!(k in tbl)) lacks.push(k); });
+      if (lacks.length > 0) {
+        missing[lang] = lacks;
+        anyMissing = true;
+      }
+    }
+
+    if (anyMissing) {
+      const lines = ['[i18n] table mismatch:'];
+      for (const lang of langs) {
+        lines.push(`  Missing in ${lang}: [${(missing[lang] || []).join(', ')}]`);
+      }
+      console.error(lines.join('\n'));
+    }
+  }
+
   function t(key) {
     const table = TABLES[currentLang];
     if (table && key in table) return table[key];
@@ -91,6 +123,7 @@ window.I18N = (function () {
 
   function init() {
     currentLang = resolveInitialLang();
+    validateTables();
     applyI18n();
   }
 
