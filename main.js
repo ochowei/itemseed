@@ -151,6 +151,7 @@ seedInput.addEventListener('keydown', (e) => {
 // =============================================================
 // 啟動
 // =============================================================
+I18N.init();
 seedInput.value = generateRandomSeed();
 generate();
 renderBatchGrid();
