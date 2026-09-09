@@ -15,14 +15,19 @@ cd game-asset-2026-2
 open index.html        # or just double-click in Finder
 ```
 
-Pick a type, pick a size (16 or 32), enter a seed (or click reroll), click
-Generate. Click any cell in the 24-cell batch grid to focus that seed.
+In the studio interface (`index.html`):
+- Pick a type, pick a size (16 or 32), enter a seed (or click reroll `⟳`), and click **Generate** (`▸ generate`).
+- Click **⇩ png** to download the active icon as a crisp, transparent PNG.
+- Click any cell in the 24-cell batch preview grid to focus and inspect that seed.
+- Switch theme (Auto / Light / Dark) and language (繁體中文 / English) via the header dropdowns.
 
 To browse the deterministic regression set side-by-side:
 
 ```bash
 open regression.html
 ```
+
+`regression.html` displays fixed seeds for all item types, supports downloading the composite PNG, downloading generated specs JSON, and testing under different visual themes.
 
 ## Asset types
 
@@ -35,26 +40,48 @@ open regression.html
 ## Project structure
 
 ```
-index.html        single-icon studio + 24-cell batch preview
-regression.html   16+ deterministic seeds per type, 32 / 16 side by side
-main.js           UI wiring + ITEM_TYPES registry
-random.js         SeededRandom (string seed -> deterministic stream)
-palette.js        color families + palette samplers
-pixel-utils.js    integer-aligned canvas helpers
-potion.js         drawPotion + sample / render pair (32 & 16)
-sword.js          drawSword  + sample / render pair (32 & 16)
-spear.js          drawSpear  + sample / render pair (32 & 16)
+index.html                single-icon studio + 24-cell batch preview
+regression.html           16+ deterministic seeds per type, 32 / 16 side by side
+main.js                   UI wiring + ITEM_TYPES registry
+random.js                 SeededRandom (string seed -> deterministic stream)
+palette.js                color families + palette samplers
+pixel-utils.js            integer-aligned canvas helpers
+theme.js                  theme runtime (URL param > localStorage > OS preference)
+theme.css                 CSS variables for dark and light palettes
+i18n.js                   runtime translation loader and DOM binding
+i18n/
+  zh-Hant.js              Traditional Chinese translations
+  en.js                   English translations
+potion.js                 drawPotion + sample / render pair (32 & 16)
+sword.js                  drawSword  + sample / render pair (32 & 16)
+spear.js                  drawSpear  + sample / render pair (32 & 16)
 scripts/
-  snapshot-regression.mjs   headless Chromium screenshots regression.html
-  find-seed.mjs             brute-force seed search for rare combos
+  snapshot-regression.mjs headless Chromium screenshots regression.html
+  find-seed.mjs           brute-force seed search for rare combos
+  test-theme.mjs          unit tests for theme runtime state transitions
+  check-i18n.mjs          static integrity checker for locale keys vs index.html
 snapshots/
-  baseline/                 tracked golden references
-  current/                  scratch output (gitignored)
+  baseline/               tracked golden references
+  current/                scratch output (gitignored)
+docs/                     design specs, implementation notes, and task plans
+AGENTS.md                 agent workflow rules and role definitions
+CLAUDE.md                 internal developer guidelines and pixel art rules
 ```
 
-## Visual regression workflow
+## Verification and regression workflow
 
-`regression.html` renders a fixed seed list per asset type. A small puppeteer
+### Theme and i18n checks
+
+Fast Node-based checks verify theme logic and translation completeness:
+
+```bash
+npm run check-theme               # verifies theme state transitions and storage
+npm run check-i18n                # verifies zh-Hant and en parity + index.html keys
+```
+
+### Visual regression snapshots
+
+`regression.html` renders a fixed seed list per asset type. A puppeteer
 script captures it to PNG so visual changes appear as a `git diff` on the
 baseline images.
 
@@ -82,10 +109,12 @@ node scripts/find-seed.mjs obsidian trident sp-obs- 5
    - `render<Asset>Spec32(ctx, spec)` and `render<Asset>Spec16(ctx, spec)`
    - `draw<Asset>(ctx, rng, size)` — convenience entry that samples + renders
 2. Register `draw<Asset>` in `ITEM_TYPES` in `main.js`
-3. Add the `<script src>` to `index.html` and `regression.html`
-4. In `regression.html`, add a `<asset>_SEEDS` array and a render block that
-   populates `#grid-<asset>`
-5. Run `npm run snapshot -- --promote` to capture the initial baseline
+3. Add the `<script src="<asset>.js"></script>` tag to `index.html` and `regression.html`
+4. Add an `<option>` to `#type-select` in `index.html` with `data-i18n-key="type.option.<asset>"`
+5. Add the corresponding translation key to `i18n/zh-Hant.js` and `i18n/en.js`
+6. In `regression.html`, add a `<asset>_SEEDS` array and a render block that populates `#grid-<asset>`
+7. Run `npm run check-i18n` to ensure all translation keys are present
+8. Run `npm run snapshot -- --promote` to capture the initial visual baseline
 
 ## Conventions
 
@@ -100,4 +129,5 @@ node scripts/find-seed.mjs obsidian trident sp-obs- 5
 ## Requirements
 
 - Any modern browser for `index.html` / `regression.html`
-- Node 18+ and `npm install` only if you want to run snapshot regressions
+- Node 18+ and `npm install` to run tests and snapshot regressions (`npm run check-theme`, `npm run check-i18n`, `npm run snapshot`)
+
