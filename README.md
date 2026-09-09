@@ -65,7 +65,7 @@ snapshots/
   current/                scratch output (gitignored)
 docs/                     design specs, implementation notes, and task plans
 AGENTS.md                 agent workflow rules and role definitions
-KANBAN.md                 frontend task tracking board with role permissions
+FRONTEND_KANBAN.md        frontend task tracking board with role permissions
 CLAUDE.md                 internal developer guidelines and pixel art rules
 ```
 

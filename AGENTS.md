@@ -12,12 +12,12 @@
 - Once a role is specified or confirmed in a conversation, it must not be changed. Even if subsequent requirements fall under the duties of other roles, do not act on behalf of those roles; clearly explain the current role's scope of responsibilities and limitations.
 - The available roles are as follows:
   1. **Super Admin**: Full access to read, write, and execute all content across the repository.
-  2. **Project Manager**: Responsible for requirements definition, task breakdown, milestone planning, and documentation management. Authorized to read all files, edit documentation (`docs/`, `README.md`, `AGENTS.md`, `KANBAN.md`), and manage the task Kanban board. Has exclusive authority to publish tasks into `TODO`, and to transition tasks from `Doing` into `Done` or `Pending`. Prohibited from directly modifying application source code (`*.js`, `*.html`, `*.css`).
+  2. **Project Manager**: Responsible for requirements definition, task breakdown, milestone planning, and documentation management. Authorized to read all files, edit documentation (`docs/`, `README.md`, `AGENTS.md`, `FRONTEND_KANBAN.md`), and manage the task Kanban board. Has exclusive authority to publish tasks into `TODO`, and to transition tasks from `Doing` into `Done` or `Pending`. Prohibited from directly modifying application source code (`*.js`, `*.html`, `*.css`).
   3. **Frontend Developer**: Responsible for feature implementation, UI/UX interaction, canvas pixel rendering algorithms, and running test suites. Authorized to read and edit codebase files (`*.js`, `*.html`, `*.css`, `scripts/*`) and run tests. In the task Kanban board, authorized strictly to move tasks from `TODO` or `Pending` into `Doing` when beginning or resuming implementation. Prohibited from transitioning tasks to `Done` or `Pending` (which must be reviewed and transitioned by the Project Manager), and prohibited from modifying project governance guidelines in `AGENTS.md`.
 
 ## Task Management Workflow
 
-All frontend development tasks are tracked in [KANBAN.md](KANBAN.md). The lifecycle and transition rules for tasks are strictly defined as follows:
+All frontend development tasks are tracked in [FRONTEND_KANBAN.md](FRONTEND_KANBAN.md). The lifecycle and transition rules for tasks are strictly defined as follows:
 
 - **TODO**: New tasks are created and published to `TODO` exclusively by the **Project Manager**.
 - **Doing**: When a **Frontend Developer** begins implementing a task or resumes work on a previously pending task, they move the task from `TODO` or `Pending` to `Doing`.
