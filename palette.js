@@ -131,6 +131,19 @@ function sampleSpearPalette(rng) {
   };
 }
 
+function sampleShieldPalette(rng) {
+  const { family, palette } = sampleSwordPalette(rng);
+  return {
+    family,
+    palette: {
+      outline:      palette.outline,
+      shieldMain:   palette.bladeMain,
+      shieldShadow: palette.bladeShadow,
+      shieldShine:  palette.bladeShine,
+    },
+  };
+}
+
 window.FAMILIES = FAMILIES;
 window.CORK_PALETTE = CORK_PALETTE;
 window.samplePalette = samplePalette;
@@ -140,3 +153,4 @@ window.LEATHER_PALETTE = LEATHER_PALETTE;
 window.sampleSwordPalette = sampleSwordPalette;
 window.WOOD_PALETTE = WOOD_PALETTE;
 window.sampleSpearPalette = sampleSpearPalette;
+window.sampleShieldPalette = sampleShieldPalette;

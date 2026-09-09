@@ -17,15 +17,7 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks published and prioritized by the Project Manager. Ready for Frontend Developers to pick up.
 
-### [TASK-006] Implement Shield Generator (32×32 and 16×16)
-- **Status**: TODO
-- **Created By**: Project Manager
-- **Description**: Add procedural shield icon generator following the project's pixel-art conventions.
-- **Scope**:
-  - Create `shield.js` implementing `sampleShieldSpec`, `renderShieldSpec32`, `renderShieldSpec16`, and `drawShield`.
-  - Register `shield` in `ITEM_TYPES` in `main.js`.
-  - Add `<option>` to `index.html` and register i18n keys in `i18n/zh-Hant.js` and `i18n/en.js`.
-  - Add seeds to `regression.html` and verify with `npm run check-i18n` and `npm run snapshot`.
+*(No tasks currently in TODO)*
 
 ---
 
@@ -33,7 +25,16 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks currently under active development by Frontend Developers.
 
-*(No tasks currently in progress)*
+### [TASK-006] Implement Shield Generator (32×32 and 16×16)
+- **Status**: Doing
+- **Started**: 2026-09-09
+- **Assignee**: Frontend Developer
+- **Description**: Add procedural shield icon generator following the project's pixel-art conventions.
+- **Scope**:
+  - Create `shield.js` implementing `sampleShieldSpec`, `renderShieldSpec32`, `renderShieldSpec16`, and `drawShield`.
+  - Register `shield` in `ITEM_TYPES` in `main.js`.
+  - Add `<option>` to `index.html` and register i18n keys in `i18n/zh-Hant.js` and `i18n/en.js`.
+  - Add seeds to `regression.html` and verify with `npm run check-i18n` and `npm run snapshot`.
 
 ---
 

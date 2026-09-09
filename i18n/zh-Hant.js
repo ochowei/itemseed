@@ -18,6 +18,7 @@ window.I18N_ZH_HANT = {
   'type.option.potion': '藥水 (potion)',
   'type.option.sword': '劍 (sword)',
   'type.option.spear': '長矛 (spear)',
+  'type.option.shield': '盾牌 (shield)',
 
   'size.label': '// size',
 

@@ -30,6 +30,7 @@ const ITEM_TYPES = {
   potion: drawPotion,
   sword: drawSword,
   spear: drawSpear,
+  shield: drawShield,
 };
 
 // =============================================================

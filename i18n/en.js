@@ -18,6 +18,7 @@ window.I18N_EN = {
   'type.option.potion': 'Potion',
   'type.option.sword': 'Sword',
   'type.option.spear': 'Spear',
+  'type.option.shield': 'Shield',
 
   'size.label': '// size',
 
