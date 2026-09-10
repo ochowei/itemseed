@@ -37,6 +37,7 @@ open regression.html
 | Sword  | ✓     | ✓     | `sword.js`  |
 | Spear  | ✓     | ✓     | `spear.js`  |
 | Shield | ✓     | ✓     | `shield.js` |
+| Staff  | ✓     | ✓     | `staff.js`  |
 
 ## Project structure
 
@@ -57,6 +58,7 @@ potion.js                 drawPotion + sample / render pair (32 & 16)
 sword.js                  drawSword  + sample / render pair (32 & 16)
 spear.js                  drawSpear  + sample / render pair (32 & 16)
 shield.js                 drawShield + sample / render pair (32 & 16)
+staff.js                  drawStaff  + sample / render pair (32 & 16)
 scripts/
   snapshot-regression.mjs headless Chromium screenshots regression.html
   find-seed.mjs           brute-force seed search for rare combos

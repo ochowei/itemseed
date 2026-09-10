@@ -25,18 +25,7 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks currently under active development by Frontend Developers.
 
-### [TASK-007] Implement Staff / Wand Generator (32×32 and 16×16)
-- **Status**: Doing
-- **Priority**: High
-- **Started**: 2026-09-10
-- **Assignee**: Frontend Developer
-- **Description**: Add procedural magic staff and wand generator following the project's pixel-art conventions.
-- **Scope**:
-  - Create `staff.js` implementing `sampleStaffSpec`, `renderStaffSpec32`, `renderStaffSpec16`, and `drawStaff`.
-  - Support shaft archetypes (wood, polished metal, dark bone) and head styles (crystal orb, crescent finial, spiraling gem).
-  - Register `staff` in `ITEM_TYPES` in `main.js`.
-  - Add `<script src="staff.js"></script>` and `<option>` to `index.html` and register i18n keys in `i18n/zh-Hant.js` and `i18n/en.js`.
-  - Add deterministic seeds to `regression.html` and verify with `npm run check-i18n` and `npm run snapshot`.
+*(No tasks currently in Doing)*
 
 ---
 
@@ -51,6 +40,11 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 ## ✅ Done
 
 > Completed tasks reviewed and confirmed by the Project Manager.
+
+### [TASK-007] Implement Staff / Wand Generator (32×32 and 16×16)
+- **Status**: Done
+- **Completed**: 2026-09-10
+- **Summary**: Implemented procedural magic staff generator in `staff.js` with crescent, orb, and crozier archetypes, 4 elemental crystal palettes (arcane, fire, nature, shadow), shaft grip rings, and ferrule butt caps at 32×32 and 16×16. Integrated into studio UI, regression grid, and captured golden snapshot baselines.
 
 ### [TASK-006] Implement Shield Generator (32×32 and 16×16)
 - **Status**: Done
