@@ -31,6 +31,7 @@ const ITEM_TYPES = {
   sword: drawSword,
   spear: drawSpear,
   shield: drawShield,
+  staff: drawStaff,
 };
 
 // =============================================================
