@@ -369,8 +369,133 @@
     }
   }
 
+  // =====================================================================
+  // 16×16 Native Compressed Rendering Helpers
+  // =====================================================================
+
+  function buildStaffMask16(spec) {
+    const size = 16;
+    const mask = _allocateMask(size);
+
+    // Shaft (y = 6..13, width 3 across x = 7..9)
+    for (let y = 6; y <= 13; y++) {
+      staffAddRange(mask, size, y, 7, 9, 'shaft');
+    }
+
+    // Butt / Ferrule (y = 14..15)
+    staffAddRange(mask, size, 14, 7, 9, 'metal');
+    if (spec.buttStyle === 'spike') {
+      _maskSet(mask, size, 8, 15, 'metal');
+    } else {
+      staffAddRange(mask, size, 15, 7, 9, 'metal');
+    }
+
+    // Head Archetype & Collar
+    if (spec.archetype === 'crescent') {
+      staffAddRange(mask, size, 5, 7, 9, 'metal');
+      for (let y = 2; y <= 4; y++) {
+        _maskSet(mask, size, 6, y, 'metal');
+        _maskSet(mask, size, 10, y, 'metal');
+      }
+      _maskSet(mask, size, 8, 1, 'gem');
+      for (let y = 2; y <= 4; y++) {
+        staffAddRange(mask, size, y, 7, 9, 'gem');
+      }
+
+    } else if (spec.archetype === 'orb') {
+      staffAddRange(mask, size, 5, 7, 9, 'metal');
+      _maskSet(mask, size, 8, 1, 'gem');
+      staffAddRange(mask, size, 2, 7, 9, 'gem');
+      staffAddRange(mask, size, 3, 6, 10, 'gem');
+      staffAddRange(mask, size, 4, 7, 9, 'gem');
+
+    } else if (spec.archetype === 'crozier') {
+      staffAddRange(mask, size, 5, 7, 9, 'metal');
+      _maskSet(mask, size, 6, 4, 'shaft');
+      _maskSet(mask, size, 6, 3, 'shaft');
+      _maskSet(mask, size, 6, 2, 'shaft');
+      staffAddRange(mask, size, 1, 7, 8, 'shaft');
+      _maskSet(mask, size, 7, 2, 'shaft');
+      _maskSet(mask, size, 8, 2, 'shaft');
+      _maskSet(mask, size, 9, 2, 'shaft');
+      _maskSet(mask, size, 9, 3, 'shaft');
+      _maskSet(mask, size, 9, 4, 'shaft');
+      staffAddRange(mask, size, 3, 7, 8, 'gem');
+      staffAddRange(mask, size, 4, 7, 8, 'gem');
+    }
+
+    return mask;
+  }
+
   function renderStaffSpec16(ctx, spec) {
-    // Stub to be implemented in Task 4
+    const size = 16;
+    ctx.clearRect(0, 0, size, size);
+
+    const mask = buildStaffMask16(spec);
+    const woodPal = spec.shaftPalette || _WOOD_PALETTE;
+
+    // 1. Paint base
+    _paintMaskByEnum(ctx, mask, size, {
+      shaft: woodPal.main,
+      metal: spec.metalPalette.main,
+      gem: spec.gemPalette.main,
+    });
+
+    // 2. Seams & Outlines
+    _paintInternalSeams(ctx, mask, size, spec.metalPalette.outline);
+    _applyInsideOutlinePass(ctx, mask, size, spec.metalPalette.outline);
+
+    // 3. Interior highlights and colors (only on non-boundary interior pixels)
+    // Shaft interior at x = 8
+    for (let y = 6; y <= 13; y++) {
+      ctx.fillStyle = woodPal.main;
+      ctx.fillRect(8, y, 1, 1);
+    }
+    // 1px metal accent if hasGripRings
+    if (spec.hasGripRings) {
+      ctx.fillStyle = spec.metalPalette.shine;
+      ctx.fillRect(8, 10, 1, 1);
+    }
+
+    // Butt interior
+    ctx.fillStyle = spec.metalPalette.main;
+    ctx.fillRect(8, 14, 1, 1);
+
+    // Collar interior
+    ctx.fillStyle = spec.metalPalette.main;
+    ctx.fillRect(8, 5, 1, 1);
+
+    if (spec.archetype === 'crescent') {
+      // Crystal interior facets
+      ctx.fillStyle = spec.gemPalette.shine;
+      ctx.fillRect(8, 2, 1, 1);
+      ctx.fillRect(7, 3, 1, 1);
+      ctx.fillStyle = spec.gemPalette.main;
+      ctx.fillRect(8, 3, 1, 1);
+      ctx.fillStyle = spec.gemPalette.shadow;
+      ctx.fillRect(9, 3, 1, 1);
+      ctx.fillRect(8, 4, 1, 1);
+
+    } else if (spec.archetype === 'orb') {
+      ctx.fillStyle = spec.gemPalette.shine;
+      ctx.fillRect(8, 2, 1, 1);
+      ctx.fillRect(7, 3, 1, 1);
+      ctx.fillStyle = spec.gemPalette.main;
+      ctx.fillRect(8, 3, 1, 1);
+      ctx.fillStyle = spec.gemPalette.shadow;
+      ctx.fillRect(9, 3, 1, 1);
+      ctx.fillRect(8, 4, 1, 1);
+
+    } else if (spec.archetype === 'crozier') {
+      // 2x2 gem interior
+      ctx.fillStyle = spec.gemPalette.shine;
+      ctx.fillRect(7, 3, 1, 1);
+      ctx.fillStyle = spec.gemPalette.main;
+      ctx.fillRect(8, 3, 1, 1);
+      ctx.fillRect(7, 4, 1, 1);
+      ctx.fillStyle = spec.gemPalette.shadow;
+      ctx.fillRect(8, 4, 1, 1);
+    }
   }
 
   function drawStaff(ctx, rng, size) {
