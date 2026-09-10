@@ -25,20 +25,7 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks currently under active development by Frontend Developers.
 
-### [TASK-008] Fix Staff Head and Shaft Centering Alignment (32x32)
-- **Status**: Doing
-- **Priority**: High
-- **Started**: 2026-09-10
-- **Assignee**: Frontend Developer
-- **Description**: Realign 32x32 staff shaft, grip rings, and ferrule coordinates to center on cx=16, matching head archetypes.
-- **Scope**:
-  - Update `buildStaffMask32` in `staff.js`:
-    - Shift shaft mask from `x=14..17` (width 4, center 15.5) to `x=15..17` (width 3, center 16.0).
-    - Expand grip rings and ferrule base to `x=14..18` (width 5, center 16.0) for symmetrical 1px step-outs.
-    - Symmetrize crozier collar junction to `x=14..18`.
-  - Update `paintStaffDetails32` in `staff.js` for clean highlighting and shading centered on col 16.
-  - Verify continuous outline and integer coordinates.
-  - Re-run tests and update baseline snapshots via `npm run snapshot -- --promote`.
+*(No tasks currently in Doing)*
 
 ---
 
@@ -53,6 +40,11 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 ## ✅ Done
 
 > Completed tasks reviewed and confirmed by the Project Manager.
+
+### [TASK-008] Fix Staff Head and Shaft Centering Alignment (32x32)
+- **Status**: Done
+- **Completed**: 2026-09-10
+- **Summary**: Corrected 32×32 staff shaft coordinates to `x=15..17` (width 3, centered on cx=16.0), aligning perfectly with head archetypes. Adjusted grip rings and ferrule base to `x=14..18` (width 5) for symmetrical 1px outer steps and centered spike tips. Updated baseline snapshots.
 
 ### [TASK-007] Implement Staff / Wand Generator (32×32 and 16×16)
 - **Status**: Done
