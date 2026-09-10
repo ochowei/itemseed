@@ -17,7 +17,7 @@ const gridContainer = document.getElementById('grid-container');
 // - offscreenCanvas:實際大小(16 或 32),用來真正畫圖示與輸出 PNG
 // - previewCanvas:放大顯示給使用者看的(像素感保持)
 let offscreenCanvas = document.createElement('canvas');
-let offscreenCtx = offscreenCanvas.getContext('2d');
+let offscreenCtx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
 
 const previewCtx = previewCanvas.getContext('2d');
 previewCtx.imageSmoothingEnabled = false;
@@ -35,6 +35,17 @@ const ITEM_TYPES = {
 };
 
 // =============================================================
+// 解析物品類型
+// 如果選擇 'any'，使用獨立的 PRNG (以 seed + ':type' 為種子) 抽取種類，
+// 避免消耗繪圖 PRNG 序列，確保繪圖函式永遠取得步數為 0 的初始 PRNG。
+// =============================================================
+function resolveItemType(type, seed) {
+  if (type !== 'any') return type;
+  const typeRng = new SeededRandom(`${seed}:type`);
+  return typeRng.pick(Object.keys(ITEM_TYPES));
+}
+
+// =============================================================
 // 主流程
 // =============================================================
 function generate() {
@@ -45,27 +56,21 @@ function generate() {
     seedInput.value = seed;
   }
   const size = parseInt(sizeSelect.value, 10);
-  let type = typeSelect.value;
+  const type = resolveItemType(typeSelect.value, seed);
 
-  // 2. 建立 PRNG
+  // 2. 建立繪圖 PRNG (保持在未被消耗的初始狀態)
   const rng = new SeededRandom(seed);
 
-  // 3. 如果選 any,再隨機選一個類型
-  if (type === 'any') {
-    const types = Object.keys(ITEM_TYPES);
-    type = rng.pick(types);
-  }
-
-  // 4. 設定離屏 canvas 大小並清空(透明背景)
+  // 3. 設定離屏 canvas 大小並清空(透明背景)
   offscreenCanvas.width = size;
   offscreenCanvas.height = size;
   offscreenCtx.clearRect(0, 0, size, size);
 
-  // 5. 呼叫對應的繪圖函式
+  // 4. 呼叫對應的繪圖函式
   const drawFn = ITEM_TYPES[type];
   drawFn(offscreenCtx, rng, size);
 
-  // 6. 放大顯示在 preview canvas 上
+  // 5. 放大顯示在 preview canvas 上
   renderPreview();
 }
 
@@ -92,22 +97,18 @@ function renderBatchGrid() {
   gridContainer.innerHTML = '';
   const size = parseInt(sizeSelect.value, 10);
   const baseSeed = seedInput.value.trim() || generateRandomSeed();
-  let type = typeSelect.value;
+  const selectedType = typeSelect.value;
 
   for (let i = 0; i < 24; i++) {
     const cellSeed = `${baseSeed}-${i}`;
+    const cellType = resolveItemType(selectedType, cellSeed);
     const rng = new SeededRandom(cellSeed);
-
-    let cellType = type;
-    if (cellType === 'any') {
-      cellType = rng.pick(Object.keys(ITEM_TYPES));
-    }
 
     const c = document.createElement('canvas');
     c.width = size;
     c.height = size;
     c.title = cellSeed;
-    const cx = c.getContext('2d');
+    const cx = c.getContext('2d', { willReadFrequently: true });
     ITEM_TYPES[cellType](cx, rng, size);
 
     // 包一層方便顯示
@@ -176,3 +177,11 @@ themeSelect.value = THEME.getSetting();
 themeSelect.addEventListener('change', (e) => {
   THEME.setTheme(e.target.value);
 });
+
+// =============================================================
+// 暴露給測試或除錯使用
+// =============================================================
+window.ITEM_TYPES = ITEM_TYPES;
+window.resolveItemType = resolveItemType;
+window.offscreenCanvas = offscreenCanvas;
+
