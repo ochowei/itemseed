@@ -17,16 +17,7 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks published and prioritized by the Project Manager. Ready for Frontend Developers to pick up.
 
-### [TASK-007] Implement Staff / Wand Generator (32×32 and 16×16)
-- **Status**: TODO
-- **Priority**: High
-- **Description**: Add procedural magic staff and wand generator following the project's pixel-art conventions.
-- **Scope**:
-  - Create `staff.js` implementing `sampleStaffSpec`, `renderStaffSpec32`, `renderStaffSpec16`, and `drawStaff`.
-  - Support shaft archetypes (wood, polished metal, dark bone) and head styles (crystal orb, crescent finial, spiraling gem).
-  - Register `staff` in `ITEM_TYPES` in `main.js`.
-  - Add `<script src="staff.js"></script>` and `<option>` to `index.html` and register i18n keys in `i18n/zh-Hant.js` and `i18n/en.js`.
-  - Add deterministic seeds to `regression.html` and verify with `npm run check-i18n` and `npm run snapshot`.
+*(No tasks currently in TODO)*
 
 ---
 
@@ -34,7 +25,18 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks currently under active development by Frontend Developers.
 
-*(No tasks currently in Doing)*
+### [TASK-007] Implement Staff / Wand Generator (32×32 and 16×16)
+- **Status**: Doing
+- **Priority**: High
+- **Started**: 2026-09-10
+- **Assignee**: Frontend Developer
+- **Description**: Add procedural magic staff and wand generator following the project's pixel-art conventions.
+- **Scope**:
+  - Create `staff.js` implementing `sampleStaffSpec`, `renderStaffSpec32`, `renderStaffSpec16`, and `drawStaff`.
+  - Support shaft archetypes (wood, polished metal, dark bone) and head styles (crystal orb, crescent finial, spiraling gem).
+  - Register `staff` in `ITEM_TYPES` in `main.js`.
+  - Add `<script src="staff.js"></script>` and `<option>` to `index.html` and register i18n keys in `i18n/zh-Hant.js` and `i18n/en.js`.
+  - Add deterministic seeds to `regression.html` and verify with `npm run check-i18n` and `npm run snapshot`.
 
 ---
 
