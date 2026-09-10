@@ -65,29 +65,29 @@
     const size = 32;
     const mask = _allocateMask(size);
 
-    // ── Shaft (y = 12..26, width 4 across x = 14..17) ──
+    // ── Shaft (y = 12..26, width 3 across x = 15..17, centered on cx = 16) ──
     for (let y = 12; y <= 26; y++) {
-      staffAddRange(mask, size, y, 14, 17, 'shaft');
+      staffAddRange(mask, size, y, 15, 17, 'shaft');
     }
 
     // ── Grip Rings (if present, overwrite shaft with 'metal') ──
     if (spec.hasGripRings) {
       for (const y of spec.ringYs) {
-        staffAddRange(mask, size, y, 14, 17, 'metal');
+        staffAddRange(mask, size, y, 14, 18, 'metal');
       }
     }
 
     // ── Butt / Ferrule (y = 27..30) ──
     if (spec.buttStyle === 'spike') {
-      staffAddRange(mask, size, 27, 14, 17, 'metal');
-      staffAddRange(mask, size, 28, 14, 17, 'metal');
-      staffAddRange(mask, size, 29, 15, 16, 'metal');
+      staffAddRange(mask, size, 27, 14, 18, 'metal');
+      staffAddRange(mask, size, 28, 14, 18, 'metal');
+      staffAddRange(mask, size, 29, 15, 17, 'metal');
       _maskSet(mask, size, 16, 30, 'metal');
     } else {
       // rounded
-      staffAddRange(mask, size, 27, 14, 17, 'metal');
-      staffAddRange(mask, size, 28, 14, 17, 'metal');
-      staffAddRange(mask, size, 29, 15, 16, 'metal');
+      staffAddRange(mask, size, 27, 14, 18, 'metal');
+      staffAddRange(mask, size, 28, 14, 18, 'metal');
+      staffAddRange(mask, size, 29, 15, 17, 'metal');
     }
 
     // ── Head Archetype & Collar ──
@@ -147,8 +147,8 @@
 
     } else if (spec.archetype === 'crozier') {
       // Metal collar band at junction y = 10..11
-      staffAddRange(mask, size, 11, 14, 17, 'metal');
-      staffAddRange(mask, size, 10, 14, 17, 'metal');
+      staffAddRange(mask, size, 11, 14, 18, 'metal');
+      staffAddRange(mask, size, 10, 14, 18, 'metal');
 
       // Wooden crook curving clockwise around (16, 6)
       staffAddRange(mask, size, 9, 13, 16, 'shaft');
@@ -177,14 +177,10 @@
     const size = 32;
     const woodPal = spec.shaftPalette || _WOOD_PALETTE;
 
-    // 1. Shaft shading (x = 15 wood highlight, x = 16 wood shadow)
+    // 1. Shaft shading (x = 16 is visible 1px center wood shaft)
     for (let y = 12; y <= 26; y++) {
-      if (_maskGet(mask, size, 15, y) === 'shaft') {
-        ctx.fillStyle = woodPal.highlight;
-        ctx.fillRect(15, y, 1, 1);
-      }
       if (_maskGet(mask, size, 16, y) === 'shaft') {
-        ctx.fillStyle = woodPal.shadow;
+        ctx.fillStyle = woodPal.main;
         ctx.fillRect(16, y, 1, 1);
       }
     }
@@ -192,34 +188,26 @@
     // 2. Grip Rings
     if (spec.hasGripRings) {
       for (const y of spec.ringYs) {
-        if (_maskGet(mask, size, 15, y) === 'metal') {
-          ctx.fillStyle = spec.metalPalette.shine;
-          ctx.fillRect(15, y, 1, 1);
-        }
-        if (_maskGet(mask, size, 16, y) === 'metal') {
-          ctx.fillStyle = spec.metalPalette.shadow;
-          ctx.fillRect(16, y, 1, 1);
-        }
+        ctx.fillStyle = spec.metalPalette.shine;
+        ctx.fillRect(15, y, 1, 1);
+        ctx.fillStyle = spec.metalPalette.main;
+        ctx.fillRect(16, y, 1, 1);
+        ctx.fillStyle = spec.metalPalette.shadow;
+        ctx.fillRect(17, y, 1, 1);
       }
     }
 
     // 3. Butt / Ferrule
     for (let y = 27; y <= 28; y++) {
-      if (_maskGet(mask, size, 15, y) === 'metal') {
-        ctx.fillStyle = spec.metalPalette.shine;
-        ctx.fillRect(15, y, 1, 1);
-      }
-      if (_maskGet(mask, size, 16, y) === 'metal') {
-        ctx.fillStyle = spec.metalPalette.shadow;
-        ctx.fillRect(16, y, 1, 1);
-      }
-    }
-    if (spec.buttStyle === 'spike') {
       ctx.fillStyle = spec.metalPalette.shine;
-      ctx.fillRect(15, 29, 1, 1);
+      ctx.fillRect(15, y, 1, 1);
+      ctx.fillStyle = spec.metalPalette.main;
+      ctx.fillRect(16, y, 1, 1);
       ctx.fillStyle = spec.metalPalette.shadow;
-      ctx.fillRect(16, 29, 1, 1);
+      ctx.fillRect(17, y, 1, 1);
     }
+    ctx.fillStyle = spec.metalPalette.main;
+    ctx.fillRect(16, 29, 1, 1);
 
     // 4. Archetype-specific details
     if (spec.archetype === 'crescent') {
@@ -301,10 +289,10 @@
       // Collar band
       for (let y = 10; y <= 11; y++) {
         ctx.fillStyle = spec.metalPalette.shine;
-        ctx.fillRect(14, y, 1, 1);
         ctx.fillRect(15, y, 1, 1);
-        ctx.fillStyle = spec.metalPalette.shadow;
+        ctx.fillStyle = spec.metalPalette.main;
         ctx.fillRect(16, y, 1, 1);
+        ctx.fillStyle = spec.metalPalette.shadow;
         ctx.fillRect(17, y, 1, 1);
       }
 
