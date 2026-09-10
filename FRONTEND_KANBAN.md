@@ -17,7 +17,18 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks published and prioritized by the Project Manager. Ready for Frontend Developers to pick up.
 
-*(No tasks currently in TODO)*
+### [TASK-008] Fix Staff Head and Shaft Centering Alignment (32x32)
+- **Status**: TODO
+- **Priority**: High
+- **Description**: Realign 32x32 staff shaft, grip rings, and ferrule coordinates to center on cx=16, matching head archetypes.
+- **Scope**:
+  - Update `buildStaffMask32` in `staff.js`:
+    - Shift shaft mask from `x=14..17` (width 4, center 15.5) to `x=15..17` (width 3, center 16.0).
+    - Expand grip rings and ferrule base to `x=14..18` (width 5, center 16.0) for symmetrical 1px step-outs.
+    - Symmetrize crozier collar junction to `x=14..18`.
+  - Update `paintStaffDetails32` in `staff.js` for clean highlighting and shading centered on col 16.
+  - Verify continuous outline and integer coordinates.
+  - Re-run tests and update baseline snapshots via `npm run snapshot -- --promote`.
 
 ---
 
