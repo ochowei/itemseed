@@ -131,6 +131,77 @@ function sampleSpearPalette(rng) {
   };
 }
 
+function sampleShieldPalette(rng) {
+  const { family, palette } = sampleSwordPalette(rng);
+  return {
+    family,
+    palette: {
+      outline:      palette.outline,
+      shieldMain:   palette.bladeMain,
+      shieldShadow: palette.bladeShadow,
+      shieldShine:  palette.bladeShine,
+    },
+  };
+}
+
+const ELEMENT_FAMILIES = {
+  arcane: {
+    hue: 195,
+    palette: {
+      outline: 'hsl(195, 45%, 10%)',
+      shadow: 'hsl(195, 85%, 35%)',
+      main: 'hsl(195, 80%, 55%)',
+      shine: 'hsl(185, 70%, 85%)',
+    },
+  },
+  fire: {
+    hue: 15,
+    palette: {
+      outline: 'hsl(15, 45%, 10%)',
+      shadow: 'hsl(15, 85%, 35%)',
+      main: 'hsl(15, 80%, 55%)',
+      shine: 'hsl(5, 70%, 85%)',
+    },
+  },
+  nature: {
+    hue: 140,
+    palette: {
+      outline: 'hsl(140, 45%, 10%)',
+      shadow: 'hsl(140, 85%, 32%)',
+      main: 'hsl(140, 80%, 50%)',
+      shine: 'hsl(130, 70%, 85%)',
+    },
+  },
+  shadow: {
+    hue: 275,
+    palette: {
+      outline: 'hsl(275, 45%, 10%)',
+      shadow: 'hsl(275, 85%, 35%)',
+      main: 'hsl(275, 80%, 55%)',
+      shine: 'hsl(265, 70%, 85%)',
+    },
+  },
+};
+
+const ELEMENT_FAMILY_NAMES = ['arcane', 'fire', 'nature', 'shadow'];
+
+function sampleStaffPalette(rng) {
+  const element = rng.pick(ELEMENT_FAMILY_NAMES);
+  const gemPalette = ELEMENT_FAMILIES[element].palette;
+  const { family: metalFamily, palette: metalPal } = sampleSwordPalette(rng);
+  return {
+    element,
+    gemPalette,
+    metalFamily,
+    metalPalette: {
+      outline: metalPal.outline,
+      main: metalPal.bladeMain,
+      shadow: metalPal.bladeShadow,
+      shine: metalPal.bladeShine,
+    },
+  };
+}
+
 window.FAMILIES = FAMILIES;
 window.CORK_PALETTE = CORK_PALETTE;
 window.samplePalette = samplePalette;
@@ -140,3 +211,14 @@ window.LEATHER_PALETTE = LEATHER_PALETTE;
 window.sampleSwordPalette = sampleSwordPalette;
 window.WOOD_PALETTE = WOOD_PALETTE;
 window.sampleSpearPalette = sampleSpearPalette;
+window.sampleShieldPalette = sampleShieldPalette;
+window.ELEMENT_FAMILIES = ELEMENT_FAMILIES;
+window.sampleStaffPalette = sampleStaffPalette;
+
+if (typeof globalThis !== 'undefined') {
+  globalThis.ELEMENT_FAMILIES = ELEMENT_FAMILIES;
+  globalThis.sampleStaffPalette = sampleStaffPalette;
+  if (typeof window !== 'undefined' && window.SeededRandom && !globalThis.SeededRandom) {
+    globalThis.SeededRandom = window.SeededRandom;
+  }
+}

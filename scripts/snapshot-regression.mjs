@@ -33,15 +33,19 @@ await page.waitForFunction(
     const spear = document.querySelectorAll('#grid-spear tr').length;
     const sword = document.querySelectorAll('#grid-sword tr').length;
     const potion = document.querySelectorAll('#grid-potion tr').length;
-    return spear > 5 && sword > 5 && potion > 5;
+    const shield = document.querySelectorAll('#grid-shield tr').length;
+    const staff = document.querySelectorAll('#grid-staff tr').length;
+    return spear > 5 && sword > 5 && potion > 5 && shield > 5 && staff > 5;
   },
   { timeout: 15000 }
 );
 
 const targets = [
+  { sel: '#grid-shield', file: 'shield-grid.png' },
   { sel: '#grid-spear', file: 'spear-grid.png' },
   { sel: '#grid-sword', file: 'sword-grid.png' },
   { sel: '#grid-potion', file: 'potion-grid.png' },
+  { sel: '#grid-staff', file: 'staff-grid.png' },
 ];
 
 for (const { sel, file } of targets) {
@@ -66,6 +70,22 @@ const ZOOMS = [
   { grid: 'grid-spear', seed: 'sp-obs-97',              size: 32, label: 'spear-obsidian-trident-32' },
   { grid: 'grid-spear', seed: 'sp-obs-32',              size: 32, label: 'spear-obsidian-hooked-32' },
   { grid: 'grid-spear', seed: 'sp-obs-51',              size: 32, label: 'spear-obsidian-straight-32' },
+  // shield zooms
+  { grid: 'grid-shield', seed: 'sh-arch-heater-3',       size: 32, label: 'shield-heater-32' },
+  { grid: 'grid-shield', seed: 'sh-arch-heater-3',       size: 16, label: 'shield-heater-16' },
+  { grid: 'grid-shield', seed: 'sh-arch-round-5',        size: 32, label: 'shield-round-32' },
+  { grid: 'grid-shield', seed: 'sh-arch-round-5',        size: 16, label: 'shield-round-16' },
+  { grid: 'grid-shield', seed: 'sh-arch-tower-2',        size: 32, label: 'shield-tower-32' },
+  { grid: 'grid-shield', seed: 'sh-arch-tower-2',        size: 16, label: 'shield-tower-16' },
+  { grid: 'grid-shield', seed: 'sh-obs-heater-33',       size: 32, label: 'shield-obsidian-32' },
+  // staff zooms
+  { grid: 'grid-staff', seed: 'staff-crescent-arcane-1', size: 32, label: 'staff-crescent-32' },
+  { grid: 'grid-staff', seed: 'staff-crescent-arcane-1', size: 16, label: 'staff-crescent-16' },
+  { grid: 'grid-staff', seed: 'staff-orb-fire-6',        size: 32, label: 'staff-orb-32' },
+  { grid: 'grid-staff', seed: 'staff-orb-fire-6',        size: 16, label: 'staff-orb-16' },
+  { grid: 'grid-staff', seed: 'staff-crozier-nature-11', size: 32, label: 'staff-crozier-32' },
+  { grid: 'grid-staff', seed: 'staff-crozier-nature-11', size: 16, label: 'staff-crozier-16' },
+  { grid: 'grid-staff', seed: 'staff-crescent-shadow-4', size: 32, label: 'staff-shadow-32' },
 ];
 
 const zoomResults = await page.evaluate((zooms) => {
