@@ -56,6 +56,9 @@
   <h2>// drawShield</h2>
   <table id="grid-shield"></table>
 
+  <h2>Staff regression set</h2>
+  <table class="grid" id="grid-staff"></table>
+
   <script src="theme.js"></script>
   <script src="random.js"></script>
   <script src="palette.js"></script>
@@ -119,10 +122,30 @@
       'sh-obs-heater-33', 'sh-obs-round-1', 'sh-obs-tower-31',
     ];
 
+    const STAFF_SEEDS = [
+      'staff-crescent-arcane-1',
+      'staff-crescent-fire-2',
+      'staff-crescent-nature-3',
+      'staff-crescent-shadow-4',
+      'staff-orb-arcane-5',
+      'staff-orb-fire-6',
+      'staff-orb-nature-7',
+      'staff-orb-shadow-8',
+      'staff-crozier-arcane-9',
+      'staff-crozier-fire-10',
+      'staff-crozier-nature-11',
+      'staff-crozier-shadow-12',
+      'staff-spike-13',
+      'staff-round-14',
+      'staff-rings-15',
+      'staff-norings-16',
+    ];
+
     const collectedPotion = [];
     const collectedSword = [];
     const collectedSpear = [];
     const collectedShield = [];
+    const collectedStaff = [];
 
     // ============================================================
     // Render potion grid
@@ -260,10 +283,43 @@
     }
 
     // ============================================================
-    // Download buttons (potion + sword + spear + shield combined)
+    // Render staff grid
+    // ============================================================
+    {
+      const grid = document.getElementById('grid-staff');
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th>seed</th><th>element</th><th>archetype</th><th>metal</th><th>butt</th><th>rings</th><th>32×32</th><th>16×16</th>';
+      grid.appendChild(headerRow);
+
+      for (const seed of STAFF_SEEDS) {
+        const rng = new SeededRandom(seed);
+        const spec = sampleStaffSpec(rng);
+
+        const c32 = document.createElement('canvas');
+        c32.width = 32; c32.height = 32; c32.style.width = '64px'; c32.style.height = '64px';
+        renderStaffSpec32(c32.getContext('2d'), spec);
+
+        const c16 = document.createElement('canvas');
+        c16.width = 16; c16.height = 16; c16.style.width = '64px'; c16.style.height = '64px';
+        renderStaffSpec16(c16.getContext('2d'), spec);
+
+        const ringsTag = spec.hasGripRings ? 'R' + spec.ringYs.length : '--';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${seed}</td><td>${spec.element}</td><td>${spec.archetype}</td><td>${spec.metalFamily}</td><td>${spec.buttStyle}</td><td>${ringsTag}</td>`;
+        const td32 = document.createElement('td'); td32.appendChild(c32); tr.appendChild(td32);
+        const td16 = document.createElement('td'); td16.appendChild(c16); tr.appendChild(td16);
+        grid.appendChild(tr);
+
+        collectedStaff.push({ kind: 'staff', seed, spec, c32, c16 });
+      }
+    }
+
+    // ============================================================
+    // Download buttons (potion + sword + spear + shield + staff combined)
     // ============================================================
     document.getElementById('dl-png').addEventListener('click', () => {
-      const all = [...collectedPotion, ...collectedSword, ...collectedSpear, ...collectedShield];
+      const all = [...collectedPotion, ...collectedSword, ...collectedSpear, ...collectedShield, ...collectedStaff];
       const cellW = 32, cellH = 32;
       const composite = document.createElement('canvas');
       composite.width = cellW + 4 + cellW;
@@ -290,6 +346,7 @@
         ...collectedSword.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
         ...collectedSpear.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
         ...collectedShield.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
+        ...collectedStaff.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
       ];
       const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');
