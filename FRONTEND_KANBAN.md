@@ -25,16 +25,7 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Tasks currently under active development by Frontend Developers.
 
-### [TASK-009] Fix Staff Option Label Consistency in i18n and index.html
-- **Status**: Doing
-- **Priority**: Medium
-- **Started**: 2026-09-10
-- **Assignee**: Frontend Developer
-- **Description**: Update staff option label to include `(staff)` English suffix in `i18n/zh-Hant.js` and `index.html` to match other items.
-- **Scope**:
-  - Update `i18n/zh-Hant.js`: change `'type.option.staff'` to `'法杖 (staff)'`.
-  - Update `index.html`: update fallback option text to `'法杖 (staff)'`.
-  - Verify with `npm run check-i18n` and `npm run check-theme`.
+*(No tasks currently in Doing)*
 
 ---
 
@@ -49,6 +40,11 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 ## ✅ Done
 
 > Completed tasks reviewed and confirmed by the Project Manager.
+
+### [TASK-009] Fix Staff Option Label Consistency in i18n and index.html
+- **Status**: Done
+- **Completed**: 2026-09-10
+- **Summary**: Updated staff option label in `i18n/zh-Hant.js` and `index.html` to `法杖 (staff)` to match naming format across all item types.
 
 ### [TASK-008] Fix Staff Head and Shaft Centering Alignment (32x32)
 - **Status**: Done
