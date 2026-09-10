@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-010] Fix Inconsistent Icon Rendering on Batch Preview Cell Click in "any" Type Mode
+- **Status**: Done
+- **Completed**: 2026-09-10
+- **Summary**: Decoupled item type resolution from the drawing PRNG stream using an isolated seed (`${seed}:type`), ensuring drawing functions always receive a pristine initial PRNG state (step 0). Added `{ willReadFrequently: true }` to canvas 2D contexts for consistent rendering. Added automated test suite `scripts/test-batch-preview.mjs` verifying pixel-identical matching on batch preview cell clicks across sizes and types.
+
 ### [TASK-009] Fix Staff Option Label Consistency in i18n and index.html
 - **Status**: Done
 - **Completed**: 2026-09-10
