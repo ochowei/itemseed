@@ -37,7 +37,6 @@ window.I18N_EN = {
   'batch.heading.after': 'preview',
   'batch.hint': 'Click any cell to load that seed',
 
-  'footer.skeleton': 'Icon Machine — first skeleton',
   'footer.inspired': 'Inspired by',
-  'footer.todo': 'More drawing rules to come',
+  'footer.source': 'Source on GitHub',
 };

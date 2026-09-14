@@ -37,7 +37,6 @@ window.I18N_ZH_HANT = {
   'batch.heading.after': 'preview',
   'batch.hint': '點任一格載入該種子',
 
-  'footer.skeleton': 'Icon Machine — 第一版骨架',
   'footer.inspired': 'Inspired by',
-  'footer.todo': '繪圖規則待擴充',
+  'footer.source': 'Source on GitHub',
 };

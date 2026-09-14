@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-012] Clean Up Legacy Icon Machine References in Production Code and Storage Keys
+- **Status**: Done
+- **Completed**: 2026-09-14
+- **Summary**: Migrated localStorage keys in `i18n.js` and `theme.js` to `itemseed.lang` and `itemseed.theme` with backwards compatibility fallback for `iconmachine.*`. Updated test harness in `scripts/test-theme.mjs`. Replaced skeleton and draft footer text in `index.html`, `i18n/zh-Hant.js`, and `i18n/en.js` with production credits and repository links. Aligned `regression.html` H1 heading to `ItemSeed — Visual Regression`. Verified all tests passed.
+
 ### [TASK-011] Update Public Product Branding to ItemSeed
 - **Status**: Done
 - **Completed**: 2026-09-11
