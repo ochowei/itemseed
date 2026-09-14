@@ -2,8 +2,8 @@
 // 繁體中文翻譯表。新增 key 時必須同步在 i18n/en.js 加上同 key。
 
 window.I18N_ZH_HANT = {
-  'app.title': 'Icon Machine — 程序化像素圖示產生器',
-  'app.tagline': '程序化像素圖示產生器',
+  'app.title': 'ItemSeed — RPG 像素道具產生器',
+  'app.tagline': 'RPG 像素道具產生器',
 
   'preview.label': '// preview',
   'preview.scale': 'scale: 12x',

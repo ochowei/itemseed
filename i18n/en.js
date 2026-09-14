@@ -2,8 +2,8 @@
 // English translation table. Adding a key here requires the same key in i18n/zh-Hant.js.
 
 window.I18N_EN = {
-  'app.title': 'Icon Machine — Procedural Pixel Icon Generator',
-  'app.tagline': 'Procedural pixel icon generator',
+  'app.title': 'ItemSeed — Pixel Art RPG Item Generator',
+  'app.tagline': 'Pixel Art RPG Item Generator',
 
   'preview.label': '// preview',
   'preview.scale': 'scale: 12x',
