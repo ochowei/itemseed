@@ -30,6 +30,7 @@ window.I18N_EN = {
 
   'generate.button': '▸ generate',
   'download.button': '⇩ png',
+  'studio.asset_license': 'Generated assets: CC0 1.0 (Free for commercial & personal projects)',
 
   'tip.text': 'Tip: the same seed always yields the same icon. Click any cell in the batch preview to load it.',
 

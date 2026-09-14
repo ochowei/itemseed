@@ -251,10 +251,41 @@
       padding: 10px;
     }
 
+    .action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .button-row {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 12px;
+    }
+
+    .asset-license-tag {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--ink-dim);
+      background: var(--bg-panel-2);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 6px;
+      width: fit-content;
+      max-width: 100%;
+    }
+    .asset-license-tag::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      flex-shrink: 0;
+      margin-top: 5px;
     }
 
     /* ---------- 批次預覽 ---------- */
@@ -404,9 +435,12 @@
           </div>
         </div>
 
-        <div class="button-row">
-          <button id="generate-btn" class="primary" data-i18n-key="generate.button">▸ generate</button>
-          <button id="download-btn" data-i18n-key="download.button">⇩ png</button>
+        <div class="action-group">
+          <div class="button-row">
+            <button id="generate-btn" class="primary" data-i18n-key="generate.button">▸ generate</button>
+            <button id="download-btn" data-i18n-key="download.button">⇩ png</button>
+          </div>
+          <span class="asset-license-tag" data-i18n-key="studio.asset_license">產生物件授權：CC0 1.0（商業與個人專案皆可免費使用）</span>
         </div>
 
         <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.6;" data-i18n-key="tip.text">

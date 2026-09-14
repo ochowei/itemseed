@@ -41,6 +41,12 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-015] Implement UI Asset License Disclosure and Export Metadata
+- **Status**: Done
+- **Completed**: 2026-09-14
+- **Summary**: Added an unobtrusive license badge (`Generated assets: CC0 1.0 · Free for commercial use`) wrapped in `.action-group` near the download button in `index.html`. Added localized strings in `i18n/zh-Hant.js` and `i18n/en.js`. Styled with theme CSS variables (`--bg-panel-2`, `--line`, `--ink-dim`, `--accent-2`) with responsive wrapping for 700-800px and itch.io iframe environments. Verified all checks passed (`check-i18n`, `check-theme`, `check-batch`, `snapshot`).
+
+
 ### [TASK-012] Clean Up Legacy Icon Machine References in Production Code and Storage Keys
 - **Status**: Done
 - **Completed**: 2026-09-14

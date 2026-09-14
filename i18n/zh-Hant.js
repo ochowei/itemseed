@@ -30,6 +30,7 @@ window.I18N_ZH_HANT = {
 
   'generate.button': '▸ generate',
   'download.button': '⇩ png',
+  'studio.asset_license': '產生物件授權：CC0 1.0（商業與個人專案皆可免費使用）',
 
   'tip.text': '提示:同樣的種子永遠產生同樣的圖示。下方批次預覽中,點任何一張圖示即可載入。',
 
