@@ -41,6 +41,12 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-011] Update Public Product Branding to ItemSeed
+- **Status**: Done
+- **Completed**: 2026-09-11
+- **Summary**: Transitioned public-facing titles and metadata to the official ItemSeed branding across `index.html`, `i18n/`, and `regression.html`. Updated header H1 to `Item<span class="accent">Seed</span>`, document title, and tagline with dual-language support (`ItemSeed — Pixel Art RPG Item Generator` / `ItemSeed — RPG 像素道具產生器`).
+
+
 ### [TASK-010] Fix Inconsistent Icon Rendering on Batch Preview Cell Click in "any" Type Mode
 - **Status**: Done
 - **Completed**: 2026-09-10
