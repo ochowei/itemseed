@@ -11,7 +11,8 @@
     "check-theme": "node scripts/test-theme.mjs",
     "check-i18n": "node scripts/check-i18n.mjs",
     "check-batch": "node scripts/test-batch-preview.mjs",
-    "package:itch": "node scripts/package-itch.mjs"
+    "package:itch": "node scripts/package-itch.mjs",
+    "assets:itch": "node scripts/generate-itch-assets.mjs"
   },
   "repository": {
     "type": "git",
