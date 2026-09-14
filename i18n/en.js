@@ -40,4 +40,5 @@ window.I18N_EN = {
 
   'footer.inspired': 'Inspired by',
   'footer.source': 'Source on GitHub',
+  'footer.license': 'Code: MIT · Generated assets: CC0 1.0',
 };

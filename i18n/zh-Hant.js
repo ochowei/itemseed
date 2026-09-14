@@ -40,4 +40,5 @@ window.I18N_ZH_HANT = {
 
   'footer.inspired': 'Inspired by',
   'footer.source': 'Source on GitHub',
+  'footer.license': '程式碼：MIT · 產生物件：CC0 1.0',
 };

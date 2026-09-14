@@ -41,6 +41,12 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-017] Pre-Release UI Enhancements, Export Filename Standard, and itch.io Packaging
+- **Status**: Done
+- **Completed**: 2026-09-14
+- **Summary**: Standardized download PNG filenames to `itemseed_${effectiveType}_${safeSeed}_${size}x${size}.png` with concrete item type resolution and sanitization in `main.js`. Added localized dual-license footer summary (`Engine: MIT · Assets: CC0 1.0`) in `index.html`, `i18n/zh-Hant.js`, and `i18n/en.js`. Created automated zero-dependency itch.io packager in `scripts/package-itch.mjs` registered as `npm run package:itch`, guaranteeing root-level `index.html`. Verified all tests and packaging passed.
+
+
 ### [TASK-015] Implement UI Asset License Disclosure and Export Metadata
 - **Status**: Done
 - **Completed**: 2026-09-14

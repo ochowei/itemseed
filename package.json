@@ -10,7 +10,8 @@
     "snapshot": "node scripts/snapshot-regression.mjs",
     "check-theme": "node scripts/test-theme.mjs",
     "check-i18n": "node scripts/check-i18n.mjs",
-    "check-batch": "node scripts/test-batch-preview.mjs"
+    "check-batch": "node scripts/test-batch-preview.mjs",
+    "package:itch": "node scripts/package-itch.mjs"
   },
   "repository": {
     "type": "git",

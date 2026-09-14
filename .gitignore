@@ -27,3 +27,8 @@ snapshots/diff/
 regression-baseline.png
 regression-specs.json
 icon_*.png
+itemseed_*.png
+
+# Distribution archives
+itemseed-itch.zip
+
