@@ -1,5 +1,5 @@
 {
-  "name": "game-asset-2026-2",
+  "name": "itemseed",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -14,15 +14,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ochowei/game-asset-2026-2.git"
+    "url": "git+https://github.com/ochowei/itemseed.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ochowei/game-asset-2026-2/issues"
+    "url": "https://github.com/ochowei/itemseed/issues"
   },
-  "homepage": "https://github.com/ochowei/game-asset-2026-2#readme",
+  "homepage": "https://github.com/ochowei/itemseed#readme",
   "devDependencies": {
     "puppeteer": "^24.43.0"
   }

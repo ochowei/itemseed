@@ -1,6 +1,6 @@
 # Project Management Workspace
 
-This directory (`docs/pm/`) is the dedicated workspace for the **Project Manager** of `game-asset-2026-2`.
+This directory (`docs/pm/`) is the dedicated workspace for the **Project Manager** of `itemseed`.
 
 ## Role & Responsibilities
 

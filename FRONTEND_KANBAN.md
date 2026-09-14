@@ -1,6 +1,6 @@
 # Frontend Development Kanban Board
 
-This board tracks frontend development tasks for the `game-asset-2026-2` project.
+This board tracks frontend development tasks for the `itemseed` project.
 
 ### Workflow & Permission Rules (see [AGENTS.md](AGENTS.md))
 - **Project Manager**:

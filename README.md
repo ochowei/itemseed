@@ -1,4 +1,4 @@
-# game-asset-2026-2
+# ItemSeed
 
 Seeded, deterministic pixel-art icon generator for game assets. Vanilla JS + HTML
 canvas, zero build step.
@@ -10,8 +10,8 @@ natively (no downscaling).
 ## Quick start
 
 ```bash
-git clone <repo>
-cd game-asset-2026-2
+git clone https://github.com/ochowei/itemseed.git
+cd itemseed
 open index.html        # or just double-click in Finder
 ```
 
