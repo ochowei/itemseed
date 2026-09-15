@@ -15,7 +15,7 @@ const ROOT       = resolve(__dirname, '..');
 
 function makeSandbox({ search = '', stored = null, prefersDark = false, hasMatchMedia = true }) {
   const storage = new Map();
-  if (stored !== null) storage.set('iconmachine.theme', stored);
+  if (stored !== null) storage.set('itemseed.theme', stored);
 
   const listeners = [];
   const mediaQuery = hasMatchMedia ? {
@@ -93,7 +93,7 @@ const cases = [
       THEME.init();
       assertEq(THEME.getSetting(), 'light', 'setting');
       assertEq(THEME.getEffective(), 'light', 'effective');
-      assertEq(meta.storage.get('iconmachine.theme'), 'light', 'storage updated');
+      assertEq(meta.storage.get('itemseed.theme'), 'light', 'storage updated');
     },
   },
   {
@@ -105,6 +105,16 @@ const cases = [
     },
   },
   {
+    name: 'fallback to legacy iconmachine.theme when itemseed.theme is absent',
+    setup: {},
+    run: (THEME, meta) => {
+      meta.storage.set('iconmachine.theme', 'light');
+      THEME.init();
+      assertEq(THEME.getSetting(), 'light', 'fallback setting');
+      assertEq(THEME.getEffective(), 'light', 'fallback effective');
+    },
+  },
+  {
     name: 'setTheme updates storage + body attribute',
     setup: { prefersDark: false },
     run: (THEME, meta) => {
@@ -112,7 +122,7 @@ const cases = [
       THEME.setTheme('dark');
       assertEq(THEME.getSetting(), 'dark', 'setting');
       assertEq(meta.body._attrs['data-theme'], 'dark', 'body data-theme');
-      assertEq(meta.storage.get('iconmachine.theme'), 'dark', 'storage');
+      assertEq(meta.storage.get('itemseed.theme'), 'dark', 'storage');
     },
   },
   {

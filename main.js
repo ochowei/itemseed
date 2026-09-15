@@ -83,12 +83,15 @@ function renderPreview() {
 
 function downloadPNG() {
   const seed = seedInput.value.trim() || 'icon';
+  const effectiveType = resolveItemType(typeSelect.value, seed);
+  const size = parseInt(sizeSelect.value, 10);
   const safeSeed = seed.replace(/[^a-z0-9_-]+/gi, '_');
   const link = document.createElement('a');
-  link.download = `icon_${safeSeed}.png`;
+  link.download = `itemseed_${effectiveType}_${safeSeed}_${size}x${size}.png`;
   link.href = offscreenCanvas.toDataURL('image/png');
   link.click();
 }
+
 
 // =============================================================
 // 批次預覽:一次產 24 張不同種子的圖示
@@ -184,4 +187,6 @@ themeSelect.addEventListener('change', (e) => {
 window.ITEM_TYPES = ITEM_TYPES;
 window.resolveItemType = resolveItemType;
 window.offscreenCanvas = offscreenCanvas;
+window.downloadPNG = downloadPNG;
+
 

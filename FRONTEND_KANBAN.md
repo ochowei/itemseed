@@ -1,6 +1,6 @@
 # Frontend Development Kanban Board
 
-This board tracks frontend development tasks for the `game-asset-2026-2` project.
+This board tracks frontend development tasks for the `itemseed` project.
 
 ### Workflow & Permission Rules (see [AGENTS.md](AGENTS.md))
 - **Project Manager**:
@@ -40,6 +40,34 @@ This board tracks frontend development tasks for the `game-asset-2026-2` project
 ## ✅ Done
 
 > Completed tasks reviewed and confirmed by the Project Manager.
+
+### [TASK-018] Fix Blank Item Canvases in itch.io Cover Image Generator
+- **Status**: Done
+- **Completed**: 2026-09-15
+- **Summary**: Resolved blank canvas rendering in `scripts/generate-itch-assets.mjs` caused by Chromium's `about:blank` local resource policy blocking `<script src="file://...">`. Inlined core engine scripts (`random.js`, `palette.js`, `pixel-utils.js`, `potion.js`, `sword.js`, `spear.js`, `shield.js`, `staff.js`) directly into HTML, ensured execution after DOM and font readiness, added automated canvas non-zero pixel assertions, and successfully regenerated `docs/pm/assets/cover.png` with crisp 32×32 pixel art across all 5 item types. Added aggregate `npm test` script in `package.json`. Verified all test suites passed.
+
+### [TASK-017] Pre-Release UI Enhancements, Export Filename Standard, and itch.io Packaging
+- **Status**: Done
+- **Completed**: 2026-09-14
+- **Summary**: Standardized download PNG filenames to `itemseed_${effectiveType}_${safeSeed}_${size}x${size}.png` with concrete item type resolution and sanitization in `main.js`. Added localized dual-license footer summary (`Engine: MIT · Assets: CC0 1.0`) in `index.html`, `i18n/zh-Hant.js`, and `i18n/en.js`. Created automated zero-dependency itch.io packager in `scripts/package-itch.mjs` registered as `npm run package:itch`, guaranteeing root-level `index.html`. Verified all tests and packaging passed.
+
+
+### [TASK-015] Implement UI Asset License Disclosure and Export Metadata
+- **Status**: Done
+- **Completed**: 2026-09-14
+- **Summary**: Added an unobtrusive license badge (`Generated assets: CC0 1.0 · Free for commercial use`) wrapped in `.action-group` near the download button in `index.html`. Added localized strings in `i18n/zh-Hant.js` and `i18n/en.js`. Styled with theme CSS variables (`--bg-panel-2`, `--line`, `--ink-dim`, `--accent-2`) with responsive wrapping for 700-800px and itch.io iframe environments. Verified all checks passed (`check-i18n`, `check-theme`, `check-batch`, `snapshot`).
+
+
+### [TASK-012] Clean Up Legacy Icon Machine References in Production Code and Storage Keys
+- **Status**: Done
+- **Completed**: 2026-09-14
+- **Summary**: Migrated localStorage keys in `i18n.js` and `theme.js` to `itemseed.lang` and `itemseed.theme` with backwards compatibility fallback for `iconmachine.*`. Updated test harness in `scripts/test-theme.mjs`. Replaced skeleton and draft footer text in `index.html`, `i18n/zh-Hant.js`, and `i18n/en.js` with production credits and repository links. Aligned `regression.html` H1 heading to `ItemSeed — Visual Regression`. Verified all tests passed.
+
+### [TASK-011] Update Public Product Branding to ItemSeed
+- **Status**: Done
+- **Completed**: 2026-09-11
+- **Summary**: Transitioned public-facing titles and metadata to the official ItemSeed branding across `index.html`, `i18n/`, and `regression.html`. Updated header H1 to `Item<span class="accent">Seed</span>`, document title, and tagline with dual-language support (`ItemSeed — Pixel Art RPG Item Generator` / `ItemSeed — RPG 像素道具產生器`).
+
 
 ### [TASK-010] Fix Inconsistent Icon Rendering on Batch Preview Cell Click in "any" Type Mode
 - **Status**: Done

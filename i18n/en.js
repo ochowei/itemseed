@@ -2,8 +2,8 @@
 // English translation table. Adding a key here requires the same key in i18n/zh-Hant.js.
 
 window.I18N_EN = {
-  'app.title': 'Icon Machine — Procedural Pixel Icon Generator',
-  'app.tagline': 'Procedural pixel icon generator',
+  'app.title': 'ItemSeed — Pixel Art RPG Item Generator',
+  'app.tagline': 'Pixel Art RPG Item Generator',
 
   'preview.label': '// preview',
   'preview.scale': 'scale: 12x',
@@ -30,6 +30,7 @@ window.I18N_EN = {
 
   'generate.button': '▸ generate',
   'download.button': '⇩ png',
+  'studio.asset_license': 'Generated assets: CC0 1.0 (Free for commercial & personal projects)',
 
   'tip.text': 'Tip: the same seed always yields the same icon. Click any cell in the batch preview to load it.',
 
@@ -37,7 +38,7 @@ window.I18N_EN = {
   'batch.heading.after': 'preview',
   'batch.hint': 'Click any cell to load that seed',
 
-  'footer.skeleton': 'Icon Machine — first skeleton',
   'footer.inspired': 'Inspired by',
-  'footer.todo': 'More drawing rules to come',
+  'footer.source': 'Source on GitHub',
+  'footer.license': 'Code: MIT · Generated assets: CC0 1.0',
 };

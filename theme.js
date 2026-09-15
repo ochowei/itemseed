@@ -6,7 +6,8 @@
 window.THEME = (function () {
   const SUPPORTED = ['auto', 'light', 'dark'];
   const DEFAULT_SETTING = 'auto';
-  const STORAGE_KEY = 'iconmachine.theme';
+  const STORAGE_KEY = 'itemseed.theme';
+  const FALLBACK_STORAGE_KEY = 'iconmachine.theme';
 
   let currentSetting = DEFAULT_SETTING;
   let mediaQuery = null;
@@ -22,8 +23,10 @@ window.THEME = (function () {
 
   function readSettingFromStorage() {
     try {
-      const v = localStorage.getItem(STORAGE_KEY);
-      if (v && SUPPORTED.includes(v)) return v;
+      const primary = localStorage.getItem(STORAGE_KEY);
+      if (primary && SUPPORTED.includes(primary)) return primary;
+      const fallback = localStorage.getItem(FALLBACK_STORAGE_KEY);
+      if (fallback && SUPPORTED.includes(fallback)) return fallback;
     } catch (_) {}
     return null;
   }

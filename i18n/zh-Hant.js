@@ -2,8 +2,8 @@
 // 繁體中文翻譯表。新增 key 時必須同步在 i18n/en.js 加上同 key。
 
 window.I18N_ZH_HANT = {
-  'app.title': 'Icon Machine — 程序化像素圖示產生器',
-  'app.tagline': '程序化像素圖示產生器',
+  'app.title': 'ItemSeed — RPG 像素道具產生器',
+  'app.tagline': 'RPG 像素道具產生器',
 
   'preview.label': '// preview',
   'preview.scale': 'scale: 12x',
@@ -30,6 +30,7 @@ window.I18N_ZH_HANT = {
 
   'generate.button': '▸ generate',
   'download.button': '⇩ png',
+  'studio.asset_license': '產生物件授權：CC0 1.0（商業與個人專案皆可免費使用）',
 
   'tip.text': '提示:同樣的種子永遠產生同樣的圖示。下方批次預覽中,點任何一張圖示即可載入。',
 
@@ -37,7 +38,7 @@ window.I18N_ZH_HANT = {
   'batch.heading.after': 'preview',
   'batch.hint': '點任一格載入該種子',
 
-  'footer.skeleton': 'Icon Machine — 第一版骨架',
   'footer.inspired': 'Inspired by',
-  'footer.todo': '繪圖規則待擴充',
+  'footer.source': 'Source on GitHub',
+  'footer.license': '程式碼：MIT · 產生物件：CC0 1.0',
 };

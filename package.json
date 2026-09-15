@@ -1,5 +1,5 @@
 {
-  "name": "game-asset-2026-2",
+  "name": "itemseed",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -7,22 +7,25 @@
     "doc": "docs"
   },
   "scripts": {
+    "test": "npm run check-theme && npm run check-i18n && npm run check-batch && npm run snapshot",
     "snapshot": "node scripts/snapshot-regression.mjs",
     "check-theme": "node scripts/test-theme.mjs",
     "check-i18n": "node scripts/check-i18n.mjs",
-    "check-batch": "node scripts/test-batch-preview.mjs"
+    "check-batch": "node scripts/test-batch-preview.mjs",
+    "package:itch": "node scripts/package-itch.mjs",
+    "assets:itch": "node scripts/generate-itch-assets.mjs"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ochowei/game-asset-2026-2.git"
+    "url": "git+https://github.com/ochowei/itemseed.git"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ochowei/game-asset-2026-2/issues"
+    "url": "https://github.com/ochowei/itemseed/issues"
   },
-  "homepage": "https://github.com/ochowei/game-asset-2026-2#readme",
+  "homepage": "https://github.com/ochowei/itemseed#readme",
   "devDependencies": {
     "puppeteer": "^24.43.0"
   }

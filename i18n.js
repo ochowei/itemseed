@@ -5,7 +5,8 @@
 window.I18N = (function () {
   const SUPPORTED = ['zh-Hant', 'en'];
   const DEFAULT_LANG = 'zh-Hant';
-  const STORAGE_KEY = 'iconmachine.lang';
+  const STORAGE_KEY = 'itemseed.lang';
+  const FALLBACK_STORAGE_KEY = 'iconmachine.lang';
 
   const TABLES = {
     'zh-Hant': window.I18N_ZH_HANT,
@@ -25,8 +26,10 @@ window.I18N = (function () {
 
   function readLangFromStorage() {
     try {
-      const v = localStorage.getItem(STORAGE_KEY);
-      if (v && SUPPORTED.includes(v)) return v;
+      const primary = localStorage.getItem(STORAGE_KEY);
+      if (primary && SUPPORTED.includes(primary)) return primary;
+      const fallback = localStorage.getItem(FALLBACK_STORAGE_KEY);
+      if (fallback && SUPPORTED.includes(fallback)) return fallback;
     } catch (_) {}
     return null;
   }

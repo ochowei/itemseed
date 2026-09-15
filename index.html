@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n-key="app.title">Icon Machine — 程序化像素圖示產生器</title>
+  <title data-i18n-key="app.title">ItemSeed — RPG 像素道具產生器</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -251,10 +251,41 @@
       padding: 10px;
     }
 
+    .action-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .button-row {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 12px;
+    }
+
+    .asset-license-tag {
+      font-size: 11px;
+      line-height: 1.5;
+      color: var(--ink-dim);
+      background: var(--bg-panel-2);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 6px;
+      width: fit-content;
+      max-width: 100%;
+    }
+    .asset-license-tag::before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      flex-shrink: 0;
+      margin-top: 5px;
     }
 
     /* ---------- 批次預覽 ---------- */
@@ -322,18 +353,27 @@
       text-align: center;
       border-top: 1px dashed var(--line);
       padding-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
     }
     footer a {
       color: var(--accent-2);
       text-decoration: none;
     }
     footer a:hover { color: var(--accent); }
+    .footer-license {
+      color: var(--ink-dim);
+      font-size: 11px;
+      letter-spacing: 0.3px;
+    }
   </style>
 </head>
 <body data-theme="dark">
   <div class="app">
     <header>
-      <h1>icon<span class="accent">.</span>machine</h1>
+      <h1>Item<span class="accent">Seed</span></h1>
       <div class="header-right">
         <div class="settings-row">
           <select id="lang-select" aria-label="Language">
@@ -347,7 +387,7 @@
           </select>
         </div>
         <div class="tagline">
-          <span data-i18n-key="app.tagline">程序化像素圖示產生器</span> <span class="blink"></span>
+          <span data-i18n-key="app.tagline">RPG 像素道具產生器</span> <span class="blink"></span>
         </div>
       </div>
     </header>
@@ -404,9 +444,12 @@
           </div>
         </div>
 
-        <div class="button-row">
-          <button id="generate-btn" class="primary" data-i18n-key="generate.button">▸ generate</button>
-          <button id="download-btn" data-i18n-key="download.button">⇩ png</button>
+        <div class="action-group">
+          <div class="button-row">
+            <button id="generate-btn" class="primary" data-i18n-key="generate.button">▸ generate</button>
+            <button id="download-btn" data-i18n-key="download.button">⇩ png</button>
+          </div>
+          <span class="asset-license-tag" data-i18n-key="studio.asset_license">產生物件授權：CC0 1.0（商業與個人專案皆可免費使用）</span>
         </div>
 
         <div style="font-size: 11px; color: var(--ink-dim); line-height: 1.6;" data-i18n-key="tip.text">
@@ -425,9 +468,11 @@
     </section>
 
     <footer>
-      <span data-i18n-key="footer.skeleton">Icon Machine — 第一版骨架</span>  ·  <span data-i18n-key="footer.inspired">Inspired by</span>
-      <a href="https://bmaczero.itch.io/icon-machine" target="_blank" rel="noopener">Brian MacIntosh</a>
-      ·  <span data-i18n-key="footer.todo">繪圖規則待擴充</span>
+      <div>
+        <span>ItemSeed</span>  ·  <span data-i18n-key="footer.inspired">Inspired by</span>
+        <a href="https://bmaczero.itch.io/icon-machine" target="_blank" rel="noopener">Brian MacIntosh's Icon Machine</a>  ·  <a href="https://github.com/ochowei/itemseed" target="_blank" rel="noopener" data-i18n-key="footer.source">Source on GitHub</a>
+      </div>
+      <div class="footer-license" data-i18n-key="footer.license">程式碼：MIT · 產生物件：CC0 1.0</div>
     </footer>
   </div>
 
