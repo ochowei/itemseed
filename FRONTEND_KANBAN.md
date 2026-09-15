@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-018] Fix Blank Item Canvases in itch.io Cover Image Generator
+- **Status**: Done
+- **Completed**: 2026-09-15
+- **Summary**: Resolved blank canvas rendering in `scripts/generate-itch-assets.mjs` caused by Chromium's `about:blank` local resource policy blocking `<script src="file://...">`. Inlined core engine scripts (`random.js`, `palette.js`, `pixel-utils.js`, `potion.js`, `sword.js`, `spear.js`, `shield.js`, `staff.js`) directly into HTML, ensured execution after DOM and font readiness, added automated canvas non-zero pixel assertions, and successfully regenerated `docs/pm/assets/cover.png` with crisp 32×32 pixel art across all 5 item types. Added aggregate `npm test` script in `package.json`. Verified all test suites passed.
+
 ### [TASK-017] Pre-Release UI Enhancements, Export Filename Standard, and itch.io Packaging
 - **Status**: Done
 - **Completed**: 2026-09-14

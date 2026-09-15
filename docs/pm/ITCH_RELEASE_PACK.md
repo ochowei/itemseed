@@ -24,6 +24,7 @@ npm run assets:itch
 | **Screenshot 1** | `docs/pm/assets/screenshot_01_studio.png` | Desktop studio interface in action (`1280 × 800 px`). |
 | **Screenshot 2** | `docs/pm/assets/screenshot_02_batch.png` | 24-cell batch preview exploration (`1280 × 800 px`). |
 | **Screenshot 3** | `docs/pm/assets/screenshot_03_dual_resolution.png` | Native 32×32 vs 16×16 pixel art comparison (`1280 × 800 px`). |
+| **Store Description (Rich)** | `docs/pm/store-description.html` | Formatted preview helper for copy-pasting directly into itch.io rich text editor. |
 
 ---
 
@@ -57,7 +58,18 @@ Under **Embed options**:
 
 ## 3. Store Description Copy (Ready to Copy-Paste)
 
-Copy the markdown block below directly into the itch.io description editor:
+itch.io's project description field uses a **Rich Text (WYSIWYG) Editor** by default, rather than raw Markdown. Choose whichever workflow matches your itch.io account configuration:
+
+### Method A (Recommended for Default itch.io Editor): Rich Formatted Copy
+1. Open [docs/pm/store-description.html](store-description.html) in your web browser.
+2. Select and copy all content inside the white box (`Cmd+A` / `Cmd+C`).
+3. Paste (`Cmd+V`) directly into the itch.io description editor.  
+   *All headings, bold typography, bullet lists, and links will automatically paste with clean, native formatting.*
+
+---
+
+### Method B (For itch.io Markdown Mode):
+> **Note**: To use raw Markdown on itch.io, go to **Account Settings** &rarr; **Content** &rarr; enable **"Prefer Markdown input where available"**. Note that itch.io's Markdown processor does not support Markdown pipe tables (`|...|`), so the licensing section below is pre-formatted as clean nested lists:
 
 ```markdown
 # ItemSeed — Pixel Art RPG Item Generator
@@ -91,10 +103,10 @@ Generate infinite weapons, gear, and magical artifacts without external dependen
 
 ### 📜 Clear, Developer-Friendly Licensing
 
-| Component | License | What It Means For You |
-| :--- | :--- | :--- |
-| **Generated Assets** (PNG & JSON) | **CC0 1.0 Universal** (Public Domain) | **Free for commercial games**, personal projects, game jams, and modifications. No royalties, no attribution required. |
-| **Generator Engine** (Source Code) | **MIT License** | Fully open source. Free to inspect, study, fork, or build tools around. |
+- **Generated Assets (PNG & JSON) — CC0 1.0 Universal (Public Domain)**  
+  **Free for commercial games**, personal projects, game jams, and modifications. No royalties, no attribution required.
+- **Generator Engine (Source Code) — MIT License**  
+  Fully open source. Free to inspect, study, fork, or build tools around.
 
 ---
 

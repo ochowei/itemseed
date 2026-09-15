@@ -31,6 +31,21 @@ try {
   console.log('Generating cover.png (1260x1000)...');
   await page.setViewport({ width: 1260, height: 1000, deviceScaleFactor: 1 });
 
+  // Core generator scripts to inline (bypasses Chromium local resource restrictions on about:blank)
+  const scriptFiles = [
+    'random.js',
+    'palette.js',
+    'pixel-utils.js',
+    'potion.js',
+    'sword.js',
+    'spear.js',
+    'shield.js',
+    'staff.js'
+  ];
+  const inlinedScripts = scriptFiles
+    .map(file => `<script>\n${fs.readFileSync(path.join(root, file), 'utf8')}\n</script>`)
+    .join('\n');
+
   const coverHtml = `
   <!DOCTYPE html>
   <html>
@@ -230,18 +245,12 @@ try {
       <div class="footer-item"><span class="dot"></span> <span>Inspired by <span class="footer-highlight">Brian MacIntosh's Icon Machine</span></span></div>
     </div>
 
-    <script src="${pathToFileURL(path.join(root, 'random.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'palette.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'pixel-utils.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'potion.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'sword.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'spear.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'shield.js')).href}"></script>
-    <script src="${pathToFileURL(path.join(root, 'staff.js')).href}"></script>
+    ${inlinedScripts}
     <script>
-      window.onload = () => {
+      function renderAll() {
         const render = (id, fn, seed) => {
           const c = document.getElementById(id);
+          if (!c) return;
           const ctx = c.getContext('2d', { willReadFrequently: true });
           const rng = new SeededRandom(seed);
           fn(ctx, rng, 32);
@@ -251,16 +260,54 @@ try {
         render('c-spear', drawSpear, 'obsidian-trident-9');
         render('c-shield', drawShield, 'aegis-tower-16');
         render('c-staff', drawStaff, 'arcane-crescent-88');
-      };
+      }
+      renderAll();
     </script>
   </body>
   </html>
   `;
 
-  await page.setContent(coverHtml);
+  page.on('console', msg => {
+    if (msg.type() === 'error') console.error('[Page Console Error]:', msg.text());
+  });
+  page.on('pageerror', err => {
+    console.error('[Page Error]:', err);
+  });
+
+  await page.setContent(coverHtml, { waitUntil: 'load' });
   await page.waitForSelector('#c-staff');
-  // Wait a moment for canvas draw to complete
-  await new Promise(r => setTimeout(r, 600));
+
+  // Ensure fonts and rendering are fully settled
+  await page.evaluate(async () => {
+    if (document.fonts) {
+      await document.fonts.ready;
+    }
+    renderAll();
+  });
+  await new Promise(r => setTimeout(r, 400));
+
+  // Verify all 5 showcase canvases have pixel art rendered
+  const renderVerification = await page.evaluate(() => {
+    const ids = ['c-potion', 'c-sword', 'c-spear', 'c-shield', 'c-staff'];
+    return ids.map(id => {
+      const c = document.getElementById(id);
+      if (!c) return { id, count: 0, error: 'element not found' };
+      const ctx = c.getContext('2d');
+      const imgData = ctx.getImageData(0, 0, 32, 32).data;
+      let nonZero = 0;
+      for (let i = 3; i < imgData.length; i += 4) {
+        if (imgData[i] > 0) nonZero++;
+      }
+      return { id, count: nonZero };
+    });
+  });
+
+  for (const item of renderVerification) {
+    if (item.count === 0) {
+      throw new Error(`Item canvas ${item.id} has 0 rendered pixels!`);
+    }
+  }
+  console.log(`✓ All 5 item canvases verified rendered: ${renderVerification.map(v => `${v.id}=${v.count}px`).join(', ')}`);
 
   const coverPath = path.join(outDir, 'cover.png');
   await page.screenshot({ path: coverPath, type: 'png' });
