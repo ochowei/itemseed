@@ -1,10 +1,18 @@
-# Introducing ItemSeed: Free Procedural Pixel Art RPG Item Generator (CC0)
+# Introducing ItemSeed v1.0.1: Free Procedural Pixel Art RPG Item Generator (CC0)
 
-We are thrilled to announce the official release of **ItemSeed** on itch.io!
+We are thrilled to announce the official release of **ItemSeed v1.0.1** on itch.io!
 
 If you are an indie game developer, game jammer, or RPG enthusiast, you know the struggle: you need dozens of crisp, coherent fantasy item icons for an inventory or loot system, but commissioning or hand-crafting individual 16×16 or 32×32 sprites takes hours of painstaking pixel work.
 
 **ItemSeed** was created to solve exactly this problem. It is a lightweight, zero-dependency procedural pixel-art generator running directly in your web browser.
+
+---
+
+## 🌟 What's New in v1.0.1?
+
+- 🇯🇵 **Full Japanese Localization (`ja`)**: We've expanded ItemSeed to support Japanese alongside English and Traditional Chinese (`zh-Hant`), making it directly accessible to JRPG and indie game creators in Japan.
+- ☀️ **Clean Light Theme by Default**: The studio interface now defaults to a crisp, paper-like Light theme out of the box (while seamlessly preserving Dark and Auto options in your local preferences).
+- 🏷️ **Header Version Badge**: A dedicated terminal-styled version badge (`v1.0.1`) is now visible directly in the studio header next to the main title.
 
 ---
 
