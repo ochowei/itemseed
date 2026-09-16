@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-024] Update itch.io Cover and Screenshots to Light Theme
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Updated itch.io promotional visual assets generator in `scripts/generate-itch-assets.mjs` and refreshed all assets in `docs/pm/assets/` (`cover.png`, `screenshot_01_studio.png`, `screenshot_02_batch.png`, `screenshot_03_dual_resolution.png`) to align with the default Light theme palette (`#f0ece4` parchment background, white item cards, crisp typography, and light-themed studio/regression viewports). Verified non-zero pixel art rendering across all 5 item archetypes and confirmed all automated tests pass.
+
 ### [TASK-023] Bump Version to v1.0.1 across package.json, index.html, and Release Artifacts
 - **Status**: Done
 - **Completed**: 2026-09-16

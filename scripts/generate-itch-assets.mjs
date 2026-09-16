@@ -57,14 +57,14 @@ try {
       body {
         width: 1260px;
         height: 1000px;
-        background-color: #12131a;
+        background-color: #f0ece4;
         background-image:
-          radial-gradient(ellipse at 50% 30%, rgba(229, 192, 123, 0.08) 0%, transparent 70%),
-          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+          radial-gradient(ellipse at 50% 30%, rgba(196, 106, 0, 0.06) 0%, transparent 70%),
+          linear-gradient(rgba(42, 38, 56, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(42, 38, 56, 0.05) 1px, transparent 1px);
         background-size: 100% 100%, 32px 32px, 32px 32px;
         font-family: 'JetBrains Mono', monospace;
-        color: #e6edf3;
+        color: #2a2638;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -81,13 +81,14 @@ try {
         letter-spacing: -1px;
         line-height: 1;
         margin-bottom: 14px;
+        color: #2a2638;
       }
       .brand-title .accent {
-        color: #e5c07b;
+        color: #c46a00;
       }
       .tagline {
         font-size: 22px;
-        color: #8b949e;
+        color: #6a6458;
         letter-spacing: 0.5px;
       }
       .badge-row {
@@ -98,23 +99,23 @@ try {
       }
       .badge {
         padding: 5px 14px;
-        background: rgba(229, 192, 123, 0.12);
-        border: 1px solid rgba(229, 192, 123, 0.35);
+        background: rgba(196, 106, 0, 0.1);
+        border: 1px solid rgba(196, 106, 0, 0.35);
         border-radius: 4px;
-        color: #e5c07b;
+        color: #c46a00;
         font-size: 13px;
         font-weight: 700;
         letter-spacing: 0.5px;
       }
       .badge.green {
-        background: rgba(152, 195, 121, 0.12);
-        border-color: rgba(152, 195, 121, 0.35);
-        color: #98c379;
+        background: rgba(46, 125, 50, 0.1);
+        border-color: rgba(46, 125, 50, 0.35);
+        color: #2e7d32;
       }
       .badge.cyan {
-        background: rgba(86, 182, 194, 0.12);
-        border-color: rgba(86, 182, 194, 0.35);
-        color: #56b6c2;
+        background: rgba(42, 138, 133, 0.1);
+        border-color: rgba(42, 138, 133, 0.35);
+        color: #2a8a85;
       }
 
       .items-container {
@@ -126,25 +127,25 @@ try {
         margin: 20px 0;
       }
       .item-card {
-        background: #181a24;
-        border: 2px solid #282c3e;
+        background: #ffffff;
+        border: 2px solid #c8c2b4;
         border-radius: 12px;
         padding: 16px 14px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
       }
       .item-card.featured {
-        border-color: rgba(229, 192, 123, 0.5);
+        border-color: #c46a00;
         transform: scale(1.05);
-        box-shadow: 0 16px 40px rgba(229, 192, 123, 0.15);
+        box-shadow: 0 14px 36px rgba(196, 106, 0, 0.18);
       }
       .canvas-box {
         width: 176px;
         height: 176px;
-        background: #0d0e14;
-        border: 1px solid #212638;
+        background: #e8e0d0;
+        border: 1px solid #c8c2b4;
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -161,26 +162,27 @@ try {
         margin-top: 14px;
         font-size: 15px;
         font-weight: 700;
-        color: #e6edf3;
+        color: #2a2638;
         text-transform: capitalize;
       }
       .item-seed {
         margin-top: 4px;
         font-size: 11px;
-        color: #6e7681;
+        color: #6a6458;
       }
 
       .footer {
         width: 100%;
-        background: #181a24;
-        border: 1px solid #282c3e;
+        background: #ffffff;
+        border: 1px solid #c8c2b4;
         border-radius: 10px;
         padding: 18px 24px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 14px;
-        color: #8b949e;
+        color: #6a6458;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
       }
       .footer-item {
         display: flex;
@@ -191,10 +193,10 @@ try {
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #98c379;
+        background: #2a8a85;
       }
       .footer-highlight {
-        color: #e6edf3;
+        color: #2a2638;
         font-weight: 700;
       }
     </style>
@@ -318,7 +320,7 @@ try {
   // -------------------------------------------------------------
   console.log('Generating screenshot_01_studio.png (1280x800)...');
   await page.setViewport({ width: 1280, height: 800, deviceScaleFactor: 1 });
-  const indexUrl = pathToFileURL(path.join(root, 'index.html')).href + '?theme=dark&lang=en';
+  const indexUrl = pathToFileURL(path.join(root, 'index.html')).href + '?theme=light&lang=en';
   await page.goto(indexUrl, { waitUntil: 'networkidle0' });
 
   // Set nice custom seed
@@ -355,7 +357,7 @@ try {
   // 4. Screenshot 3: Dual Resolution Comparison (1280x800)
   // -------------------------------------------------------------
   console.log('Generating screenshot_03_dual_resolution.png (1280x800)...');
-  const regUrl = pathToFileURL(path.join(root, 'regression.html')).href + '?theme=dark';
+  const regUrl = pathToFileURL(path.join(root, 'regression.html')).href + '?theme=light';
   await page.goto(regUrl, { waitUntil: 'networkidle0' });
   await new Promise(r => setTimeout(r, 500));
 

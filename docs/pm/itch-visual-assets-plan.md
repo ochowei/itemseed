@@ -16,7 +16,7 @@ Establish the visual presentation plan for ItemSeed's itch.io release, addressin
 
 ### 3.1 Asset 1: itch.io Cover Image (`cover.png`)
 - **Dimensions**: 630×500 px (standard) and 1260×1000 px (@2x Retina recommendation).
-- **Background**: Deep terminal charcoal (`#16161d`) with subtle pixel-grid accent lines.
+- **Background**: Bright retro parchment (`#f0ece4`) with subtle pixel-grid accent lines.
 - **Header**:
   - Main Title: `ItemSeed` with golden accent.
   - Subtitle: `Pixel Art RPG Item Generator`
@@ -32,7 +32,7 @@ Establish the visual presentation plan for ItemSeed's itch.io release, addressin
 
 ### 3.2 Asset 2: Studio UI In Action (`screenshot_01_studio.png`)
 - **Dimensions**: 1280×800 px.
-- **Subject**: Full desktop studio interface in Dark Theme.
+- **Subject**: Full desktop studio interface in Light Theme.
 - **Focus**:
   - 12× scaled active preview of an iconic item.
   - Control panel with seed input, type selector, size switch, and action buttons.
