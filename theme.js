@@ -5,7 +5,7 @@
 
 window.THEME = (function () {
   const SUPPORTED = ['auto', 'light', 'dark'];
-  const DEFAULT_SETTING = 'auto';
+  const DEFAULT_SETTING = 'light';
   const STORAGE_KEY = 'itemseed.theme';
   const FALLBACK_STORAGE_KEY = 'iconmachine.theme';
 
@@ -44,7 +44,7 @@ window.THEME = (function () {
     if (setting === 'light' || setting === 'dark') return setting;
     if (mediaQuery && mediaQuery.matches) return 'dark';
     if (mediaQuery) return 'light';
-    return 'dark'; // matchMedia unsupported → safe fallback
+    return 'light'; // matchMedia unsupported → safe fallback
   }
 
   function applyTheme() {

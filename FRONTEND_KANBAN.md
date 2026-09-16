@@ -41,6 +41,26 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-024] Update itch.io Cover and Screenshots to Light Theme
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Updated itch.io promotional visual assets generator in `scripts/generate-itch-assets.mjs` and refreshed all assets in `docs/pm/assets/` (`cover.png`, `screenshot_01_studio.png`, `screenshot_02_batch.png`, `screenshot_03_dual_resolution.png`) to align with the default Light theme palette (`#f0ece4` parchment background, white item cards, crisp typography, and light-themed studio/regression viewports). Verified non-zero pixel art rendering across all 5 item archetypes and confirmed all automated tests pass.
+
+### [TASK-023] Bump Version to v1.0.1 across package.json, index.html, and Release Artifacts
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Bumped application version from `1.0.0` to `1.0.1` following the integration of Japanese i18n support and default light theme. Updated `package.json` and `package-lock.json` to version `1.0.1`. Updated header version badge to `v1.0.1` in `index.html`. Re-packaged itch.io release bundle to `itemseed-v1.0.1.zip` via `npm run package:itch`. Synchronized version documentation in `docs/pm/ITCH_RELEASE_PACK.md`. Verified all tests passed.
+
+### [TASK-022] Set Default Interface Theme to Light
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Set default application theme to `light` across ItemSeed studio and regression interfaces. Updated `theme.js` runtime `DEFAULT_SETTING = 'light'` and safe fallback to `'light'`. Updated initial HTML attribute to `<body data-theme="light">` in both `index.html` and `regression.html` to prevent dark flash of unstyled content (FOUC). Expanded `scripts/test-theme.mjs` test suite to 16 comprehensive assertions verifying default light resolution while preserving explicit `auto` and `dark` selection and OS mediaQuery live syncing. All tests passed.
+
+### [TASK-021] Add Japanese (ja) Internationalization Support
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Added Japanese (`ja`) internationalization support to ItemSeed. Created `i18n/ja.js` with complete 30-key dictionary matching `en` and `zh-Hant`. Registered `ja` in `i18n.js` with browser locale detection (`navigator.language.startsWith('ja')`). Added `<option value="ja">日本語</option>` and script inclusion in `index.html`. Enhanced static validator `scripts/check-i18n.mjs` to enforce three-way key parity. Updated `scripts/package-itch.mjs` deployment files list. All tests passed.
+
 ### [TASK-020] Include Dynamic Version in Packaging Output Filename
 - **Status**: Done
 - **Completed**: 2026-09-16

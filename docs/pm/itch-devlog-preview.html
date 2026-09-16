@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ItemSeed — itch.io Devlogs Formatted Preview (v1.0.0 &amp; v1.0.1)</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 24px;
+      line-height: 1.65;
+      color: #24292f;
+      background: #f6f8fa;
+    }
+    .strategy-banner {
+      background: #ddf4ff;
+      border: 1px solid #54aeff;
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 32px;
+    }
+    .strategy-banner h2 {
+      margin-top: 0;
+      color: #0969da;
+      font-size: 18px;
+    }
+    .strategy-banner p {
+      margin: 6px 0;
+      font-size: 14px;
+      color: #1f2328;
+    }
+    .post-card {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      padding: 32px 36px;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+    .post-header {
+      border-bottom: 2px solid #eaecef;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .post-tag {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #0969da;
+      color: #ffffff;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .post-tag.update {
+      background: #1a7f37;
+    }
+    .post-meta {
+      font-size: 14px;
+      color: #57609a;
+      background: #f6f8fa;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    h1 {
+      font-size: 24px;
+      margin: 4px 0 0 0;
+      color: #24292f;
+    }
+    h2 {
+      font-size: 19px;
+      margin-top: 24px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 6px;
+    }
+    h3 {
+      font-size: 16px;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid #eaecef;
+      margin: 20px 0;
+    }
+    ul, ol {
+      padding-left: 24px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+    code {
+      background: rgba(175, 184, 193, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 85%;
+    }
+    a {
+      color: #0969da;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="strategy-banner">
+    <h2>🎯 itch.io Devlog Publishing Workflow</h2>
+    <p><strong>Step 1:</strong> Publish <strong>Post #1 (v1.0.0 Launch)</strong> first to establish the initial project release announcement.</p>
+    <p><strong>Step 2:</strong> Publish <strong>Post #2 (v1.0.1 Update)</strong> to showcase the latest Japanese translation and default light theme, capturing a second round of storefront discovery exposure!</p>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- POST 1: v1.0.0 LAUNCH -->
+  <!-- ======================================================== -->
+  <div class="post-card">
+    <div class="post-header">
+      <span class="post-tag">Post 1 of 2 · Official Launch</span>
+      <h1>ItemSeed is Live! Free Procedural Pixel Art RPG Item Generator (v1.0.0 Launch)</h1>
+      <div class="post-meta">
+        <strong>Devlog Title:</strong> <code>ItemSeed is Live! Free Procedural Pixel Art RPG Item Generator (v1.0.0 Launch)</code><br>
+        <strong>Type of post:</strong> <code>Release announcement</code>
+      </div>
+    </div>
+
+    <div class="content-body">
+      <p>We are thrilled to announce the official release of <strong>ItemSeed v1.0.0</strong> on itch.io!</p>
+
+      <p>If you are an indie game developer, game jammer, or RPG enthusiast, you know the struggle: you need dozens of crisp, coherent fantasy item icons for an inventory or loot system, but commissioning or hand-crafting individual 16×16 or 32×32 sprites takes hours of painstaking pixel work.</p>
+
+      <p><strong>ItemSeed</strong> was created to solve exactly this problem. It is a lightweight, zero-dependency procedural pixel-art generator running directly in your web browser.</p>
+
+      <hr>
+
+      <h2>🎨 Inspired by a Classic: The Icon Machine Legacy</h2>
+      <p>ItemSeed is directly inspired by Brian MacIntosh's pioneering <a href="https://bmaczero.itch.io/icon-machine" target="_blank" rel="noopener">Icon Machine</a>, a beloved tool that served game makers for years. ItemSeed is an independent, clean-room modern reimplementation built on pure HTML5 Canvas and vanilla JavaScript, crafted to bring deterministic procedural generation to modern web browsers with zero installation and instant zero-build execution.</p>
+
+      <hr>
+
+      <h2>⚔️ What Makes ItemSeed Special?</h2>
+
+      <h3>1. Dual Handcrafted Resolutions (32×32 &amp; 16×16)</h3>
+      <p>Most procedural tools generate high-resolution images and naively downscale them, resulting in blurry, sub-pixel artifacts that ruin retro aesthetics. In ItemSeed, 16×16 sprites are authored with <strong>feature-folding logic</strong>: outlines adapt, highlights simplify, and silhouettes remain instantly readable at true retro resolutions.</p>
+
+      <h3>2. Deterministic Generation ("Same Seed = Same Item")</h3>
+      <p>Every item is driven by a seed string (e.g. <code>dragon-blade-42</code> or <code>sacred-flask-7</code>) powered by a Mulberry32 pseudorandom generator. A simple 20-character string reproduces the exact same sprite every single time. This means you can store entire loot tables directly in your game's source code or save files as text strings rather than bloated sprite sheets!</p>
+
+      <h3>3. Five Diverse Item Archetypes</h3>
+      <ul>
+        <li><strong>Potions</strong>: Volumetric flasks, bottles, fluid level variations, bubbles, and cork/wax/cloth stoppers.</li>
+        <li><strong>Swords</strong>: Slanted broadswords, rapiers, and curved sabers with dynamic blade highlights, crossguards, and pommels.</li>
+        <li><strong>Spears</strong>: Symmetrical tridents, harpoons, and straight lances with wrapped shafts and ferrule butt caps.</li>
+        <li><strong>Shields</strong>: Heater shields, studded tower shields, and round bucklers with ornate bosses and rim rivets.</li>
+        <li><strong>Staffs</strong>: Crescent-head, arcane-orb, and shepherd-crozier staves with embedded 4-element crystal matrices.</li>
+      </ul>
+
+      <h3>4. 24-Cell Batch Explorer</h3>
+      <p>Need inspiration? Switch to the 24-cell Batch Preview in "Any" mode to inspect dozens of procedural combinations across colors, archetypes, and materials at once. Click any tile to load it into the main canvas for fine-tuning or instant export.</p>
+
+      <h3>5. Transparent PNG Export</h3>
+      <p>Export single icons with a single click (<code>⇩ png</code>). Filenames are automatically standardized (e.g., <code>itemseed_sword_dragon-blade-42_32x32.png</code>), ready to drag directly into Godot, Unity, GameMaker, or Aseprite.</p>
+
+      <hr>
+
+      <h2>📜 100% Free for Commercial Games (CC0 1.0 Universal)</h2>
+      <p>We believe game creators should never have to worry about legal friction or restrictive royalty clauses:</p>
+      <ul>
+        <li><strong>Generated Artwork</strong>: Dedicated to the public domain under <strong>CC0 1.0 Universal</strong>. You are free to use them in commercial games on Steam, itch.io, or mobile with <strong>no royalties and no attribution required</strong>.</li>
+        <li><strong>Generator Engine</strong>: Fully open source under the <strong>MIT License</strong> on <a href="https://github.com/ochowei/itemseed" target="_blank" rel="noopener">GitHub (ochowei/itemseed)</a>.</li>
+      </ul>
+
+      <hr>
+
+      <h2>🚀 What's Coming Next? (We Want Your Feedback!)</h2>
+      <p>This is just the beginning of ItemSeed. We want to hear from you:</p>
+      <ul>
+        <li>What item categories do you need most for your games? (Bows, Helms, Rings &amp; Amulets, Spellbooks, or Axes?)</li>
+        <li>Would you find an automated Sprite Sheet / Atlas exporter helpful?</li>
+        <li>What color palettes or themes would fit your game best?</li>
+      </ul>
+
+      <p>Drop a comment below with your feedback, share seeds of cool items you discovered, or check out the code on <a href="https://github.com/ochowei/itemseed" target="_blank" rel="noopener">GitHub (ochowei/itemseed)</a>.</p>
+
+      <p>Happy game making!</p>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- POST 2: v1.0.1 UPDATE -->
+  <!-- ======================================================== -->
+  <div class="post-card">
+    <div class="post-header">
+      <span class="post-tag update">Post 2 of 2 · First Update</span>
+      <h1>Update v1.0.1: Japanese Localization (日本語) &amp; Default Light Theme</h1>
+      <div class="post-meta">
+        <strong>Devlog Title:</strong> <code>Update v1.0.1: Japanese Localization (日本語) &amp; Default Light Theme</code><br>
+        <strong>Type of post:</strong> <code>Major update</code>
+      </div>
+    </div>
+
+    <div class="content-body">
+      <p>Following our official launch, we are excited to roll out our very first feature update: <strong>ItemSeed v1.0.1</strong>!</p>
+
+      <p>Here is what's new in this release:</p>
+
+      <hr>
+
+      <h2>🇯🇵 Full Japanese Localization (日本語)</h2>
+      <p>ItemSeed now includes complete Japanese language support alongside English and Traditional Chinese (<code>zh-Hant</code>). Every item archetype, interface label, and license tooltip has been carefully translated using standard retro JRPG conventions (e.g., <code>ドット絵</code>, <code>ポーション</code>, <code>剣</code>, <code>槍</code>, <code>盾</code>, <code>杖</code>). The interface automatically detects Japanese browser settings or can be manually selected via the header dropdown.</p>
+
+      <h2>☀️ Clean Light Theme by Default</h2>
+      <p>By popular request, ItemSeed now defaults to a bright, paper-like clean canvas theme on initial visit. For developers working late at night, the Dark theme and Auto system detection remain fully supported and easily toggled via the theme selector (and saved in your local browser preferences).</p>
+
+      <h2>🏷️ Header Version Badge</h2>
+      <p>A subtle terminal-styled version badge (<code>v1.0.1</code>) is now displayed directly next to the header title, making it easy to confirm that you are running the latest build in your browser or itch.io iframe.</p>
+
+      <hr>
+
+      <p>The updated web build is live now on this page. As always, all generated pixel art icons remain <strong>CC0 1.0 Universal</strong> and 100% free for your commercial and personal games.</p>
+
+      <p>Let us know what item archetypes you'd like to see in v1.1.0!</p>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,9 +1,9 @@
 // i18n.js
-// Runtime for translating UI strings. Reads window.I18N_ZH_HANT / window.I18N_EN
-// (loaded by i18n/zh-Hant.js and i18n/en.js) and exposes window.I18N.
+// Runtime for translating UI strings. Reads window.I18N_ZH_HANT / window.I18N_EN / window.I18N_JA
+// (loaded by i18n/zh-Hant.js, i18n/en.js, and i18n/ja.js) and exposes window.I18N.
 
 window.I18N = (function () {
-  const SUPPORTED = ['zh-Hant', 'en'];
+  const SUPPORTED = ['zh-Hant', 'en', 'ja'];
   const DEFAULT_LANG = 'zh-Hant';
   const STORAGE_KEY = 'itemseed.lang';
   const FALLBACK_STORAGE_KEY = 'iconmachine.lang';
@@ -11,6 +11,7 @@ window.I18N = (function () {
   const TABLES = {
     'zh-Hant': window.I18N_ZH_HANT,
     'en':      window.I18N_EN,
+    'ja':      window.I18N_JA,
   };
 
   let currentLang = DEFAULT_LANG;
@@ -39,6 +40,7 @@ window.I18N = (function () {
       const nav = (navigator.language || '').toLowerCase();
       if (nav.startsWith('zh')) return 'zh-Hant';
       if (nav.startsWith('en')) return 'en';
+      if (nav.startsWith('ja')) return 'ja';
     } catch (_) {}
     return null;
   }
