@@ -10,7 +10,7 @@
 Run these two commands in the repository root to ensure the latest bundle and visual assets are ready before uploading:
 
 ```bash
-# 1. Generate the itch.io HTML5 ZIP bundle (outputs itemseed-itch.zip):
+# 1. Generate the itch.io HTML5 ZIP bundle (outputs itemseed-v<version>.zip, e.g. itemseed-v1.0.0.zip):
 npm run package:itch
 
 # 2. (Optional) Re-generate official cover and screenshots into docs/pm/assets/:
@@ -19,7 +19,7 @@ npm run assets:itch
 
 | Asset Name | Local File Location | Purpose on itch.io |
 | :--- | :--- | :--- |
-| **HTML5 Package** | `itemseed-itch.zip` | Uploaded in **Uploads** section with *"This file will be played in the browser"* checked. |
+| **HTML5 Package** | `itemseed-v1.0.0.zip` (or `itemseed-v<version>.zip`) | Uploaded in **Uploads** section with *"This file will be played in the browser"* checked. |
 | **Cover Image** | `docs/pm/assets/cover.png` | Storefront cover (`1260 × 1000 px`, 2x Retina compatible). |
 | **Screenshot 1** | `docs/pm/assets/screenshot_01_studio.png` | Desktop studio interface in action (`1280 × 800 px`). |
 | **Screenshot 2** | `docs/pm/assets/screenshot_02_batch.png` | 24-cell batch preview exploration (`1280 × 800 px`). |
@@ -151,8 +151,8 @@ pixel-art, generator, rpg, game-assets, procedural, tools, cc0, html5, fantasy, 
 
 Follow this step-by-step checklist before flipping the switch to **Public**:
 
-- [ ] **Step 1: Build Package**: Run `npm run package:itch` in terminal to produce `itemseed-itch.zip`.
-- [ ] **Step 2: Upload Archive**: In itch.io project dashboard, upload `itemseed-itch.zip` and check *"This file will be played in the browser"*.
+- [ ] **Step 1: Build Package**: Run `npm run package:itch` in terminal to produce `itemseed-v<version>.zip` (e.g. `itemseed-v1.0.0.zip`).
+- [ ] **Step 2: Upload Archive**: In itch.io project dashboard, upload `itemseed-v1.0.0.zip` and check *"This file will be played in the browser"* (and set the version tag to `v1.0.0`).
 - [ ] **Step 3: Upload Cover**: Upload `docs/pm/assets/cover.png` as the main project cover image.
 - [ ] **Step 4: Upload Screenshots**: Upload `screenshot_01_studio.png`, `screenshot_02_batch.png`, and `screenshot_03_dual_resolution.png` from `docs/pm/assets/`.
 - [ ] **Step 5: Paste Details**: Paste Title, Tagline, Tags, and the Store Description from Section 3.

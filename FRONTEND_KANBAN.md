@@ -41,6 +41,12 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-020] Include Dynamic Version in Packaging Output Filename
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Enhanced `scripts/package-itch.mjs` to dynamically read the application version from `package.json` (with fallback to `1.0.0`) and name the output bundle `itemseed-v${version}.zip` (currently `itemseed-v1.0.0.zip`). Added pre-build target cleanup and updated `.gitignore` with `itemseed-*.zip` to prevent accidental archive commits. Synchronized package output naming across `docs/pm/ITCH_RELEASE_PACK.md`. Verified all test suites (`npm test`) and itch.io bundle packaging passed.
+
+
 ### [TASK-019] Add Version Badge in Header Next to Main Title
 - **Status**: Done
 - **Completed**: 2026-09-16
