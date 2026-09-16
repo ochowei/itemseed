@@ -57,8 +57,28 @@ function assertEq(actual, expected, msg) {
 
 const cases = [
   {
-    name: 'no URL, no storage, OS=dark → effective=dark, setting=auto',
+    name: 'no URL, no storage, OS=dark → effective=light, setting=light (default to light)',
     setup: { prefersDark: true },
+    run: (THEME, meta) => {
+      THEME.init();
+      assertEq(THEME.getSetting(), 'light', 'setting');
+      assertEq(THEME.getEffective(), 'light', 'effective');
+      assertEq(meta.body._attrs['data-theme'], 'light', 'body data-theme');
+    },
+  },
+  {
+    name: 'no URL, no storage, OS=light → effective=light, setting=light (default to light)',
+    setup: { prefersDark: false },
+    run: (THEME, meta) => {
+      THEME.init();
+      assertEq(THEME.getSetting(), 'light', 'setting');
+      assertEq(THEME.getEffective(), 'light', 'effective');
+      assertEq(meta.body._attrs['data-theme'], 'light', 'body data-theme');
+    },
+  },
+  {
+    name: 'storage=auto, OS=dark → effective=dark, setting=auto (stored auto matches OS dark)',
+    setup: { stored: 'auto', prefersDark: true },
     run: (THEME, meta) => {
       THEME.init();
       assertEq(THEME.getSetting(), 'auto', 'setting');
@@ -67,8 +87,8 @@ const cases = [
     },
   },
   {
-    name: 'no URL, no storage, OS=light → effective=light, setting=auto',
-    setup: { prefersDark: false },
+    name: 'storage=auto, OS=light → effective=light, setting=auto (stored auto matches OS light)',
+    setup: { stored: 'auto', prefersDark: false },
     run: (THEME, meta) => {
       THEME.init();
       assertEq(THEME.getSetting(), 'auto', 'setting');
@@ -97,6 +117,16 @@ const cases = [
     },
   },
   {
+    name: 'URL=auto overrides default light + resolves via OS dark',
+    setup: { search: '?theme=auto', prefersDark: true },
+    run: (THEME, meta) => {
+      THEME.init();
+      assertEq(THEME.getSetting(), 'auto', 'setting');
+      assertEq(THEME.getEffective(), 'dark', 'effective');
+      assertEq(meta.storage.get('itemseed.theme'), 'auto', 'storage updated');
+    },
+  },
+  {
     name: 'invalid URL value falls back to storage',
     setup: { search: '?theme=banana', stored: 'dark' },
     run: (THEME, _meta) => {
@@ -105,13 +135,22 @@ const cases = [
     },
   },
   {
+    name: 'invalid URL value without storage falls back to default light',
+    setup: { search: '?theme=banana' },
+    run: (THEME, meta) => {
+      THEME.init();
+      assertEq(THEME.getSetting(), 'light', 'default setting');
+      assertEq(THEME.getEffective(), 'light', 'default effective');
+    },
+  },
+  {
     name: 'fallback to legacy iconmachine.theme when itemseed.theme is absent',
     setup: {},
     run: (THEME, meta) => {
-      meta.storage.set('iconmachine.theme', 'light');
+      meta.storage.set('iconmachine.theme', 'dark');
       THEME.init();
-      assertEq(THEME.getSetting(), 'light', 'fallback setting');
-      assertEq(THEME.getEffective(), 'light', 'fallback effective');
+      assertEq(THEME.getSetting(), 'dark', 'fallback setting');
+      assertEq(THEME.getEffective(), 'dark', 'fallback effective');
     },
   },
   {
@@ -136,7 +175,7 @@ const cases = [
   },
   {
     name: 'matchMedia change while setting=auto re-applies',
-    setup: { prefersDark: false },
+    setup: { stored: 'auto', prefersDark: false },
     run: (THEME, meta) => {
       THEME.init();
       assertEq(meta.body._attrs['data-theme'], 'light', 'initial light');
@@ -156,11 +195,21 @@ const cases = [
     },
   },
   {
-    name: 'matchMedia unsupported → effective fallback dark',
+    name: 'matchMedia unsupported with stored=auto → effective fallback light',
+    setup: { stored: 'auto', hasMatchMedia: false },
+    run: (THEME, meta) => {
+      THEME.init();
+      assertEq(THEME.getSetting(), 'auto', 'setting');
+      assertEq(THEME.getEffective(), 'light', 'fallback');
+    },
+  },
+  {
+    name: 'matchMedia unsupported without storage → effective fallback light',
     setup: { hasMatchMedia: false },
     run: (THEME, meta) => {
       THEME.init();
-      assertEq(THEME.getEffective(), 'dark', 'fallback');
+      assertEq(THEME.getSetting(), 'light', 'setting');
+      assertEq(THEME.getEffective(), 'light', 'fallback');
     },
   },
 ];

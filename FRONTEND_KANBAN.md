@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-022] Set Default Interface Theme to Light
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Set default application theme to `light` across ItemSeed studio and regression interfaces. Updated `theme.js` runtime `DEFAULT_SETTING = 'light'` and safe fallback to `'light'`. Updated initial HTML attribute to `<body data-theme="light">` in both `index.html` and `regression.html` to prevent dark flash of unstyled content (FOUC). Expanded `scripts/test-theme.mjs` test suite to 16 comprehensive assertions verifying default light resolution while preserving explicit `auto` and `dark` selection and OS mediaQuery live syncing. All tests passed.
+
 ### [TASK-021] Add Japanese (ja) Internationalization Support
 - **Status**: Done
 - **Completed**: 2026-09-16
