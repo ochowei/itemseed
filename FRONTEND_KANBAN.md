@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-021] Add Japanese (ja) Internationalization Support
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Added Japanese (`ja`) internationalization support to ItemSeed. Created `i18n/ja.js` with complete 30-key dictionary matching `en` and `zh-Hant`. Registered `ja` in `i18n.js` with browser locale detection (`navigator.language.startsWith('ja')`). Added `<option value="ja">日本語</option>` and script inclusion in `index.html`. Enhanced static validator `scripts/check-i18n.mjs` to enforce three-way key parity. Updated `scripts/package-itch.mjs` deployment files list. All tests passed.
+
 ### [TASK-020] Include Dynamic Version in Packaging Output Filename
 - **Status**: Done
 - **Completed**: 2026-09-16

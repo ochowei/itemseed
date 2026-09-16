@@ -86,7 +86,7 @@ Generate infinite weapons, gear, and magical artifacts without external dependen
 - **Same Seed = Same Item**: Fully deterministic procedural generation. A 20-character string reproduces the exact same sprite every time, allowing artwork to live in source code rather than binary blobs.
 - **24-Cell Batch Exploration**: Explore 24 procedural variations simultaneously. Click any cell to immediately inspect, fine-tune, or download.
 - **Transparent PNG Export**: Single-click download (`⇩ png`) with standardized filenames containing item type, seed string, and resolution.
-- **Multi-Theme & Multi-Language**: Seamless dark/light theme switching and full dual-language support (English & 繁體中文).
+- **Multi-Theme & Multi-Language**: Seamless dark/light theme switching and trilingual support (English, 日本語 & 繁體中文).
 - **Runs Everywhere**: Zero build step, vanilla HTML5 Canvas + JavaScript. No ads, no logins, no paywalls.
 
 ---

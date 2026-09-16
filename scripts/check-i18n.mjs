@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/check-i18n.mjs
-// Static integrity check for i18n. Diffs zh-Hant vs en key sets and grep
-// index.html for data-i18n-key / data-i18n-attr-* references. Run via:
+// Static integrity check for i18n. Diffs zh-Hant vs en vs ja key sets and
+// greps index.html for data-i18n-key / data-i18n-attr-* references. Run via:
 //   node scripts/check-i18n.mjs
 
 import { readFile } from 'node:fs/promises';
@@ -25,14 +25,6 @@ async function loadTable(relativePath, globalName) {
   return table;
 }
 
-function diffKeys(a, b) {
-  const aKeys = new Set(Object.keys(a));
-  const bKeys = new Set(Object.keys(b));
-  const missingInB = [...aKeys].filter((k) => !bKeys.has(k)).sort();
-  const missingInA = [...bKeys].filter((k) => !aKeys.has(k)).sort();
-  return { missingInA, missingInB };
-}
-
 async function extractHtmlKeys(htmlPath) {
   const src = await readFile(htmlPath, 'utf8');
   const used = new Set();
@@ -49,27 +41,44 @@ async function main() {
 
   const zh = await loadTable('i18n/zh-Hant.js', 'I18N_ZH_HANT');
   const en = await loadTable('i18n/en.js',      'I18N_EN');
+  const ja = await loadTable('i18n/ja.js',      'I18N_JA');
 
-  const zhCount = Object.keys(zh).length;
-  const enCount = Object.keys(en).length;
+  const tables = {
+    'zh-Hant': zh,
+    'en':      en,
+    'ja':      ja,
+  };
 
-  const { missingInA: missingInZh, missingInB: missingInEn } = diffKeys(zh, en);
+  const allKeys = new Set([
+    ...Object.keys(zh),
+    ...Object.keys(en),
+    ...Object.keys(ja),
+  ]);
 
-  const mismatch = missingInEn.length > 0 || missingInZh.length > 0;
-  console.log(`  ${mismatch ? '✗' : '✓'} zh-Hant: ${zhCount} keys`);
-  console.log(`  ${mismatch ? '✗' : '✓'} en:      ${enCount} keys`);
+  const missingByLang = {};
+  for (const [lang, tbl] of Object.entries(tables)) {
+    const missing = [...allKeys].filter((k) => !(k in tbl)).sort();
+    if (missing.length > 0) {
+      missingByLang[lang] = missing;
+    }
+  }
 
-  if (missingInEn.length === 0 && missingInZh.length === 0) {
+  console.log(`  ${!missingByLang['zh-Hant'] ? '✓' : '✗'} zh-Hant: ${Object.keys(zh).length} keys`);
+  console.log(`  ${!missingByLang['en'] ? '✓' : '✗'} en:      ${Object.keys(en).length} keys`);
+  console.log(`  ${!missingByLang['ja'] ? '✓' : '✗'} ja:      ${Object.keys(ja).length} keys`);
+
+  if (Object.keys(missingByLang).length === 0) {
     console.log('  ✓ Tables match');
   } else {
     console.log('  ✗ Tables mismatch');
-    if (missingInEn.length) console.log(`      Missing in en:      [${missingInEn.join(', ')}]`);
-    if (missingInZh.length) console.log(`      Missing in zh-Hant: [${missingInZh.join(', ')}]`);
+    for (const [lang, missing] of Object.entries(missingByLang)) {
+      console.log(`      Missing in ${lang}: [${missing.join(', ')}]`);
+    }
     fail = true;
   }
 
   const htmlKeys = await extractHtmlKeys(resolve(ROOT, 'index.html'));
-  const tableKeys = new Set([...Object.keys(zh), ...Object.keys(en)]);
+  const tableKeys = allKeys;
 
   const usedNotInTable = [...htmlKeys].filter((k) => !tableKeys.has(k)).sort();
   const definedNotUsed = [...tableKeys].filter((k) => !htmlKeys.has(k)).sort();

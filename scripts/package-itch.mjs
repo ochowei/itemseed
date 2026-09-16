@@ -47,6 +47,7 @@ const DEPLOY_FILES = [
   'i18n.js',
   'i18n/zh-Hant.js',
   'i18n/en.js',
+  'i18n/ja.js',
   'LICENSE',
   'ASSET-LICENSE.md',
 ];
