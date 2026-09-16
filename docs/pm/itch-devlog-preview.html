@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ItemSeed — itch.io Launch Devlog Formatted Preview</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 820px;
+      margin: 40px auto;
+      padding: 24px;
+      line-height: 1.65;
+      color: #24292f;
+      background: #fafbfc;
+    }
+    .instruction-card {
+      background: #f0fdf4;
+      border: 2px dashed #16a34a;
+      border-radius: 10px;
+      padding: 18px 24px;
+      margin-bottom: 32px;
+    }
+    .instruction-card h2 {
+      margin: 0 0 8px 0;
+      font-size: 17px;
+      color: #16a34a;
+    }
+    .instruction-card p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #1f2328;
+    }
+    .content-container {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      padding: 36px 40px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+    h1 {
+      font-size: 26px;
+      border-bottom: 2px solid #eaecef;
+      padding-bottom: 12px;
+      margin-top: 0;
+    }
+    h2 {
+      font-size: 20px;
+      margin-top: 28px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 6px;
+    }
+    h3 {
+      font-size: 17px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+    hr {
+      border: 0;
+      border-top: 1px solid #d0d7de;
+      margin: 24px 0;
+    }
+    ul, ol {
+      padding-left: 24px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    code {
+      background: rgba(175, 184, 193, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 85%;
+    }
+    a {
+      color: #0969da;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="instruction-card">
+    <h2>📋 How to Post this Devlog to itch.io:</h2>
+    <p>1. On your itch.io project dashboard, click <strong>Devlog</strong> &rarr; <strong>Post new devlog</strong>.</p>
+    <p>2. Set Title: <code>Introducing ItemSeed: Free Procedural Pixel Art RPG Item Generator (CC0)</code></p>
+    <p>3. Select all content in the white box below, press <strong>Cmd+C</strong> (macOS) / <strong>Ctrl+C</strong> (Windows).</p>
+    <p>4. Paste (<strong>Cmd+V</strong>) directly into the devlog content box. It will maintain all headings, bullet points, and hyperlinks cleanly!</p>
+  </div>
+
+  <div class="content-container" id="copy-area">
+    <p>We are thrilled to announce the official release of <strong>ItemSeed</strong> on itch.io!</p>
+
+    <p>If you are an indie game developer, game jammer, or RPG enthusiast, you know the struggle: you need dozens of crisp, coherent fantasy item icons for an inventory or loot system, but commissioning or hand-crafting individual 16×16 or 32×32 sprites takes hours of painstaking pixel work.</p>
+
+    <p><strong>ItemSeed</strong> was created to solve exactly this problem. It is a lightweight, zero-dependency procedural pixel-art generator running directly in your web browser.</p>
+
+    <hr>
+
+    <h2>🎨 Inspired by a Classic: The Icon Machine Legacy</h2>
+
+    <p>ItemSeed is directly inspired by Brian MacIntosh's pioneering <a href="https://bmaczero.itch.io/icon-machine" target="_blank" rel="noopener">Icon Machine</a>, a beloved tool that served game makers for years. ItemSeed is an independent, clean-room modern reimplementation built on pure HTML5 Canvas and vanilla JavaScript, crafted to bring deterministic procedural generation to modern web browsers with zero installation and instant zero-build execution.</p>
+
+    <hr>
+
+    <h2>⚔️ What Makes ItemSeed Special?</h2>
+
+    <h3>1. Dual Handcrafted Resolutions (32×32 &amp; 16×16)</h3>
+    <p>Most procedural tools generate high-resolution images and naively downscale them, resulting in blurry, sub-pixel artifacts that ruin retro aesthetics. In ItemSeed, 16×16 sprites are authored with <strong>feature-folding logic</strong>: outlines adapt, highlights simplify, and silhouettes remain instantly readable at true retro resolutions.</p>
+
+    <h3>2. Deterministic Generation ("Same Seed = Same Item")</h3>
+    <p>Every item is driven by a seed string (e.g. <code>dragon-blade-42</code> or <code>sacred-flask-7</code>) powered by a Mulberry32 pseudorandom generator. A simple 20-character string reproduces the exact same sprite every single time. This means you can store entire loot tables directly in your game's source code or save files as text strings rather than bloated sprite sheets!</p>
+
+    <h3>3. Five Diverse Item Archetypes</h3>
+    <ul>
+      <li><strong>Potions</strong>: Volumetric flasks, bottles, fluid level variations, bubbles, and cork/wax/cloth stoppers.</li>
+      <li><strong>Swords</strong>: Slanted broadswords, rapiers, and curved sabers with dynamic blade highlights, crossguards, and pommels.</li>
+      <li><strong>Spears</strong>: Symmetrical tridents, harpoons, and straight lances with wrapped shafts and ferrule butt caps.</li>
+      <li><strong>Shields</strong>: Heater shields, studded tower shields, and round bucklers with ornate bosses and rim rivets.</li>
+      <li><strong>Staffs</strong>: Crescent-head, arcane-orb, and shepherd-crozier staves with embedded 4-element crystal matrices.</li>
+    </ul>
+
+    <h3>4. 24-Cell Batch Explorer</h3>
+    <p>Need inspiration? Switch to the 24-cell Batch Preview in "Any" mode to inspect dozens of procedural combinations across colors, archetypes, and materials at once. Click any tile to load it into the main canvas for fine-tuning or instant export.</p>
+
+    <h3>5. Transparent PNG Export</h3>
+    <p>Export single icons with a single click (<code>⇩ png</code>). Filenames are automatically standardized (e.g., <code>itemseed_sword_dragon-blade-42_32x32.png</code>), ready to drag directly into Godot, Unity, GameMaker, or Aseprite.</p>
+
+    <hr>
+
+    <h2>📜 100% Free for Commercial Games (CC0 1.0 Universal)</h2>
+
+    <p>We believe game creators should never have to worry about legal friction or restrictive royalty clauses:</p>
+
+    <ul>
+      <li><strong>Generated Artwork</strong>: Dedicated to the public domain under <strong>CC0 1.0 Universal</strong>. You are free to use them in commercial games on Steam, itch.io, or mobile with <strong>no royalties and no attribution required</strong>.</li>
+      <li><strong>Generator Engine</strong>: Fully open source under the <strong>MIT License</strong> on <a href="https://github.com/ochowei/itemseed" target="_blank" rel="noopener">GitHub</a>.</li>
+    </ul>
+
+    <hr>
+
+    <h2>🚀 What's Coming Next? (We Want Your Feedback!)</h2>
+
+    <p>This is just the beginning of ItemSeed. We want to hear from you:</p>
+    <ul>
+      <li>What item categories do you need most for your games? (Bows, Helms, Rings &amp; Amulets, Spellbooks, or Axes?)</li>
+      <li>Would you find an automated Sprite Sheet / Atlas exporter helpful?</li>
+      <li>What color palettes or themes would fit your game best?</li>
+    </ul>
+
+    <p>Drop a comment below with your feedback, share seeds of cool items you discovered, or check out the code on <a href="https://github.com/ochowei/itemseed" target="_blank" rel="noopener">GitHub (ochowei/itemseed)</a>.</p>
+
+    <p>Happy game making!</p>
+  </div>
+</body>
+</html>
