@@ -49,11 +49,38 @@
       padding-bottom: 24px;
       margin-bottom: 40px;
     }
+    .header-title-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .version-badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 3px 8px;
+      color: var(--ink-dim);
+      background: var(--bg-panel-2);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      letter-spacing: 0.5px;
+      user-select: none;
+      white-space: nowrap;
+    }
     .header-right {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 8px;
+    }
+    @media (max-width: 540px) {
+      .header-right {
+        align-items: flex-start;
+      }
     }
     #lang-select, #theme-select {
       font-size: 12px;
@@ -373,7 +400,10 @@
 <body data-theme="dark">
   <div class="app">
     <header>
-      <h1>Item<span class="accent">Seed</span></h1>
+      <div class="header-title-wrap">
+        <h1>Item<span class="accent">Seed</span></h1>
+        <span class="version-badge">v1.0.0</span>
+      </div>
       <div class="header-right">
         <div class="settings-row">
           <select id="lang-select" aria-label="Language">

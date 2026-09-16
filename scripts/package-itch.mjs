@@ -5,7 +5,7 @@
 // with index.html at root level (avoiding folder nesting which breaks itch.io).
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, unlinkSync, statSync } from 'node:fs';
+import { existsSync, unlinkSync, statSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,7 +13,21 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
 const ROOT       = resolve(__dirname, '..');
 
-const ZIP_NAME = 'itemseed-itch.zip';
+// Dynamically read version from package.json with fallback to 1.0.0
+let version = '1.0.0';
+try {
+  const pkgPath = resolve(ROOT, 'package.json');
+  if (existsSync(pkgPath)) {
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8'));
+    if (pkg && typeof pkg.version === 'string' && pkg.version.trim()) {
+      version = pkg.version.trim();
+    }
+  }
+} catch (err) {
+  console.warn(`Warning: Could not read version from package.json: ${err.message}. Defaulting to ${version}`);
+}
+
+const ZIP_NAME = `itemseed-v${version}.zip`;
 const ZIP_PATH = resolve(ROOT, ZIP_NAME);
 
 // Strictly the runtime deployment files required to run ItemSeed

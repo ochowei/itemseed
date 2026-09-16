@@ -41,6 +41,18 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-020] Include Dynamic Version in Packaging Output Filename
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Enhanced `scripts/package-itch.mjs` to dynamically read the application version from `package.json` (with fallback to `1.0.0`) and name the output bundle `itemseed-v${version}.zip` (currently `itemseed-v1.0.0.zip`). Added pre-build target cleanup and updated `.gitignore` with `itemseed-*.zip` to prevent accidental archive commits. Synchronized package output naming across `docs/pm/ITCH_RELEASE_PACK.md`. Verified all test suites (`npm test`) and itch.io bundle packaging passed.
+
+
+### [TASK-019] Add Version Badge in Header Next to Main Title
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Added styled retro terminal version badge (`v1.0.0`) wrapped with `<h1>ItemSeed</h1>` inside `.header-title-wrap` in `index.html`. Utilized theme CSS variables (`--bg-panel-2`, `--line`, `--ink-dim`) for high-contrast presentation in both Light and Dark themes. Enhanced responsiveness with flex-wrapping and mobile alignment breakpoint at `max-width: 540px`, ensuring zero horizontal overflow on mobile viewports (320px–768px). Verified 100% test pass rate across `check-theme`, `check-i18n`, `check-batch`, `snapshot`, and verified clean itch.io HTML5 packaging (`itemseed-itch.zip`).
+
+
 ### [TASK-018] Fix Blank Item Canvases in itch.io Cover Image Generator
 - **Status**: Done
 - **Completed**: 2026-09-15
