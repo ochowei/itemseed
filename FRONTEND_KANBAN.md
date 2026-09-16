@@ -41,6 +41,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-023] Bump Version to v1.0.1 across package.json, index.html, and Release Artifacts
+- **Status**: Done
+- **Completed**: 2026-09-16
+- **Summary**: Bumped application version from `1.0.0` to `1.0.1` following the integration of Japanese i18n support and default light theme. Updated `package.json` and `package-lock.json` to version `1.0.1`. Updated header version badge to `v1.0.1` in `index.html`. Re-packaged itch.io release bundle to `itemseed-v1.0.1.zip` via `npm run package:itch`. Synchronized version documentation in `docs/pm/ITCH_RELEASE_PACK.md`. Verified all tests passed.
+
 ### [TASK-022] Set Default Interface Theme to Light
 - **Status**: Done
 - **Completed**: 2026-09-16
