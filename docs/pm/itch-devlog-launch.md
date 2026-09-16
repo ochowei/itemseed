@@ -1,16 +1,15 @@
 # itch.io Devlog Publication Kit: v1.0.0 & v1.0.1
 
-This kit provides two publishing strategies for ItemSeed's itch.io Devlogs:
+This kit contains the two ready-to-publish Devlogs for ItemSeed on itch.io:
+1. **Post 1**: Initial launch announcement introducing ItemSeed v1.0.0 and its core features.
+2. **Post 2**: First official update announcing v1.0.1 (Japanese localization & default light theme).
 
 ---
 
-## Strategy A: Two-Post Release (Recommended for Double Exposure)
+## Post 1: Official v1.0.0 Launch Announcement
 
-On itch.io, every published Devlog appears in public discovery feeds and follower alerts. Publishing two posts allows you to capture initial launch traffic with v1.0.0 and immediate update visibility with v1.0.1.
-
-### Post 1: Official v1.0.0 Launch Announcement
 - **Title**: `ItemSeed is Live! Free Procedural Pixel Art RPG Item Generator (v1.0.0 Launch)`
-- **Type**: `Release announcement`
+- **Type of post**: `Release announcement`
 
 ```markdown
 We are thrilled to announce the official release of **ItemSeed v1.0.0** on itch.io!
@@ -73,9 +72,10 @@ Happy game making!
 
 ---
 
-### Post 2: First Update Announcement (v1.0.1)
+## Post 2: First Update Announcement (v1.0.1)
+
 - **Title**: `Update v1.0.1: Japanese Localization (日本語) & Default Light Theme`
-- **Type**: `Major update`
+- **Type of post**: `Major update`
 
 ```markdown
 Following our official launch, we are excited to roll out our very first feature update: **ItemSeed v1.0.1**!
@@ -97,14 +97,3 @@ The updated web build is live now on this page. As always, all generated pixel a
 
 Let us know what item archetypes you'd like to see in v1.1.0!
 ```
-
----
-
-## Strategy B: Single Combined Launch Announcement
-
-If you prefer to publish only one post, use this combined text introducing ItemSeed at v1.0.1:
-
-- **Title**: `Introducing ItemSeed v1.0.1: Free Procedural Pixel Art RPG Item Generator (CC0)`
-- **Type**: `Release announcement`
-
-*(Refer to `docs/pm/itch-devlog-preview.html` Section 3 for formatted copy).*
