@@ -4,21 +4,31 @@
   <meta charset="utf-8">
   <title>ItemSeed — itch.io Devlogs Formatted Preview (v1.0.0 &amp; v1.0.1)</title>
   <style>
+    :root {
+      --primary: #0969da;
+      --primary-hover: #0856b5;
+      --success: #1a7f37;
+      --bg: #f6f8fa;
+      --card-bg: #ffffff;
+      --border: #d0d7de;
+      --ink: #24292f;
+      --ink-dim: #57606a;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       max-width: 860px;
-      margin: 40px auto;
-      padding: 24px;
+      margin: 32px auto;
+      padding: 0 20px 60px;
       line-height: 1.65;
-      color: #24292f;
-      background: #f6f8fa;
+      color: var(--ink);
+      background: var(--bg);
     }
     .strategy-banner {
       background: #ddf4ff;
       border: 1px solid #54aeff;
       border-radius: 10px;
       padding: 18px 24px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .strategy-banner h2 {
       margin-top: 0;
@@ -66,41 +76,84 @@
       border-radius: 6px;
       margin-top: 8px;
     }
-    h1 {
-      font-size: 24px;
-      margin: 4px 0 0 0;
-      color: #24292f;
+
+    /* Toolbar Actions */
+    .action-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f0f7ff;
+      border: 1px solid #b6e3ff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 16px 0 20px 0;
+      gap: 12px;
+      flex-wrap: wrap;
     }
-    h2 {
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+    .copy-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+    .copy-btn:hover {
+      background: var(--primary-hover);
+    }
+    .copy-btn.copied {
+      background: var(--success);
+    }
+    .copy-btn.secondary {
+      background: #ffffff;
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+    .copy-btn.secondary:hover {
+      background: #f3f4f6;
+    }
+
+    .content-body h2 {
       font-size: 19px;
       margin-top: 24px;
       margin-bottom: 10px;
       border-bottom: 1px solid #eaecef;
       padding-bottom: 6px;
     }
-    h3 {
+    .content-body h3 {
       font-size: 16px;
       margin-top: 18px;
       margin-bottom: 8px;
     }
-    hr {
+    .content-body hr {
       border: 0;
       border-top: 1px solid #eaecef;
       margin: 20px 0;
     }
-    ul, ol {
+    .content-body ul, .content-body ol {
       padding-left: 24px;
     }
-    li {
+    .content-body li {
       margin-bottom: 6px;
     }
-    code {
+    .content-body code {
       background: rgba(175, 184, 193, 0.2);
       padding: 2px 6px;
       border-radius: 4px;
       font-size: 85%;
     }
-    a {
+    .content-body a {
       color: #0969da;
       text-decoration: underline;
     }
@@ -112,6 +165,7 @@
     <h2>🎯 itch.io Devlog Publishing Workflow</h2>
     <p><strong>Step 1:</strong> Publish <strong>Post #1 (v1.0.0 Launch)</strong> first to establish the initial project release announcement.</p>
     <p><strong>Step 2:</strong> Publish <strong>Post #2 (v1.0.1 Update)</strong> to showcase the latest Japanese translation and default light theme, capturing a second round of storefront discovery exposure!</p>
+    <p style="margin-top: 8px; font-size: 13px; color: #054da7;">💡 <strong>使用提示</strong>：請在瀏覽器開啟本頁面，點擊下方各篇按鈕即可一鍵複製富文本（或 Markdown）至 itch.io 貼上！</p>
   </div>
 
   <!-- ======================================================== -->
@@ -127,7 +181,19 @@
       </div>
     </div>
 
-    <div class="content-body">
+    <div class="action-toolbar">
+      <span style="font-size: 13px; color: #054da7;">📋 複製文章內容：</span>
+      <div class="btn-group">
+        <button class="copy-btn" id="btn-post1-rich" onclick="copyPostRich('post1-body', 'btn-post1-rich')">
+          📋 一鍵複製富文本
+        </button>
+        <button class="copy-btn secondary" id="btn-post1-md" onclick="copyPostMarkdown('post1', 'btn-post1-md')">
+          📝 複製 Markdown
+        </button>
+      </div>
+    </div>
+
+    <div class="content-body" id="post1-body">
       <p>We are thrilled to announce the official release of <strong>ItemSeed v1.0.0</strong> on itch.io!</p>
 
       <p>If you are an indie game developer, game jammer, or RPG enthusiast, you know the struggle: you need dozens of crisp, coherent fantasy item icons for an inventory or loot system, but commissioning or hand-crafting individual 16×16 or 32×32 sprites takes hours of painstaking pixel work.</p>
@@ -202,7 +268,19 @@
       </div>
     </div>
 
-    <div class="content-body">
+    <div class="action-toolbar">
+      <span style="font-size: 13px; color: #054da7;">📋 複製文章內容：</span>
+      <div class="btn-group">
+        <button class="copy-btn" id="btn-post2-rich" onclick="copyPostRich('post2-body', 'btn-post2-rich')">
+          📋 一鍵複製富文本
+        </button>
+        <button class="copy-btn secondary" id="btn-post2-md" onclick="copyPostMarkdown('post2', 'btn-post2-md')">
+          📝 複製 Markdown
+        </button>
+      </div>
+    </div>
+
+    <div class="content-body" id="post2-body">
       <p>Following our official launch, we are excited to roll out our very first feature update: <strong>ItemSeed v1.0.1</strong>!</p>
 
       <p>Here is what's new in this release:</p>
@@ -225,6 +303,144 @@
       <p>Let us know what item archetypes you'd like to see in v1.1.0!</p>
     </div>
   </div>
+
+  <script>
+    const mdPost1 = `We are thrilled to announce the official release of **ItemSeed v1.0.0** on itch.io!
+
+If you are an indie game developer, game jammer, or RPG enthusiast, you know the struggle: you need dozens of crisp, coherent fantasy item icons for an inventory or loot system, but commissioning or hand-crafting individual 16×16 or 32×32 sprites takes hours of painstaking pixel work.
+
+**ItemSeed** was created to solve exactly this problem. It is a lightweight, zero-dependency procedural pixel-art generator running directly in your web browser.
+
+---
+
+### 🎨 Inspired by a Classic: The Icon Machine Legacy
+
+ItemSeed is directly inspired by Brian MacIntosh's pioneering [Icon Machine](https://bmaczero.itch.io/icon-machine), a beloved tool that served game makers for years. ItemSeed is an independent, clean-room modern reimplementation built on pure HTML5 Canvas and vanilla JavaScript, crafted to bring deterministic procedural generation to modern web browsers with zero installation and instant zero-build execution.
+
+---
+
+### ⚔️ What Makes ItemSeed Special?
+
+#### 1. Dual Handcrafted Resolutions (32×32 & 16×16)
+Most procedural tools generate high-resolution images and naively downscale them, resulting in blurry, sub-pixel artifacts that ruin retro aesthetics. In ItemSeed, 16×16 sprites are authored with **feature-folding logic**: outlines adapt, highlights simplify, and silhouettes remain instantly readable at true retro resolutions.
+
+#### 2. Deterministic Generation ("Same Seed = Same Item")
+Every item is driven by a seed string (e.g. \`dragon-blade-42\` or \`sacred-flask-7\`) powered by a Mulberry32 pseudorandom generator. A simple 20-character string reproduces the exact same sprite every single time. This means you can store entire loot tables directly in your game's source code or save files as text strings rather than bloated sprite sheets!
+
+#### 3. Five Diverse Item Archetypes
+- **Potions**: Volumetric flasks, bottles, fluid level variations, bubbles, and cork/wax/cloth stoppers.
+- **Swords**: Slanted broadswords, rapiers, and curved sabers with dynamic blade highlights, crossguards, and pommels.
+- **Spears**: Symmetrical tridents, harpoons, and straight lances with wrapped shafts and ferrule butt caps.
+- **Shields**: Heater shields, studded tower shields, and round bucklers with ornate bosses and rim rivets.
+- **Staffs**: Crescent-head, arcane-orb, and shepherd-crozier staves with embedded 4-element crystal matrices.
+
+#### 4. 24-Cell Batch Explorer
+Need inspiration? Switch to the 24-cell Batch Preview in "Any" mode to inspect dozens of procedural combinations across colors, archetypes, and materials at once. Click any tile to load it into the main canvas for fine-tuning or instant export.
+
+#### 5. Transparent PNG Export
+Export single icons with a single click (\`⇩ png\`). Filenames are automatically standardized (e.g., \`itemseed_sword_dragon-blade-42_32x32.png\`), ready to drag directly into Godot, Unity, GameMaker, or Aseprite.
+
+---
+
+### 📜 100% Free for Commercial Games (CC0 1.0 Universal)
+
+We believe game creators should never have to worry about legal friction or restrictive royalty clauses:
+
+- **Generated Artwork**: Dedicated to the public domain under **CC0 1.0 Universal**. You are free to use them in commercial games on Steam, itch.io, or mobile with **no royalties and no attribution required**.
+- **Generator Engine**: Fully open source under the **MIT License** on [GitHub (ochowei/itemseed)](https://github.com/ochowei/itemseed).
+
+---
+
+### 🚀 What's Coming Next? (We Want Your Feedback!)
+
+This is just the beginning of ItemSeed. We want to hear from you:
+- What item categories do you need most for your games? (Bows, Helms, Rings & Amulets, Spellbooks, or Axes?)
+- Would you find an automated Sprite Sheet / Atlas exporter helpful?
+- What color palettes or themes would fit your game best?
+
+Drop a comment below with your feedback, share seeds of cool items you discovered, or check out the code on [GitHub (ochowei/itemseed)](https://github.com/ochowei/itemseed).
+
+Happy game making!`;
+
+    const mdPost2 = `Following our official launch, we are excited to roll out our very first feature update: **ItemSeed v1.0.1**!
+
+Here is what's new in this release:
+
+### 🇯🇵 Full Japanese Localization (日本語)
+ItemSeed now includes complete Japanese language support alongside English and Traditional Chinese (\`zh-Hant\`). Every item type, interface label, and license tooltip has been localized using standard retro JRPG conventions (e.g., \`ドット絵\`, \`ポーション\`, \`剣\`, \`槍\`, \`盾\`, \`杖\`). The interface automatically detects Japanese browser settings or can be manually selected in the header.
+
+### ☀️ Clean Light Theme by Default
+By popular request, ItemSeed now defaults to a bright, paper-like clean canvas theme on initial visit. For developers working late at night, the Dark theme and Auto system detection remain fully supported and easily toggled via the theme selector (and saved in your local preferences).
+
+### 🏷️ Header Version Badge
+A subtle terminal-styled version badge (\`v1.0.1\`) is now displayed directly next to the header title, making it easy to confirm that you are running the latest build in your browser or itch.io iframe.
+
+---
+
+The updated web build is live now on this page. As always, all generated pixel art icons remain **CC0 1.0 Universal** and 100% free for your commercial and personal games.
+
+Let us know what item archetypes you'd like to see in v1.1.0!`;
+
+    async function copyPostRich(bodyId, btnId) {
+      const btn = document.getElementById(btnId);
+      const elem = document.getElementById(bodyId);
+      
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          const htmlBlob = new Blob([elem.innerHTML], { type: 'text/html' });
+          const textBlob = new Blob([elem.innerText], { type: 'text/plain' });
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': htmlBlob,
+              'text/plain': textBlob
+            })
+          ]);
+        } else {
+          const range = document.createRange();
+          range.selectNodeContents(elem);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+          document.execCommand('copy');
+          sel.removeAllRanges();
+        }
+        
+        btn.classList.add('copied');
+        btn.innerHTML = '✅ 已複製富文本！請貼上';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '📋 一鍵複製富文本';
+        }, 2500);
+      } catch (err) {
+        console.error('Copy failed:', err);
+        const range = document.createRange();
+        range.selectNodeContents(elem);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand('copy');
+        sel.removeAllRanges();
+        alert('已複製至剪貼簿！');
+      }
+    }
+
+    async function copyPostMarkdown(postKey, btnId) {
+      const btn = document.getElementById(btnId);
+      const text = postKey === 'post1' ? mdPost1 : mdPost2;
+      
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.classList.add('copied');
+        btn.innerHTML = '✅ 已複製 Markdown！';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '📝 複製 Markdown';
+        }, 2500);
+      } catch (err) {
+        console.error('Copy failed:', err);
+      }
+    }
+  </script>
 
 </body>
 </html>
