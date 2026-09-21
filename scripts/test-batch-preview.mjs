@@ -133,7 +133,7 @@ try {
     if (!test2.pass) return test2;
 
     // 3. 測試 size=32, explicit types
-    for (const type of ['sword', 'potion', 'spear', 'shield', 'staff']) {
+    for (const type of ['sword', 'potion', 'spear', 'shield', 'staff', 'bow']) {
       const t = await testGrid(32, type, [0, 4, 12, 23]);
       if (!t.pass) return t;
     }
@@ -172,7 +172,7 @@ try {
   } else {
     console.log('  ✓ Batch preview cell click in "any" mode: 24/24 cells verified pixel-identical (32×32)');
     console.log('  ✓ Batch preview cell click in "any" mode: verified pixel-identical (16×16)');
-    console.log('  ✓ Explicit types (sword, potion, spear, shield, staff): verified pixel-identical');
+    console.log('  ✓ Explicit types (sword, potion, spear, shield, staff, bow): verified pixel-identical');
     console.log('  ✓ Determinism check between resolved type and explicit type: 100% matched');
     console.log('\nAll batch preview consistency checks PASSED!');
   }

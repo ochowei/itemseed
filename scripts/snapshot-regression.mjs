@@ -35,7 +35,8 @@ await page.waitForFunction(
     const potion = document.querySelectorAll('#grid-potion tr').length;
     const shield = document.querySelectorAll('#grid-shield tr').length;
     const staff = document.querySelectorAll('#grid-staff tr').length;
-    return spear > 5 && sword > 5 && potion > 5 && shield > 5 && staff > 5;
+    const bow = document.querySelectorAll('#grid-bow tr').length;
+    return spear > 5 && sword > 5 && potion > 5 && shield > 5 && staff > 5 && bow > 5;
   },
   { timeout: 15000 }
 );
@@ -46,6 +47,7 @@ const targets = [
   { sel: '#grid-sword', file: 'sword-grid.png' },
   { sel: '#grid-potion', file: 'potion-grid.png' },
   { sel: '#grid-staff', file: 'staff-grid.png' },
+  { sel: '#grid-bow', file: 'bow-grid.png' },
 ];
 
 for (const { sel, file } of targets) {
@@ -86,6 +88,14 @@ const ZOOMS = [
   { grid: 'grid-staff', seed: 'staff-crozier-nature-11', size: 32, label: 'staff-crozier-32' },
   { grid: 'grid-staff', seed: 'staff-crozier-nature-11', size: 16, label: 'staff-crozier-16' },
   { grid: 'grid-staff', seed: 'staff-crescent-shadow-4', size: 32, label: 'staff-shadow-32' },
+  // bow zooms
+  { grid: 'grid-bow',   seed: 'bow-longbow-oak-6',      size: 32, label: 'bow-longbow-32' },
+  { grid: 'grid-bow',   seed: 'bow-longbow-oak-6',      size: 16, label: 'bow-longbow-16' },
+  { grid: 'grid-bow',   seed: 'bow-recurve-oak-17',     size: 32, label: 'bow-recurve-32' },
+  { grid: 'grid-bow',   seed: 'bow-recurve-oak-17',     size: 16, label: 'bow-recurve-16' },
+  { grid: 'grid-bow',   seed: 'bow-shortbow-oak-14',    size: 32, label: 'bow-shortbow-32' },
+  { grid: 'grid-bow',   seed: 'bow-shortbow-oak-14',    size: 16, label: 'bow-shortbow-16' },
+  { grid: 'grid-bow',   seed: 'bow-recurve-ebony-329',  size: 32, label: 'bow-ebony-32' },
 ];
 
 const zoomResults = await page.evaluate((zooms) => {
