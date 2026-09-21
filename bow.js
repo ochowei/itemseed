@@ -16,13 +16,6 @@
   const _LEATHER_PALETTE = typeof LEATHER_PALETTE !== 'undefined' ? LEATHER_PALETTE : (typeof window !== 'undefined' ? window.LEATHER_PALETTE : (typeof globalThis !== 'undefined' ? globalThis.LEATHER_PALETTE : null));
   const _sampleBowPalette = typeof sampleBowPalette !== 'undefined' ? sampleBowPalette : (typeof window !== 'undefined' ? window.sampleBowPalette : (typeof globalThis !== 'undefined' ? globalThis.sampleBowPalette : null));
 
-  // Ensure rng supports both .bool/.int and .chance/.randomInt methods
-  const SR = typeof SeededRandom !== 'undefined' ? SeededRandom : (typeof window !== 'undefined' ? window.SeededRandom : (typeof globalThis !== 'undefined' ? globalThis.SeededRandom : null));
-  if (SR && SR.prototype) {
-    if (!SR.prototype.bool) SR.prototype.bool = function (p) { return this.chance(p); };
-    if (!SR.prototype.int) SR.prototype.int = function (min, max) { return this.randomInt(min, max); };
-  }
-
   // Integer Bresenham line algorithm
   function bresenhamLine(x0, y0, x1, y1) {
     const pts = [];
@@ -57,13 +50,16 @@
   // =====================================================================
 
   function sampleBowSpec(rng) {
-    if (rng && !rng.chance && rng.bool) rng.chance = function (p) { return this.bool(p); };
-    if (rng && !rng.randomInt && rng.int) rng.randomInt = function (min, max) { return this.int(min, max); };
+    const chance = (p) => {
+      if (rng && typeof rng.chance === 'function') return rng.chance(p);
+      if (rng && typeof rng.bool === 'function') return rng.bool(p);
+      return rng.random() < p;
+    };
 
     const archetype = rng.pickWeighted(BOW_ARCHETYPES, BOW_ARCHETYPE_WEIGHTS);
     const pal = _sampleBowPalette ? _sampleBowPalette(rng) : null;
-    const hasGripWrap = rng.chance(0.6);
-    const hasNockReinforcement = archetype === 'longbow' ? true : rng.chance(0.5);
+    const hasGripWrap = chance(0.6);
+    const hasNockReinforcement = archetype === 'longbow' ? true : chance(0.5);
 
     const woodPalette = pal ? pal.woodPalette : {
       outline: '#26170d',
@@ -231,13 +227,13 @@
     const upString = bresenhamLine(upperTip.x, upperTip.y, nockingPoint.x, nockingPoint.y);
     const lowString = bresenhamLine(lowerTip.x, lowerTip.y, nockingPoint.x, nockingPoint.y);
 
-    // String shadow (#475569) offset by 1px
+    // Symmetrically aligned string shadow (#475569) offset by 1px towards inner area
     ctx.fillStyle = '#475569';
     for (const p of upString) {
       ctx.fillRect(p.x + 1, p.y, 1, 1);
     }
     for (const p of lowString) {
-      ctx.fillRect(p.x, p.y + 1, 1, 1);
+      ctx.fillRect(p.x, p.y - 1, 1, 1);
     }
 
     // Main string line (#e2e8f0)
@@ -259,34 +255,54 @@
       highlight: '#8a6840',
     };
 
-    // 1. Base colors by enum
+    // 1. Base colors by enum (predominantly woodPalette.main)
     _paintMaskByEnum(ctx, mask, size, {
       stave: spec.woodPalette.main,
       grip: leatherPal.main,
       nock: spec.metalPalette.main,
     });
 
-    // 2. Upper face highlight (shine) along upper limb
+    // 2. Upper face highlight (shine): accent at crest of upper limb
+    // Only 2 accent pixels at the crest where light catches, preserving woodPalette.main
     ctx.fillStyle = spec.woodPalette.shine;
-    for (let i = 2; i < upperCurve.length - 2; i++) {
-      const p = upperCurve[i];
-      if (_maskGet(mask, size, p.x, p.y) === 'stave') {
-        ctx.fillRect(p.x, p.y, 1, 1);
+    const upperShineIndices = [2, 3];
+    for (const idx of upperShineIndices) {
+      if (idx < upperCurve.length) {
+        const p = upperCurve[idx];
+        if (_maskGet(mask, size, p.x, p.y) === 'stave') {
+          ctx.fillRect(p.x, p.y, 1, 1);
+        }
       }
     }
 
-    // 3. Inner face shadow along lower limb
+    // 3. Inner face shadow: accent at lower limb bend
+    // Only 2 accent pixels at lower bend, preserving woodPalette.main
     ctx.fillStyle = spec.woodPalette.shadow;
-    for (let i = 2; i < upperCurve.length - 2; i++) {
-      const p = upperCurve[i];
-      const lx = 31 - p.y;
-      const ly = 31 - p.x;
-      if (_maskGet(mask, size, lx, ly) === 'stave') {
-        ctx.fillRect(lx, ly, 1, 1);
+    const lowerShadowIndices = [2, 3];
+    for (const idx of lowerShadowIndices) {
+      if (idx < upperCurve.length) {
+        const p = upperCurve[idx];
+        const lx = 31 - p.y;
+        const ly = 31 - p.x;
+        if (_maskGet(mask, size, lx, ly) === 'stave') {
+          ctx.fillRect(lx, ly, 1, 1);
+        }
       }
     }
 
-    // 4. Grip wrap centered around (16, 16)
+    // 4. Metal nock interior highlight (BEFORE outline pass to preserve outer outline)
+    if (spec.hasNockReinforcement) {
+      const un = upperCurve[1];
+      ctx.fillStyle = spec.metalPalette.shine;
+      ctx.fillRect(un.x, un.y, 1, 1);
+
+      const lnX = 31 - un.y;
+      const lnY = 31 - un.x;
+      ctx.fillStyle = spec.metalPalette.shadow;
+      ctx.fillRect(lnX, lnY, 1, 1);
+    }
+
+    // 5. Grip wrap centered around (16, 16)
     if (spec.hasGripWrap) {
       ctx.fillStyle = leatherPal.shadow;
       ctx.fillRect(15, 14, 2, 1);
@@ -296,19 +312,11 @@
       ctx.fillRect(16, 15, 2, 1);
     }
 
-    // 5. Internal seams between stave, grip, and nock caps
+    // 6. Internal seams between stave, grip, and nock caps
     _paintInternalSeams(ctx, mask, size, spec.woodPalette.outline);
 
-    // 6. Solid perimeter outline
+    // 7. Solid perimeter outline (encloses stave & nocks completely)
     _applyInsideOutlinePass(ctx, mask, size, spec.woodPalette.outline);
-
-    // 7. Metal nock cap highlights (if reinforced)
-    if (spec.hasNockReinforcement) {
-      ctx.fillStyle = spec.metalPalette.shine;
-      ctx.fillRect(upperTip.x, upperTip.y, 1, 1);
-      ctx.fillStyle = spec.metalPalette.shadow;
-      ctx.fillRect(lowerTip.x, lowerTip.y, 1, 1);
-    }
 
     // -----------------------------------------------------------------
     // Layer 3: Arrow
@@ -325,46 +333,59 @@
       ctx.fillRect(p.x, p.y, 1, 1);
     }
 
-    // Fletching: 2 angled vanes at (6, 25) .. (8, 27)
-    // Upper vane: (6, 23), (5, 24), (5, 25)
+    // Fletching: 2 angled vanes completely enclosed by dark outline
+    // Fletching dark outline:
+    ctx.fillStyle = spec.woodPalette.outline;
+    const upperFletchOutline = [
+      [6, 22], [5, 23], [7, 23], [4, 24], [4, 25], [4, 26], [5, 26], [6, 24]
+    ];
+    for (const [ox, oy] of upperFletchOutline) {
+      ctx.fillRect(ox, oy, 1, 1);
+    }
+
+    const lowerFletchOutline = [
+      [7, 25], [6, 26], [6, 27], [7, 27], [8, 28], [9, 27], [9, 26], [8, 25]
+    ];
+    for (const [ox, oy] of lowerFletchOutline) {
+      ctx.fillRect(ox, oy, 1, 1);
+    }
+
+    // Fletching feather interior:
+    // Upper vane:
     ctx.fillStyle = spec.fletchingPalette.main;
     ctx.fillRect(6, 23, 1, 1);
     ctx.fillRect(5, 24, 1, 1);
     ctx.fillRect(5, 25, 1, 1);
 
-    // Lower vane: (7, 26), (8, 26), (8, 27)
+    // Lower vane:
     ctx.fillStyle = spec.fletchingPalette.shadow;
     ctx.fillRect(7, 26, 1, 1);
     ctx.fillRect(8, 26, 1, 1);
     ctx.fillRect(8, 27, 1, 1);
 
-    // Fletching dark outline
-    ctx.fillStyle = spec.woodPalette.outline;
-    ctx.fillRect(5, 23, 1, 1);
-    ctx.fillRect(4, 24, 1, 2);
-    ctx.fillRect(7, 27, 1, 1);
-    ctx.fillRect(8, 28, 1, 1);
-    ctx.fillRect(9, 27, 1, 1);
-
-    // Arrowhead: 3×3 faceted diamond point centered around (25, 6)
-    // Tip at (26, 5)
+    // Arrowhead: 3×3 faceted diamond completely enclosed by outline
     ctx.fillStyle = spec.metalPalette.outline;
-    ctx.fillRect(26, 4, 1, 1);
-    ctx.fillRect(27, 5, 1, 1);
-    ctx.fillRect(27, 6, 1, 1);
-    ctx.fillRect(26, 7, 1, 1);
-    ctx.fillRect(24, 6, 1, 1);
+    const headOutline = [
+      [27, 4],          // diamond tip outline
+      [26, 4], [25, 4], // top edges
+      [24, 5], [27, 5], // upper barbs
+      [24, 6], [27, 6], // center barbs
+      [25, 7], [26, 7], // bottom barbs
+    ];
+    for (const [hx, hy] of headOutline) {
+      ctx.fillRect(hx, hy, 1, 1);
+    }
 
+    // Interior metallic facets:
     ctx.fillStyle = spec.metalPalette.shine;
-    ctx.fillRect(26, 5, 1, 1); // diamond tip
-    ctx.fillRect(25, 5, 1, 1); // top facet
+    ctx.fillRect(25, 5, 1, 1); // top-left facet
+    ctx.fillRect(26, 5, 1, 1); // top-right facet
 
     ctx.fillStyle = spec.metalPalette.main;
     ctx.fillRect(25, 6, 1, 1); // center ridge
 
     ctx.fillStyle = spec.metalPalette.shadow;
-    ctx.fillRect(26, 6, 1, 1); // right facet
-    ctx.fillRect(25, 7, 1, 1); // bottom facet
+    ctx.fillRect(26, 6, 1, 1); // lower facet
   }
 
   // =====================================================================
