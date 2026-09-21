@@ -25,12 +25,7 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Tasks currently under active development by Frontend Developers.
 
-### [TASK-025] Implement Bow Generator (32×32 and 16×16)
-- **Status**: Doing
-- **Priority**: High
-- **Assigned**: Frontend Developer
-- **Spec**: [docs/pm/requirements/TASK-025-implement-bow-generator.md](docs/pm/requirements/TASK-025-implement-bow-generator.md) / [docs/superpowers/specs/2026-09-21-bow-generator-design.md](docs/superpowers/specs/2026-09-21-bow-generator-design.md)
-- **Summary**: Implement procedural bow and arrow generator in `bow.js` with 3 archetypes (`longbow`, `recurve`, `shortbow`), diagonal 45° nocked arrow composition, wood & fletching palettes in `palette.js`, dual-resolution 32×32 & 16×16 rasterization, studio UI & regression integration, multi-language dictionaries (`zh-Hant`, `en`, `ja`), and baseline visual regression snapshots.
+*(No tasks currently in Doing)*
 
 ---
 
@@ -45,6 +40,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 ## ✅ Done
 
 > Completed tasks reviewed and confirmed by the Project Manager.
+
+### [TASK-025] Implement Bow Generator (32×32 and 16×16)
+- **Status**: Done
+- **Completed**: 2026-09-21
+- **Summary**: Implemented procedural bow and arrow generator in `bow.js` with 3 archetypes (`longbow`, `recurve`, `shortbow`), diagonal 45° nocked arrow composition, wood & fletching palettes in `palette.js`, dual-resolution 32×32 & 16×16 rasterization, studio UI & regression integration, multi-language dictionaries (`zh-Hant`, `en`, `ja`), and baseline visual regression snapshots. Confirmed 100% test pass rate across `check-theme`, `check-i18n`, `check-batch`, and `snapshot`.
 
 ### [TASK-024] Update itch.io Cover and Screenshots to Light Theme
 - **Status**: Done
