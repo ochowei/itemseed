@@ -17,7 +17,12 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Tasks published and prioritized by the Project Manager. Ready for Frontend Developers to pick up.
 
-*(No tasks currently in TODO)*
+### [TASK-025] Implement Bow Generator (32×32 and 16×16)
+- **Status**: TODO
+- **Priority**: High
+- **Assigned**: Frontend Developer
+- **Spec**: [docs/pm/requirements/TASK-025-implement-bow-generator.md](docs/pm/requirements/TASK-025-implement-bow-generator.md) / [docs/superpowers/specs/2026-09-21-bow-generator-design.md](docs/superpowers/specs/2026-09-21-bow-generator-design.md)
+- **Summary**: Implement procedural bow and arrow generator in `bow.js` with 3 archetypes (`longbow`, `recurve`, `shortbow`), diagonal 45° nocked arrow composition, wood & fletching palettes in `palette.js`, dual-resolution 32×32 & 16×16 rasterization, studio UI & regression integration, multi-language dictionaries (`zh-Hant`, `en`, `ja`), and baseline visual regression snapshots.
 
 ---
 
