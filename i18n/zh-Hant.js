@@ -20,6 +20,7 @@ window.I18N_ZH_HANT = {
   'type.option.spear': '長矛 (spear)',
   'type.option.shield': '盾牌 (shield)',
   'type.option.staff': '法杖 (staff)',
+  'type.option.bow': '弓 (bow)',
 
   'size.label': '// size',
 
