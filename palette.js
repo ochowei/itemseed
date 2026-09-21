@@ -256,7 +256,13 @@ const FLETCHING_NAMES = ['crimson', 'emerald', 'azure', 'white'];
 function sampleBowPalette(rng) {
   const woodFamily = rng.pick(BOW_WOOD_NAMES);
   const woodPalette = BOW_WOOD_FAMILIES[woodFamily];
-  const { family: metalFamily, palette: metalPalette } = sampleSwordPalette(rng);
+  const { family: metalFamily, palette: metalPal } = sampleSwordPalette(rng);
+  const metalPalette = {
+    outline: metalPal.outline,
+    main: metalPal.bladeMain,
+    shadow: metalPal.bladeShadow,
+    shine: metalPal.bladeShine,
+  };
   const fletchingName = rng.pick(FLETCHING_NAMES);
   const fletchingPalette = FLETCHING_COLORS[fletchingName];
 
@@ -266,6 +272,7 @@ function sampleBowPalette(rng) {
     metalFamily,
     metalPalette,
     fletchingName,
+    fletchingColor: fletchingName,
     fletchingPalette,
   };
 }
