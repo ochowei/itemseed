@@ -498,53 +498,43 @@
       nock: spec.metalPalette.main,
     });
 
-    // 2. Seams and outer perimeter outline
+    // 2. Derive stave body fills and accents from upperCurve
+    const shineIdx = 2;
+
+    for (let i = 0; i < upperCurve.length; i++) {
+      const p = upperCurve[i];
+      const lx = 16 - p.y;
+      const ly = 16 - p.x;
+      const isGrip = (p.x === 8 && p.y === 8);
+
+      if (isGrip) {
+        ctx.fillStyle = spec.hasGripWrap ? leatherPal.main : spec.woodPalette.main;
+        ctx.fillRect(p.x, p.y, 1, 1);
+      } else if (i === 1 && spec.hasNockReinforcement) {
+        // Metal nock interior accent on upperCurve[1]
+        ctx.fillStyle = spec.metalPalette.shine;
+        ctx.fillRect(p.x, p.y, 1, 1);
+        ctx.fillStyle = spec.metalPalette.shadow;
+        ctx.fillRect(lx, ly, 1, 1);
+      } else if (i === shineIdx) {
+        // Upper limb shine highlight / lower limb shadow
+        ctx.fillStyle = spec.woodPalette.shine;
+        ctx.fillRect(p.x, p.y, 1, 1);
+        ctx.fillStyle = spec.woodPalette.shadow;
+        ctx.fillRect(lx, ly, 1, 1);
+      } else if (i > 1) {
+        // Stave body main along curve
+        ctx.fillStyle = spec.woodPalette.main;
+        ctx.fillRect(p.x, p.y, 1, 1);
+        ctx.fillRect(lx, ly, 1, 1);
+      }
+    }
+
+    // 3. Internal seams between stave, grip, and nock caps
     _paintInternalSeams(ctx, mask, size, spec.woodPalette.outline);
+
+    // 4. Solid perimeter outline (AFTER all stave body colors and accents)
     _applyInsideOutlinePass(ctx, mask, size, spec.woodPalette.outline);
-
-    // 3. Stave body core color
-    ctx.fillStyle = spec.woodPalette.main;
-    ctx.fillRect(6, 5, 1, 1);
-    if (spec.archetype === 'shortbow') {
-      ctx.fillRect(6, 6, 1, 1);
-      ctx.fillRect(10, 10, 1, 1);
-    } else {
-      ctx.fillRect(7, 6, 1, 1);
-      ctx.fillRect(10, 9, 1, 1);
-    }
-    ctx.fillRect(7, 7, 1, 1);
-    ctx.fillRect(9, 9, 1, 1);
-    ctx.fillRect(11, 10, 1, 1);
-
-    if (spec.archetype === 'recurve') {
-      ctx.fillRect(4, 3, 1, 1);
-      ctx.fillRect(13, 12, 1, 1);
-    }
-
-    // 4. Upper limb highlight in shine
-    ctx.fillStyle = spec.woodPalette.shine;
-    ctx.fillRect(5, 4, 1, 1);
-
-    // 5. Lower limb shadow in shadow
-    ctx.fillStyle = spec.woodPalette.shadow;
-    ctx.fillRect(12, 11, 1, 1);
-
-    // 6. Grip wrap at center (8, 8)
-    if (spec.hasGripWrap) {
-      ctx.fillStyle = leatherPal.main;
-      ctx.fillRect(8, 8, 1, 1);
-    } else {
-      ctx.fillStyle = spec.woodPalette.main;
-      ctx.fillRect(8, 8, 1, 1);
-    }
-
-    // 7. Nock reinforcement at tips
-    if (spec.hasNockReinforcement) {
-      ctx.fillStyle = spec.metalPalette.shine;
-      ctx.fillRect(upperTip.x, upperTip.y, 1, 1);
-      ctx.fillStyle = spec.metalPalette.main;
-      ctx.fillRect(lowerTip.x, lowerTip.y, 1, 1);
-    }
 
     // -----------------------------------------------------------------
     // Layer 3: Arrow
