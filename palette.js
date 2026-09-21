@@ -215,10 +215,73 @@ window.sampleShieldPalette = sampleShieldPalette;
 window.ELEMENT_FAMILIES = ELEMENT_FAMILIES;
 window.sampleStaffPalette = sampleStaffPalette;
 
+const BOW_WOOD_FAMILIES = {
+  oak: {
+    outline: '#26170d',
+    main: '#8a5a2e',
+    shadow: '#5a3a1e',
+    shine: '#b88560',
+  },
+  yew: {
+    outline: '#24100b',
+    main: '#964426',
+    shadow: '#662814',
+    shine: '#c46844',
+  },
+  ash: {
+    outline: '#2c2214',
+    main: '#bfa16b',
+    shadow: '#80683f',
+    shine: '#ded0a8',
+  },
+  ebony: {
+    outline: '#14121a',
+    main: '#3c364c',
+    shadow: '#252030',
+    shine: '#625b7a',
+  },
+};
+
+const BOW_WOOD_NAMES = ['oak', 'yew', 'ash', 'ebony'];
+
+const FLETCHING_COLORS = {
+  crimson: { main: '#dc2626', shadow: '#991b1b' },
+  emerald: { main: '#16a34a', shadow: '#166534' },
+  azure:   { main: '#2563eb', shadow: '#1e40af' },
+  white:   { main: '#f1f5f9', shadow: '#94a3b8' },
+};
+
+const FLETCHING_NAMES = ['crimson', 'emerald', 'azure', 'white'];
+
+function sampleBowPalette(rng) {
+  const woodFamily = rng.pick(BOW_WOOD_NAMES);
+  const woodPalette = BOW_WOOD_FAMILIES[woodFamily];
+  const { family: metalFamily, palette: metalPalette } = sampleSwordPalette(rng);
+  const fletchingName = rng.pick(FLETCHING_NAMES);
+  const fletchingPalette = FLETCHING_COLORS[fletchingName];
+
+  return {
+    woodFamily,
+    woodPalette,
+    metalFamily,
+    metalPalette,
+    fletchingName,
+    fletchingPalette,
+  };
+}
+
+window.BOW_WOOD_FAMILIES = BOW_WOOD_FAMILIES;
+window.FLETCHING_COLORS = FLETCHING_COLORS;
+window.sampleBowPalette = sampleBowPalette;
+
 if (typeof globalThis !== 'undefined') {
   globalThis.ELEMENT_FAMILIES = ELEMENT_FAMILIES;
   globalThis.sampleStaffPalette = sampleStaffPalette;
+  globalThis.BOW_WOOD_FAMILIES = BOW_WOOD_FAMILIES;
+  globalThis.FLETCHING_COLORS = FLETCHING_COLORS;
+  globalThis.sampleBowPalette = sampleBowPalette;
   if (typeof window !== 'undefined' && window.SeededRandom && !globalThis.SeededRandom) {
     globalThis.SeededRandom = window.SeededRandom;
   }
 }
+
