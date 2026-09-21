@@ -389,11 +389,198 @@
   }
 
   // =====================================================================
-  // Stub for 16×16 Native Rasterizer (Task 3 will fully implement)
+  // Phase 3: 16×16 Native Rasterizer
   // =====================================================================
 
+  function getArchetypeUpperCurve16(archetype) {
+    if (archetype === 'recurve') {
+      return [
+        { x: 3, y: 3 },
+        { x: 4, y: 3 },
+        { x: 5, y: 4 },
+        { x: 6, y: 5 },
+        { x: 7, y: 6 },
+        { x: 7, y: 7 },
+        { x: 8, y: 8 },
+      ];
+    }
+    if (archetype === 'shortbow') {
+      return [
+        { x: 4, y: 3 },
+        { x: 5, y: 4 },
+        { x: 6, y: 5 },
+        { x: 6, y: 6 },
+        { x: 7, y: 7 },
+        { x: 8, y: 8 },
+      ];
+    }
+    // longbow: Smooth parabolic arc
+    return [
+      { x: 4, y: 3 },
+      { x: 5, y: 4 },
+      { x: 6, y: 5 },
+      { x: 7, y: 6 },
+      { x: 7, y: 7 },
+      { x: 8, y: 8 },
+    ];
+  }
+
+  function buildBowMask16(spec, upperCurve) {
+    const size = 16;
+    const mask = _allocateMask(size);
+
+    function addCell(x, y, label) {
+      _maskSet(mask, size, x, y, label);
+      _maskSet(mask, size, 16 - y, 16 - x, label);
+    }
+
+    for (let i = 0; i < upperCurve.length; i++) {
+      const p = upperCurve[i];
+      const isGrip = (p.x === 8 && p.y === 8);
+      const isNock = (i === 0 && spec.hasNockReinforcement);
+      const label = isGrip ? 'grip' : (isNock ? 'nock' : 'stave');
+
+      addCell(p.x, p.y, label);
+      addCell(p.x + 1, p.y, label);
+      addCell(p.x, p.y - 1, label);
+      if (i >= 2) {
+        addCell(p.x - 1, p.y, label);
+        addCell(p.x, p.y + 1, label);
+      }
+    }
+
+    // Pronounced grip block for shortbow
+    if (spec.archetype === 'shortbow') {
+      addCell(7, 8, 'grip');
+      addCell(8, 7, 'grip');
+    }
+
+    return mask;
+  }
+
   function renderBowSpec16(ctx, spec) {
-    // Stub for 16×16 native rasterizer (Task 3)
+    const size = 16;
+    ctx.clearRect(0, 0, size, size);
+
+    const upperCurve = getArchetypeUpperCurve16(spec.archetype);
+    const upperTip = upperCurve[0];
+    const lowerTip = { x: 16 - upperTip.y, y: 16 - upperTip.x };
+    const nockingPoint = { x: 5, y: 10 };
+
+    // -----------------------------------------------------------------
+    // Layer 1: Bowstring
+    // -----------------------------------------------------------------
+    const upString = bresenhamLine(upperTip.x, upperTip.y, nockingPoint.x, nockingPoint.y);
+    const lowString = bresenhamLine(lowerTip.x, lowerTip.y, nockingPoint.x, nockingPoint.y);
+
+    ctx.fillStyle = '#cbd5e1';
+    for (const p of upString) {
+      ctx.fillRect(p.x, p.y, 1, 1);
+    }
+    for (const p of lowString) {
+      ctx.fillRect(p.x, p.y, 1, 1);
+    }
+
+    // -----------------------------------------------------------------
+    // Layer 2: Bow Stave
+    // -----------------------------------------------------------------
+    const mask = buildBowMask16(spec, upperCurve);
+    const leatherPal = _LEATHER_PALETTE || {
+      main: '#6a4828',
+      shadow: '#3a2818',
+      highlight: '#8a6840',
+    };
+
+    // 1. Base colors by enum
+    _paintMaskByEnum(ctx, mask, size, {
+      stave: spec.woodPalette.main,
+      grip: leatherPal.main,
+      nock: spec.metalPalette.main,
+    });
+
+    // 2. Seams and outer perimeter outline
+    _paintInternalSeams(ctx, mask, size, spec.woodPalette.outline);
+    _applyInsideOutlinePass(ctx, mask, size, spec.woodPalette.outline);
+
+    // 3. Stave body core color
+    ctx.fillStyle = spec.woodPalette.main;
+    ctx.fillRect(6, 5, 1, 1);
+    if (spec.archetype === 'shortbow') {
+      ctx.fillRect(6, 6, 1, 1);
+      ctx.fillRect(10, 10, 1, 1);
+    } else {
+      ctx.fillRect(7, 6, 1, 1);
+      ctx.fillRect(10, 9, 1, 1);
+    }
+    ctx.fillRect(7, 7, 1, 1);
+    ctx.fillRect(9, 9, 1, 1);
+    ctx.fillRect(11, 10, 1, 1);
+
+    if (spec.archetype === 'recurve') {
+      ctx.fillRect(4, 3, 1, 1);
+      ctx.fillRect(13, 12, 1, 1);
+    }
+
+    // 4. Upper limb highlight in shine
+    ctx.fillStyle = spec.woodPalette.shine;
+    ctx.fillRect(5, 4, 1, 1);
+
+    // 5. Lower limb shadow in shadow
+    ctx.fillStyle = spec.woodPalette.shadow;
+    ctx.fillRect(12, 11, 1, 1);
+
+    // 6. Grip wrap at center (8, 8)
+    if (spec.hasGripWrap) {
+      ctx.fillStyle = leatherPal.main;
+      ctx.fillRect(8, 8, 1, 1);
+    } else {
+      ctx.fillStyle = spec.woodPalette.main;
+      ctx.fillRect(8, 8, 1, 1);
+    }
+
+    // 7. Nock reinforcement at tips
+    if (spec.hasNockReinforcement) {
+      ctx.fillStyle = spec.metalPalette.shine;
+      ctx.fillRect(upperTip.x, upperTip.y, 1, 1);
+      ctx.fillStyle = spec.metalPalette.main;
+      ctx.fillRect(lowerTip.x, lowerTip.y, 1, 1);
+    }
+
+    // -----------------------------------------------------------------
+    // Layer 3: Arrow
+    // -----------------------------------------------------------------
+    const shaftPal = spec.arrowShaftPalette || _WOOD_PALETTE || {
+      main: '#a87c4e',
+      shadow: '#6a4020',
+    };
+
+    // Shaft: 1px continuous diagonal line from (3, 12) to (12, 3)
+    const shaftPts = bresenhamLine(3, 12, 12, 3);
+    ctx.fillStyle = shaftPal.main;
+    for (const p of shaftPts) {
+      ctx.fillRect(p.x, p.y, 1, 1);
+    }
+
+    // Arrowhead: 2×2 faceted diamond point at (12, 3) .. (13, 2) with tip at (13, 2)
+    ctx.fillStyle = spec.metalPalette.outline;
+    ctx.fillRect(12, 2, 1, 1);
+    ctx.fillRect(13, 3, 1, 1);
+    ctx.fillStyle = spec.metalPalette.shine;
+    ctx.fillRect(13, 2, 1, 1);
+    ctx.fillStyle = spec.metalPalette.main;
+    ctx.fillRect(12, 3, 1, 1);
+
+    // Fletching: 2px angled barb at (3, 12) in fletchingPalette.main with dark outline
+    ctx.fillStyle = spec.woodPalette.outline;
+    ctx.fillRect(2, 11, 1, 1);
+    ctx.fillRect(1, 12, 1, 1);
+    ctx.fillRect(2, 13, 1, 1);
+    ctx.fillRect(3, 14, 1, 1);
+    ctx.fillRect(4, 13, 1, 1);
+
+    ctx.fillStyle = spec.fletchingPalette.main;
+    ctx.fillRect(2, 12, 1, 1);
+    ctx.fillRect(3, 13, 1, 1);
   }
 
   // =====================================================================
