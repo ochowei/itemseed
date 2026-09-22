@@ -25,12 +25,7 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Tasks currently under active development by Frontend Developers.
 
-### [TASK-027] Add Feature Flag for Bow Item Type (Default Off)
-- **Status**: Doing
-- **Priority**: High
-- **Assigned**: Frontend Developer
-- **Spec**: [docs/pm/requirements/TASK-027-feature-flag-bow.md](docs/pm/requirements/TASK-027-feature-flag-bow.md)
-- **Summary**: Implement a runtime feature flag mechanism for `bow` defaulting to disabled. When flag is off, hide `<option value="bow">` in `#type-select` and exclude `bow` from random selection in `any` mode. Allow activation via URL parameter (`?bow=1` / `?features=bow`) and localStorage (`itemseed.feature.bow`). Add automated test coverage and verify all suites pass.
+*(No tasks currently in Doing)*
 
 ---
 
@@ -45,6 +40,11 @@ This board tracks frontend development tasks for the `itemseed` project.
 ## ✅ Done
 
 > Completed tasks reviewed and confirmed by the Project Manager.
+
+### [TASK-027] Add Feature Flag for Bow Item Type (Default Off)
+- **Status**: Done
+- **Completed**: 2026-09-22
+- **Summary**: Implemented a runtime feature flag mechanism for `bow` defaulting to disabled. When flag is off, `<option value="bow">` is removed from `#type-select` and `bow` is strictly excluded from random selection in `any` mode. Allowed activation via URL parameter (`?bow=1` / `?features=bow`) and localStorage (`itemseed.feature.bow`). Added comprehensive automated unit tests (`scripts/test-feature-flags.mjs`) and updated batch preview verification suite (`scripts/test-batch-preview.mjs`). Confirmed 100% test pass rate across all test suites.
 
 ### [TASK-026] Refine Bow Arrowhead, Fletching, and Nocking Alignment
 - **Status**: Done
