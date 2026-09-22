@@ -326,51 +326,51 @@
       shadow: '#6a4020',
     };
 
-    // Shaft: 1px integer diagonal line from (6, 25) to (24, 7)
-    const shaftPts = bresenhamLine(6, 25, 24, 7);
+    // Shaft: 1px integer diagonal line from (9, 22) to (24, 7) aligned to nock (10, 21)
+    const shaftPts = bresenhamLine(9, 22, 24, 7);
     ctx.fillStyle = shaftPal.main;
     for (const p of shaftPts) {
       ctx.fillRect(p.x, p.y, 1, 1);
     }
 
-    // Fletching: 2 angled vanes completely enclosed by dark outline
-    // Fletching dark outline:
+    // Fletching: streamlined feather vanes hugging the shaft completely enclosed by dark outline
     ctx.fillStyle = spec.woodPalette.outline;
-    const upperFletchOutline = [
-      [6, 22], [5, 23], [7, 23], [4, 24], [4, 25], [4, 26], [5, 26], [6, 24]
+    const fletchOutline = [
+      // upper vane outline
+      [8, 21], [9, 20], [10, 19], [11, 18], [12, 18],
+      // rear nock outline cap
+      [8, 22], [8, 23], [9, 23],
+      // lower vane outline
+      [10, 23], [11, 22], [12, 21], [13, 20], [13, 19]
     ];
-    for (const [ox, oy] of upperFletchOutline) {
+    for (const [ox, oy] of fletchOutline) {
       ctx.fillRect(ox, oy, 1, 1);
     }
 
-    const lowerFletchOutline = [
-      [7, 25], [6, 26], [6, 27], [7, 27], [8, 28], [9, 27], [9, 26], [8, 25]
-    ];
-    for (const [ox, oy] of lowerFletchOutline) {
-      ctx.fillRect(ox, oy, 1, 1);
-    }
-
-    // Fletching feather interior:
-    // Upper vane:
+    // Upper vane feather interior:
     ctx.fillStyle = spec.fletchingPalette.main;
-    ctx.fillRect(6, 23, 1, 1);
-    ctx.fillRect(5, 24, 1, 1);
-    ctx.fillRect(5, 25, 1, 1);
+    ctx.fillRect(9, 21, 1, 1);
+    ctx.fillRect(10, 20, 1, 1);
+    ctx.fillRect(11, 19, 1, 1);
 
-    // Lower vane:
+    // Lower vane feather interior:
     ctx.fillStyle = spec.fletchingPalette.shadow;
-    ctx.fillRect(7, 26, 1, 1);
-    ctx.fillRect(8, 26, 1, 1);
-    ctx.fillRect(8, 27, 1, 1);
+    ctx.fillRect(10, 22, 1, 1);
+    ctx.fillRect(11, 21, 1, 1);
+    ctx.fillRect(12, 20, 1, 1);
 
-    // Arrowhead: 3×3 faceted diamond completely enclosed by outline
+    // Arrowhead: sharp acute piercing spearhead pointing top-right towards (28, 3)
     ctx.fillStyle = spec.metalPalette.outline;
     const headOutline = [
-      [27, 4],          // diamond tip outline
-      [26, 4], [25, 4], // top edges
-      [24, 5], [27, 5], // upper barbs
-      [24, 6], [27, 6], // center barbs
-      [25, 7], [26, 7], // bottom barbs
+      [28, 3],          // razor tip outline
+      [27, 3],          // top edge
+      [26, 4], [25, 4], // upper-left edges
+      [24, 5],          // upper barb
+      [24, 6],          // left socket
+      [25, 7],          // bottom socket
+      [26, 7],          // lower barb
+      [27, 6], [27, 5], // lower-right edges
+      [28, 4],          // right edge
     ];
     for (const [hx, hy] of headOutline) {
       ctx.fillRect(hx, hy, 1, 1);
@@ -378,11 +378,12 @@
 
     // Interior metallic facets:
     ctx.fillStyle = spec.metalPalette.shine;
-    ctx.fillRect(25, 5, 1, 1); // top-left facet
-    ctx.fillRect(26, 5, 1, 1); // top-right facet
+    ctx.fillRect(27, 4, 1, 1); // tip facet
+    ctx.fillRect(25, 5, 1, 1); // upper facet
 
     ctx.fillStyle = spec.metalPalette.main;
-    ctx.fillRect(25, 6, 1, 1); // center ridge
+    ctx.fillRect(26, 5, 1, 1); // central ridge
+    ctx.fillRect(25, 6, 1, 1); // lower ridge / socket
 
     ctx.fillStyle = spec.metalPalette.shadow;
     ctx.fillRect(26, 6, 1, 1); // lower facet
@@ -544,33 +545,48 @@
       shadow: '#6a4020',
     };
 
-    // Shaft: 1px continuous diagonal line from (3, 12) to (12, 3)
-    const shaftPts = bresenhamLine(3, 12, 12, 3);
+    // Shaft: 1px continuous diagonal line from (4, 11) to (11, 4) aligned to nock (5, 10)
+    const shaftPts = bresenhamLine(4, 11, 11, 4);
     ctx.fillStyle = shaftPal.main;
     for (const p of shaftPts) {
       ctx.fillRect(p.x, p.y, 1, 1);
     }
 
-    // Arrowhead: 2×2 faceted diamond point at (12, 3) .. (13, 2) with tip at (13, 2)
-    ctx.fillStyle = spec.metalPalette.outline;
-    ctx.fillRect(12, 2, 1, 1);
-    ctx.fillRect(13, 3, 1, 1);
-    ctx.fillStyle = spec.metalPalette.shine;
-    ctx.fillRect(13, 2, 1, 1);
-    ctx.fillStyle = spec.metalPalette.main;
-    ctx.fillRect(12, 3, 1, 1);
-
-    // Fletching: 2px angled barb at (3, 12) in fletchingPalette.main with dark outline
+    // Fletching: streamlined feather vanes hugging shaft near nocking point (5, 10)
     ctx.fillStyle = spec.woodPalette.outline;
-    ctx.fillRect(2, 11, 1, 1);
-    ctx.fillRect(1, 12, 1, 1);
-    ctx.fillRect(2, 13, 1, 1);
-    ctx.fillRect(3, 14, 1, 1);
-    ctx.fillRect(4, 13, 1, 1);
+    const fletch16Outline = [
+      [4, 9], [5, 9],
+      [3, 10], [6, 10],
+      [3, 11], [6, 11],
+      [3, 12], [4, 12], [5, 12]
+    ];
+    for (const [ox, oy] of fletch16Outline) {
+      ctx.fillRect(ox, oy, 1, 1);
+    }
 
     ctx.fillStyle = spec.fletchingPalette.main;
-    ctx.fillRect(2, 12, 1, 1);
-    ctx.fillRect(3, 13, 1, 1);
+    ctx.fillRect(4, 10, 1, 1);
+
+    ctx.fillStyle = spec.fletchingPalette.shadow;
+    ctx.fillRect(5, 11, 1, 1);
+
+    // Arrowhead: acute razor tip pointing top-right towards (14, 1)
+    ctx.fillStyle = spec.metalPalette.outline;
+    const head16Outline = [
+      [14, 1],
+      [13, 1], [14, 2],
+      [12, 2], [13, 3],
+      [11, 3], [12, 4]
+    ];
+    for (const [hx, hy] of head16Outline) {
+      ctx.fillRect(hx, hy, 1, 1);
+    }
+
+    ctx.fillStyle = spec.metalPalette.shine;
+    ctx.fillRect(13, 2, 1, 1);
+
+    ctx.fillStyle = spec.metalPalette.main;
+    ctx.fillRect(12, 3, 1, 1);
   }
 
   // =====================================================================

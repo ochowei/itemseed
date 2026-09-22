@@ -25,7 +25,12 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Tasks currently under active development by Frontend Developers.
 
-*(No tasks currently in Doing)*
+### [TASK-026] Refine Bow Arrowhead, Fletching, and Nocking Alignment
+- **Status**: Doing
+- **Priority**: High
+- **Assigned**: Frontend Developer
+- **Spec**: [docs/pm/requirements/TASK-026-refine-bow-visual-direction.md](docs/pm/requirements/TASK-026-refine-bow-visual-direction.md)
+- **Summary**: Refine 32×32 and 16×16 bow generator rasterization in `bow.js` to eliminate visual ambiguity on firing orientation. Sharpen and elongate the arrowhead pointing top-right, streamline feather fletching, align arrow nock directly with the drawn string at nocking point `(10, 21)` (32×32) and `(5, 10)` (16×16), and refresh golden snapshot baselines.
 
 ---
 
