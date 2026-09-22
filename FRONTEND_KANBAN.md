@@ -25,7 +25,12 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Tasks currently under active development by Frontend Developers.
 
-*(No tasks currently in Doing)*
+### [TASK-027] Add Feature Flag for Bow Item Type (Default Off)
+- **Status**: Doing
+- **Priority**: High
+- **Assigned**: Frontend Developer
+- **Spec**: [docs/pm/requirements/TASK-027-feature-flag-bow.md](docs/pm/requirements/TASK-027-feature-flag-bow.md)
+- **Summary**: Implement a runtime feature flag mechanism for `bow` defaulting to disabled. When flag is off, hide `<option value="bow">` in `#type-select` and exclude `bow` from random selection in `any` mode. Allow activation via URL parameter (`?bow=1` / `?features=bow`) and localStorage (`itemseed.feature.bow`). Add automated test coverage and verify all suites pass.
 
 ---
 
