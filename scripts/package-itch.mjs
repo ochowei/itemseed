@@ -42,6 +42,7 @@ const DEPLOY_FILES = [
   'spear.js',
   'shield.js',
   'staff.js',
+  'bow.js',
   'theme.js',
   'theme.css',
   'i18n.js',

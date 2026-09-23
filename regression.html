@@ -59,6 +59,9 @@
   <h2>Staff regression set</h2>
   <table class="grid" id="grid-staff"></table>
 
+  <h2>// drawBow</h2>
+  <table id="grid-bow"></table>
+
   <script src="theme.js"></script>
   <script src="random.js"></script>
   <script src="palette.js"></script>
@@ -68,6 +71,7 @@
   <script src="spear.js"></script>
   <script src="shield.js"></script>
   <script src="staff.js"></script>
+  <script src="bow.js"></script>
   <script>
     // ============================================================
     // Theme bootstrap
@@ -141,11 +145,31 @@
       'staff-norings-16',
     ];
 
+    const BOW_SEEDS = [
+      'bow-longbow-oak-6',
+      'bow-longbow-yew-157',
+      'bow-longbow-ash-159',
+      'bow-longbow-ebony-92',
+      'bow-recurve-oak-17',
+      'bow-recurve-yew-48',
+      'bow-recurve-ash-183',
+      'bow-recurve-ebony-329',
+      'bow-shortbow-oak-14',
+      'bow-shortbow-yew-36',
+      'bow-shortbow-ash-31',
+      'bow-shortbow-ebony-22',
+      'bow-longbow-steel-69',
+      'bow-recurve-gold-91',
+      'bow-shortbow-obsidian-36',
+      'bow-recurve-bronze-28',
+    ];
+
     const collectedPotion = [];
     const collectedSword = [];
     const collectedSpear = [];
     const collectedShield = [];
     const collectedStaff = [];
+    const collectedBow = [];
 
     // ============================================================
     // Render potion grid
@@ -316,10 +340,43 @@
     }
 
     // ============================================================
-    // Download buttons (potion + sword + spear + shield + staff combined)
+    // Render bow grid
+    // ============================================================
+    {
+      const grid = document.getElementById('grid-bow');
+      const headerRow = document.createElement('tr');
+      headerRow.innerHTML = '<th>seed</th><th>archetype</th><th>wood</th><th>metal</th><th>fletching</th><th>wrap</th><th>32×32</th><th>16×16</th>';
+      grid.appendChild(headerRow);
+
+      for (const seed of BOW_SEEDS) {
+        const rng = new SeededRandom(seed);
+        const spec = sampleBowSpec(rng);
+
+        const c32 = document.createElement('canvas');
+        c32.width = 32; c32.height = 32; c32.style.width = '64px'; c32.style.height = '64px';
+        renderBowSpec32(c32.getContext('2d'), spec);
+
+        const c16 = document.createElement('canvas');
+        c16.width = 16; c16.height = 16; c16.style.width = '64px'; c16.style.height = '64px';
+        renderBowSpec16(c16.getContext('2d'), spec);
+
+        const wrapTag = spec.hasGripWrap ? 'wrap' : 'none';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${seed}</td><td>${spec.archetype}</td><td>${spec.woodFamily}</td><td>${spec.metalFamily}</td><td>${spec.fletchingColor}</td><td>${wrapTag}</td>`;
+        const td32 = document.createElement('td'); td32.appendChild(c32); tr.appendChild(td32);
+        const td16 = document.createElement('td'); td16.appendChild(c16); tr.appendChild(td16);
+        grid.appendChild(tr);
+
+        collectedBow.push({ kind: 'bow', seed, spec, c32, c16 });
+      }
+    }
+
+    // ============================================================
+    // Download buttons (potion + sword + spear + shield + staff + bow combined)
     // ============================================================
     document.getElementById('dl-png').addEventListener('click', () => {
-      const all = [...collectedPotion, ...collectedSword, ...collectedSpear, ...collectedShield, ...collectedStaff];
+      const all = [...collectedPotion, ...collectedSword, ...collectedSpear, ...collectedShield, ...collectedStaff, ...collectedBow];
       const cellW = 32, cellH = 32;
       const composite = document.createElement('canvas');
       composite.width = cellW + 4 + cellW;
@@ -347,6 +404,7 @@
         ...collectedSpear.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
         ...collectedShield.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
         ...collectedStaff.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
+        ...collectedBow.map(({ kind, seed, spec }) => ({ kind, seed, spec })),
       ];
       const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
       const a = document.createElement('a');

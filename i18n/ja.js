@@ -20,6 +20,7 @@ window.I18N_JA = {
   'type.option.spear': '槍 (spear)',
   'type.option.shield': '盾 (shield)',
   'type.option.staff': '杖 (staff)',
+  'type.option.bow': '弓 (bow)',
 
   'size.label': '// size',
 

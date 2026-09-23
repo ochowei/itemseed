@@ -7,10 +7,11 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "npm run check-theme && npm run check-i18n && npm run check-batch && npm run snapshot",
+    "test": "npm run check-theme && npm run check-i18n && npm run check-flags && npm run check-batch && npm run snapshot",
     "snapshot": "node scripts/snapshot-regression.mjs",
     "check-theme": "node scripts/test-theme.mjs",
     "check-i18n": "node scripts/check-i18n.mjs",
+    "check-flags": "node scripts/test-feature-flags.mjs",
     "check-batch": "node scripts/test-batch-preview.mjs",
     "package:itch": "node scripts/package-itch.mjs",
     "assets:itch": "node scripts/generate-itch-assets.mjs"

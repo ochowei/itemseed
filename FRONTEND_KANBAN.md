@@ -41,6 +41,21 @@ This board tracks frontend development tasks for the `itemseed` project.
 
 > Completed tasks reviewed and confirmed by the Project Manager.
 
+### [TASK-027] Add Feature Flag for Bow Item Type (Default Off)
+- **Status**: Done
+- **Completed**: 2026-09-22
+- **Summary**: Implemented a runtime feature flag mechanism for `bow` defaulting to disabled. When flag is off, `<option value="bow">` is removed from `#type-select` and `bow` is strictly excluded from random selection in `any` mode. Allowed activation via URL parameter (`?bow=1` / `?features=bow`) and localStorage (`itemseed.feature.bow`). Added comprehensive automated unit tests (`scripts/test-feature-flags.mjs`) and updated batch preview verification suite (`scripts/test-batch-preview.mjs`). Confirmed 100% test pass rate across all test suites.
+
+### [TASK-026] Refine Bow Arrowhead, Fletching, and Nocking Alignment
+- **Status**: Done
+- **Completed**: 2026-09-22
+- **Summary**: Refined 32×32 and 16×16 bow generator rasterization in `bow.js` to eliminate visual ambiguity on firing orientation. Sharpened and elongated the arrowhead pointing top-right with crisp metallic facets, streamlined feather fletching to hug the shaft, aligned arrow nock directly with the drawn string at nocking point `(10, 21)` (32×32) and `(5, 10)` (16×16) eliminating backward shaft protrusion, and updated golden snapshot baselines. Confirmed 100% test pass rate.
+
+### [TASK-025] Implement Bow Generator (32×32 and 16×16)
+- **Status**: Done
+- **Completed**: 2026-09-21
+- **Summary**: Implemented procedural bow and arrow generator in `bow.js` with 3 archetypes (`longbow`, `recurve`, `shortbow`), diagonal 45° nocked arrow composition, wood & fletching palettes in `palette.js`, dual-resolution 32×32 & 16×16 rasterization, studio UI & regression integration, multi-language dictionaries (`zh-Hant`, `en`, `ja`), and baseline visual regression snapshots. Confirmed 100% test pass rate across `check-theme`, `check-i18n`, `check-batch`, and `snapshot`.
+
 ### [TASK-024] Update itch.io Cover and Screenshots to Light Theme
 - **Status**: Done
 - **Completed**: 2026-09-16

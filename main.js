@@ -23,10 +23,57 @@ const previewCtx = previewCanvas.getContext('2d');
 previewCtx.imageSmoothingEnabled = false;
 
 // =============================================================
-// 物品類型登記表
-// 之後新增物品(盾、戒指、書...)在這裡多加一行就好
+// 功能旗標 (Feature Flags)
 // =============================================================
-const ITEM_TYPES = {
+function isFeatureEnabled(featureName) {
+  const nameLower = String(featureName).toLowerCase();
+  try {
+    if (typeof window !== 'undefined' && window.location && window.location.search) {
+      const params = new URLSearchParams(window.location.search);
+      const directVal = params.get(featureName) ?? params.get(nameLower);
+      if (directVal === '1' || directVal === 'true') return true;
+      if (directVal === '0' || directVal === 'false') return false;
+
+      const featuresParam = params.get('features');
+      if (featuresParam !== null) {
+        const list = featuresParam.split(',').map((s) => s.trim().toLowerCase());
+        if (list.includes(nameLower)) return true;
+      }
+    }
+  } catch (_) {}
+
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(`itemseed.feature.${nameLower}`) ?? localStorage.getItem(`itemseed.feature.${featureName}`);
+      if (stored === 'true' || stored === '1') return true;
+      if (stored === 'false' || stored === '0') return false;
+    }
+  } catch (_) {}
+
+  return false;
+}
+
+function setFeature(name, enabled) {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(`itemseed.feature.${String(name).toLowerCase()}`, enabled ? 'true' : 'false');
+    }
+  } catch (_) {}
+}
+
+const FEATURES = {
+  isEnabled: isFeatureEnabled,
+  setFeature: setFeature,
+};
+if (typeof window !== 'undefined') {
+  window.FEATURES = FEATURES;
+}
+
+// =============================================================
+// 物品類型登記表
+// 基礎類型 vs 旗標控制的可選類型
+// =============================================================
+const BASE_ITEM_TYPES = {
   potion: drawPotion,
   sword: drawSword,
   spear: drawSpear,
@@ -34,15 +81,31 @@ const ITEM_TYPES = {
   staff: drawStaff,
 };
 
+const ALL_ITEM_TYPES = {
+  ...BASE_ITEM_TYPES,
+  bow: drawBow,
+};
+
+function getActiveItemTypes() {
+  return isFeatureEnabled('bow') ? ALL_ITEM_TYPES : BASE_ITEM_TYPES;
+}
+
+const ITEM_TYPES = ALL_ITEM_TYPES;
+
 // =============================================================
 // 解析物品類型
 // 如果選擇 'any'，使用獨立的 PRNG (以 seed + ':type' 為種子) 抽取種類，
 // 避免消耗繪圖 PRNG 序列，確保繪圖函式永遠取得步數為 0 的初始 PRNG。
+// 若所選類型未在 activeTypes 中啟用，降級回 'potion'。
 // =============================================================
 function resolveItemType(type, seed) {
-  if (type !== 'any') return type;
+  const activeTypes = getActiveItemTypes();
+  if (type !== 'any') {
+    if (activeTypes[type]) return type;
+    return 'potion';
+  }
   const typeRng = new SeededRandom(`${seed}:type`);
-  return typeRng.pick(Object.keys(ITEM_TYPES));
+  return typeRng.pick(Object.keys(activeTypes));
 }
 
 // =============================================================
@@ -67,7 +130,7 @@ function generate() {
   offscreenCtx.clearRect(0, 0, size, size);
 
   // 4. 呼叫對應的繪圖函式
-  const drawFn = ITEM_TYPES[type];
+  const drawFn = ALL_ITEM_TYPES[type] || ALL_ITEM_TYPES.potion;
   drawFn(offscreenCtx, rng, size);
 
   // 5. 放大顯示在 preview canvas 上
@@ -112,7 +175,8 @@ function renderBatchGrid() {
     c.height = size;
     c.title = cellSeed;
     const cx = c.getContext('2d', { willReadFrequently: true });
-    ITEM_TYPES[cellType](cx, rng, size);
+    const drawFn = ALL_ITEM_TYPES[cellType] || ALL_ITEM_TYPES.potion;
+    drawFn(cx, rng, size);
 
     // 包一層方便顯示
     const wrap = document.createElement('div');
@@ -159,6 +223,18 @@ seedInput.addEventListener('keydown', (e) => {
 // =============================================================
 THEME.init();
 I18N.init();
+
+// Studio UI: 若未啟用 bow，從選單中移除並防止選取
+if (!isFeatureEnabled('bow')) {
+  const bowOption = typeSelect.querySelector('option[value="bow"]');
+  if (bowOption) {
+    bowOption.remove();
+  }
+  if (typeSelect.value === 'bow') {
+    typeSelect.value = 'any';
+  }
+}
+
 seedInput.value = generateRandomSeed();
 generate();
 renderBatchGrid();
@@ -184,7 +260,12 @@ themeSelect.addEventListener('change', (e) => {
 // =============================================================
 // 暴露給測試或除錯使用
 // =============================================================
-window.ITEM_TYPES = ITEM_TYPES;
+window.ITEM_TYPES = ALL_ITEM_TYPES;
+window.BASE_ITEM_TYPES = BASE_ITEM_TYPES;
+window.ALL_ITEM_TYPES = ALL_ITEM_TYPES;
+window.getActiveItemTypes = getActiveItemTypes;
+window.isFeatureEnabled = isFeatureEnabled;
+window.FEATURES = FEATURES;
 window.resolveItemType = resolveItemType;
 window.offscreenCanvas = offscreenCanvas;
 window.downloadPNG = downloadPNG;

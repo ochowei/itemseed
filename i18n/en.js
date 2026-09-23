@@ -20,6 +20,7 @@ window.I18N_EN = {
   'type.option.spear': 'Spear',
   'type.option.shield': 'Shield',
   'type.option.staff': 'Staff',
+  'type.option.bow': 'Bow',
 
   'size.label': '// size',
 
