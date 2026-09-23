@@ -31,20 +31,89 @@ open regression.html
 
 ## Asset types
 
-| Type   | 32×32 | 16×16 | Source     |
-|--------|-------|-------|------------|
-| Potion | ✓     | ✓     | `potion.js` |
-| Sword  | ✓     | ✓     | `sword.js`  |
-| Spear  | ✓     | ✓     | `spear.js`  |
-| Shield | ✓     | ✓     | `shield.js` |
-| Staff  | ✓     | ✓     | `staff.js`  |
+| Type    | 32×32 | 16×16 | Source     | Status |
+|---------|-------|-------|------------|--------|
+| Potion  | ✓     | ✓     | `potion.js` | Stable |
+| Sword   | ✓     | ✓     | `sword.js`  | Stable |
+| Spear   | ✓     | ✓     | `spear.js`  | Stable |
+| Shield  | ✓     | ✓     | `shield.js` | Stable |
+| Staff   | ✓     | ✓     | `staff.js`  | Stable |
+| Bow 🚩  | ✓     | ✓     | `bow.js`    | Preview (Feature Flag) |
+
+> 🚩 **Note**: Features marked with a flag are preview items disabled by default in `index.html`. They can be enabled on-demand via URL parameters or browser `localStorage`. In `regression.html`, all item types are always rendered for testing.
+
+## Feature flags
+
+ItemSeed includes experimental and preview features guarded by lightweight feature flags. By default, preview features are disabled in the production studio (`index.html`) to ensure a stable baseline experience, while remaining fully visible in `regression.html` for continuous visual testing.
+
+### Available flags
+
+| Flag | Item / Capability | Default State | Description |
+|------|-------------------|---------------|-------------|
+| `bow` | Bow Asset Generator | `false` (Disabled) | Procedural bow generator supporting longbow, recurve, and shortbow archetypes with feathered arrows. |
+
+When a flag like `bow` is disabled:
+- The item type does not appear in the `#type-select` dropdown in `index.html`.
+- The `any` (random) type mode will never pick this item type.
+
+### How to enable feature flags
+
+Flags can be enabled either for a single browser session via URL parameters, or persistently across browser reloads via `localStorage`.
+
+#### 1. Via URL parameter (single session / query string)
+
+Append `?<flag>=1` or `?features=<flag>` to the studio URL:
+
+```bash
+# Enable bow via dedicated parameter
+open "index.html?bow=1"
+
+# Enable bow via comma-separated features parameter
+open "index.html?features=bow"
+```
+
+To explicitly force-disable a flag regardless of storage:
+```bash
+open "index.html?bow=0"
+```
+
+#### 2. Via Developer Console / LocalStorage (persistent across reloads)
+
+Open browser Developer Tools (<kbd>F12</kbd> or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd>) on `index.html` and use the built-in runtime API:
+
+```javascript
+// Enable bow feature (persists in localStorage)
+window.FEATURES.setFeature('bow', true);
+location.reload();
+
+// Disable bow feature
+window.FEATURES.setFeature('bow', false);
+location.reload();
+
+// Check current status
+window.FEATURES.isEnabled('bow'); // returns true or false
+```
+
+Alternatively, set the `localStorage` key directly:
+
+```javascript
+localStorage.setItem('itemseed.feature.bow', 'true');
+location.reload();
+```
+
+#### Resolution precedence
+
+The feature flag runtime evaluates settings in the following strict order:
+1. **URL parameter** (`?bow=1` or `?bow=0` or `?features=bow`)
+2. **Local storage** (`itemseed.feature.bow` in `localStorage`)
+3. **Default value** (`false`)
 
 ## Project structure
 
 ```
 index.html                single-icon studio + 24-cell batch preview
 regression.html           16+ deterministic seeds per type, 32 / 16 side by side
-main.js                   UI wiring + ITEM_TYPES registry
+main.js                   UI wiring + ITEM_TYPES registry + feature flags runtime
 random.js                 SeededRandom (string seed -> deterministic stream)
 palette.js                color families + palette samplers
 pixel-utils.js            integer-aligned canvas helpers
@@ -59,11 +128,14 @@ sword.js                  drawSword  + sample / render pair (32 & 16)
 spear.js                  drawSpear  + sample / render pair (32 & 16)
 shield.js                 drawShield + sample / render pair (32 & 16)
 staff.js                  drawStaff  + sample / render pair (32 & 16)
+bow.js                    drawBow    + sample / render pair (32 & 16) [preview]
 scripts/
   snapshot-regression.mjs headless Chromium screenshots regression.html
   find-seed.mjs           brute-force seed search for rare combos
   test-theme.mjs          unit tests for theme runtime state transitions
   check-i18n.mjs          static integrity checker for locale keys vs index.html
+  test-feature-flags.mjs  unit tests for feature flag URL/storage precedence
+  test-batch-preview.mjs  unit tests for 24-cell batch preview determinism
 snapshots/
   baseline/               tracked golden references
   current/                scratch output (gitignored)
@@ -77,13 +149,15 @@ CLAUDE.md                 internal developer guidelines and pixel art rules
 
 ## Verification and regression workflow
 
-### Theme and i18n checks
+### Automated test suites
 
-Fast Node-based checks verify theme logic and translation completeness:
+Fast Node-based checks verify theme logic, translations, feature flags, and batch generation:
 
 ```bash
 npm run check-theme               # verifies theme state transitions and storage
 npm run check-i18n                # verifies zh-Hant and en parity + index.html keys
+npm run check-flags               # verifies feature flag URL/storage precedence and filtering
+npm run check-batch               # verifies 24-cell batch preview deterministic generation
 ```
 
 ### Visual regression snapshots
@@ -136,7 +210,7 @@ node scripts/find-seed.mjs obsidian trident sp-obs- 5
 ## Requirements
 
 - Any modern browser for `index.html` / `regression.html`
-- Node 18+ and `npm install` to run tests and snapshot regressions (`npm run check-theme`, `npm run check-i18n`, `npm run snapshot`)
+- Node 18+ and `npm install` to run tests and snapshot regressions (`npm test`, `npm run check-theme`, `npm run check-i18n`, `npm run check-flags`, `npm run check-batch`, `npm run snapshot`)
 
 ## License and Provenance
 
